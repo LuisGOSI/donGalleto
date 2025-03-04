@@ -1,11 +1,15 @@
-body{
+body {
     margin: 0;
     padding: 0;
 }
 
-header{
-    height: 80px;
+header {
+    height: 70px;
     background-color: #D7B89D;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 .header-container {
@@ -16,7 +20,6 @@ header{
     width: 100%;
 }
 
-
 .header-item {
     display: flex;
     align-items: center;
@@ -26,5 +29,67 @@ header{
     font-size: 20px;
     color: white;
     background-color: #3E302C;
+    text-decoration: none;
 }
 
+.header-item:hover {
+    background-color: #5E4D48;
+}
+
+/* ------------------------------------------------------------------------ Imagen de la galleta -------------------------------------------------------------  */
+.img-index-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img-index-container img {
+    width: 100%;
+    height: 350px;
+    margin-top: 80px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+/* ------------------------------------------------------------------------ Grid de valores ------------------------------------------------------------------- */
+.index-info-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.index-info-container h2 {
+    text-align: center;
+    font-size: 30px;
+    background-color: #3E302C;
+    color: white;
+}
+
+.index-info-container p{
+    text-align: center;
+    font-size: 18px;
+}
+
+.div-info1 {
+    border: #5E4D48 5px solid;
+    grid-row: span 2 / span 2;
+    grid-column-start: 2;
+}
+
+.div-info2 {
+    border: #5E4D48 5px solid;
+    grid-row: span 2 / span 2;
+}
+
+.div-info3 {
+    border: #5E4D48 5px solid;
+    grid-row: span 2 / span 2;    
+}
+
+.line {
+    background-color: #3E302C;
+    height: 10px;
+    margin-bottom: 6px;
+}
