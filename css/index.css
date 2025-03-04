@@ -66,10 +66,9 @@ header {
     font-size: 30px;
     background-color: #3E302C;
     color: white;
-    
 }
 
-.index-info-container p{
+.index-info-container p {
     text-align: center;
     font-size: 18px;
 }
@@ -83,4 +82,54 @@ header {
     background-color: #3E302C;
     height: 10px;
     margin-bottom: 6px;
+}
+
+/* ------------------------------------------------------------------------ Media Queries ------------------------------------------------------------------- */
+@media (max-width: 1200px) {
+    .header-item {
+        width: 18%;
+        font-size: 18px;
+    }
+
+    .index-info-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .header-item {
+        width: 25%;
+        font-size: 16px;
+    }
+
+    .index-info-container {
+        grid-template-columns: 1fr;
+    }
+
+    .img-index-container img {
+        margin-top: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        height: 60px;
+    }
+
+    .header-item {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .img-index-container img {
+        margin-top: 50px;
+    }
+
+    .index-info-container h2 {
+        font-size: 24px;
+    }
+
+    .index-info-container p {
+        font-size: 16px;
+    }
 }
