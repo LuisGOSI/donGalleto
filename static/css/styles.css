@@ -1,3 +1,41 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    height: 70px;
+    background-color: #D7B89D;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.header-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 14%;
+    font-size: 20px;
+    color: white;
+    background-color: #3E302C;
+    text-decoration: none;
+}
+
+.header-item:hover {
+    background-color: #5E4D48;
+}
+
 /* ------------------------------------------------------------------------ Imagen de la galleta -------------------------------------------------------------  */
 .img-index-container {
     display: flex;

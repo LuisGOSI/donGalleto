@@ -1,6 +1,8 @@
-<app-header></app-header>
+{% extends "base.html" %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
 <div class="img-index-container">
-    <img src="fondoIndex.png" alt="Imagen de fondo para la pagina de inicio">
+    <img src="{{ url_for('static', filename='img/fondoIndex.png') }}" alt="Imagen de fondo para la pagina de inicio">
 </div>
 
 <div class="index-info-container">
@@ -36,3 +38,4 @@
         <div class="line"></div>
     </div>
 </div>
+{% endblock %}
