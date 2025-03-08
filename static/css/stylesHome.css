@@ -1,0 +1,38 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    height: 70px;
+    background-color: #3E302C;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.header-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 14%;
+}
+
+.header-item a {
+    background-color: #4e423d;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 20px;
+    color: white;
+    text-decoration: none;
+}

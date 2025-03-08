@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Don galleton - {% block title %}{% endblock %}</title>
+		<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+		<link
+			rel="stylesheet"
+			href="{{ url_for('static', filename='css/stylesLogin.css')}}"
+		/>
+		<link
+			rel="icon"
+			href="{{ url_for('static', filename='img/Don_galleto_icon.png')}}"
+			type="image/x-icon"
+		/>
+	</head>
+	<body>
+        {% block content %}{% endblock %}
+    </body>
+</html>

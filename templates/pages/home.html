@@ -1,0 +1,18 @@
+{% extends "baseHome.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="home">
+            <div class="home__text">
+                <h1 class="home__title">Bienvenido a Don Galleton</h1>
+                <p class="home__description">
+                    Don Galleton es una pastelería que ofrece una amplia variedad de productos de panadería y pastelería. 
+                    Contamos con una amplia variedad de productos para satisfacer los gustos de nuestros clientes.
+                </p>
+            </div>
+            <div class="home__img">
+                <img src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}" alt="Logo don galleto"/>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "baseLogin.html" %} {% block title %}Iniciar Sesion{% endblock %}
+{% block content %}
+<div class="button-back-container">
+	<a href="{{url_for('home')}}" class="button-back">Volver a inicio</a>
+</div>
+<div class="img-container"><img src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}" alt="Logo don galleto" ></div>
+
+<div class="main">
+	<input type="checkbox" id="chk" aria-hidden="true" />
+	
+	<div class="login">
+		<form method="POST" action="/login">
+			<label for="chk" aria-hidden="true">Iniciar sesión</label>
+			<input type="email" name="email" placeholder="Email" required />
+			<input type="password" name="password" placeholder="Contraseña" required />
+			<button type ="submit">Iniciar sesión</button>
+		</form>
+	</div>
+	
+	<div class="signup">
+		<form method="POST" action="/register">
+			<label for="chk" aria-hidden="true">Registrarse</label>
+			<input type="text" name="name" placeholder="Nombre" required />
+			<input type="email" name="email" placeholder="Email" required />
+			<input type="number" name="phone" placeholder="Telefono" required />
+			<input type="password" name="password" placeholder="Contraseña" required />
+			<button type="submit">Registrarse</button>
+		</form>
+	</div>
+</div>
+
+{% endblock %}
