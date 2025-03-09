@@ -1,18 +1,38 @@
-{% extends "baseHome.html" %}
-{% block title %}Home{% endblock %}
+{% extends "baseHome.html" %} {% block title %}Home{% endblock %} 
 {% block content %}
-    <div class="container">
-        <div class="home">
-            <div class="home__text">
-                <h1 class="home__title">Bienvenido a Don Galleton</h1>
-                <p class="home__description">
-                    Don Galleton es una pastelería que ofrece una amplia variedad de productos de panadería y pastelería. 
-                    Contamos con una amplia variedad de productos para satisfacer los gustos de nuestros clientes.
-                </p>
-            </div>
-            <div class="home__img">
-                <img src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}" alt="Logo don galleto"/>
-            </div>
-        </div>
+<section class="intro-container">
+	<h1 class="intro-title">Pasión por lo crujiente</h1>
+	<p class="intro-text">
+		Abrimos nuestras puertas por primera vez en 1884 entre las calles que hoy se
+		conocen como Madero e Isabel la Católica, con el objetivo de alegrar y
+		regalarle un dulce sabor de boca a cada uno de nuestros comensales en la
+		Ciudad de México.
+	</p>
+	<button class="intro-btn">
+		<a href="{{url_for('about_us')}}">Acerca de nosotros</a>
+	</button>
+</section>
+<section class="info-container">
+    <div class="info">
+        <h2 class="info-title>">¿Por qué elegirnos?</h2>
+        <p class="info-text">
+            En cada galleta que horneamos hay una historia de pasión y tradición. Desde
+            nuestros inicios, nos hemos comprometido a crear sabores excepcionales
+            utilizando solo ingredientes de la más alta calidad, cuidadosamente
+            seleccionados de proveedores locales.
+            <br> Lo que nos distingue es nuestra
+            dedicación al equilibrio perfecto entre la innovación y las recetas
+            tradicionales. Cada bocado ofrece una experiencia única que combina texturas
+            y sabores que despiertan los sentidos y evocan momentos de felicidad.
+            Nuestro proceso artesanal garantiza que cada galleta reciba atención
+            personalizada, mientras que nuestras prácticas sostenibles reflejan nuestro
+            compromiso con el planeta que todos compartimos. Elegir nuestras galletas es
+            elegir excelencia, autenticidad y el placer de disfrutar algo creado con
+            verdadero amor por la repostería.
+        </p>
     </div>
-{% endblock %}
+    <img src="{{url_for('static', filename='img/cookie.jpg')}}" alt="cookie" class="info-img" />
+</section>
+
+	{% endblock %}
+</section>

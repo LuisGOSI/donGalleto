@@ -19,11 +19,13 @@ mysql = MySQL(app)
 
 # Rutas -------------------------------------------------------------------------------------------------------------
 @app.route("/sobreNosotros")
-def index():
-    if 'user' in session:
-        return render_template("/pages/about_us.html")
+def about_us():
+    user = session.get('user')
+    if user is not None:
+        return render_template("/pages/about_us.html", user=user)
     else:
-        return redirect(url_for("login"))
+        return render_template("/pages/about_us.html", user=None)
+
 
 
 # Login -------------------------------------------------------------------------------------------------------------
@@ -34,20 +36,21 @@ def home():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if 'user' in session:
-        return redirect(url_for('index'))
+    user = session.get('user')
+    if user is not None:
+        return redirect(url_for('about_us'))
     else:   
         if request.method == "POST":
             email = request.form["email"]
             password = request.form["password"]
             cur = mysql.connection.cursor()
             cur.execute("SELECT * FROM ussertest where email = %s", (email,))
-            user = cur.fetchone()
-            print(user)
+            userDb = cur.fetchone()
+            print(userDb)
             cur.close()
-            if user and check_password_hash(user[4], password):
-                session["user"] = user[2]
-                return redirect(url_for("index"))
+            if userDb and check_password_hash(userDb[4], password):
+                session["user"] = userDb
+                return redirect(url_for("about_us", user=user))
             else:
                 return render_template("/pages/login.html")
         return render_template("/pages/login.html")
