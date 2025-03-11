@@ -14,7 +14,8 @@
 </section>
 <section class="info-container">
     <div class="info">
-        <h2 class="info-title>">¿Por qué elegirnos?</h2>
+        <h6 class="info-subtitle">Descubre</h6>
+        <h1 class="info-title>">¿Por qué elegirnos?</h1>
         <p class="info-text">
             En cada galleta que horneamos hay una historia de pasión y tradición. Desde
             nuestros inicios, nos hemos comprometido a crear sabores excepcionales
@@ -33,6 +34,70 @@
     </div>
     <img src="{{url_for('static', filename='img/cookie.jpg')}}" alt="cookie" class="info-img" />
 </section>
+
+<section class="carousel-container">
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="/static/imgGalletas/GalletaMamut.jpeg" class="d-block w-100" alt="Slide 1">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Galletas recién horneadas</h5>
+                    <p>Disfruta de la mejor repostería con ingredientes 100% naturales.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="/static/imgGalletas/GalletaMaria.png" class="d-block w-100" alt="Slide 2">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Sabores únicos</h5>
+                    <p>Explora nuestras recetas exclusivas con el mejor sabor artesanal.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="/static/imgGalletas/GalletaVainilla.jpg" class="d-block w-100" alt="Slide 3">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>Tradición y calidad</h5>
+                    <p>Más de 100 años creando momentos dulces para compartir.</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        </button>
+        <div class="cart-button-container">
+            <a href="{{ url_for('login') }}" class="cart-button">
+                <i class="fas fa-shopping-cart"></i> Comprar Ahora
+            </a>            
+        </div>
+    </div>
+</section>
+
+    <h1 class="custom-text">#ConMasSaborQueNada</h1>
+    <h4 class="textPersonalidado">Accede a tu cuenta y haz tu pedido para deleitarte con las mejores galletas de México</h4>
+    <div class="contenedorImagenes">
+        <div class="card">
+            <img class="background" src="/static/imgGalletas/GalletaImagen1.jpg" alt="">
+            <div class="card-content">
+                <h3 class="title-galleta">Galleta de Chispas de Chocolate</h3>
+            </div>
+        </div>
+        <div class="card">
+            <img class="background" src="/static/imgGalletas/GalletaImagen2.jpg" alt="">
+            <div class="card-content">
+                <h3 class="title-galleta">Galleta de Alfajores</h3>
+            </div>
+        </div>
+        <div class="card">
+            <img class="background" src="/static/imgGalletas/GalletaImagen3.jpg" alt="">
+            <div class="card-content">
+                <h3 class="title-galleta">Galleta de Nuez Don Galleto</h3>
+            </div>
+        </div>
+    </div>
+    
 
 	{% endblock %}
 </section>
