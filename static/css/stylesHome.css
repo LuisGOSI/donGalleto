@@ -56,51 +56,92 @@ header {
 .intro-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  height: 550px;
-  align-items: center;
+  grid-template-rows: repeat(3, auto); /* Cambiado a auto para permitir expansión */
+  height: 550px; /* Altura inicial */
+  align-items: start; /* Cambiado para mejor control del espacio */
   background-image: url(../img/fondoIntro.jpg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+  transition: height 0.5s ease-out; /* Animación para la expansión */
+}
+
+/* Cuando el checkbox está marcado, expande el contenedor */
+.expand-toggle:checked ~ .intro-container,
+.intro-container:has(.expand-toggle:checked) {
+  height: 800px; /* Altura expandida - ajusta según necesites */
 }
 
 .intro-title{
   color: white;
   font-size: 3em;
   margin-left: 36px;
+  padding-top: 100px; /* Asegura que el título esté bien posicionado */
+}
+
+.intro-text-container {
+  position: relative;
+  margin-left: 36px;
+  grid-row-start: 2;
+  overflow: hidden;
+  width: 80%; /* Controla el ancho del contenedor de texto */
+}
+
+.expand-toggle {
+  display: none;
 }
 
 .intro-text {
   color: white;
   font-size: 20px;
-  margin-left: 36px;
-  grid-row-start:2 ;
+  max-height: 40px; /* Altura limitada para mostrar solo parte del texto */
+  overflow: hidden;
+  transition: max-height 0.8s ease-out;
+  margin-bottom: 30px; /* Espacio después del texto */
 }
 
-.intro-btn{
-  margin-left: 36px;
+/* Cuando el checkbox está marcado, expande el texto */
+.expand-toggle:checked ~ .intro-text {
+  max-height: 600px; /* Un valor suficientemente grande para mostrar todo el texto */
+}
+
+
+/* Cuando el checkbox está marcado, oculta el desvanecido */
+.expand-toggle:checked ~ .text-fade {
+  opacity: 0;
+}
+
+.intro-btn {
+  display: block;
+  margin-top: 10px;
   width: 35%;
   height: 40px;
   background: #4d3730;
+  color: white;
   font-size: 1em;
   font-weight: bold;
-  outline: none;
-  border: none;
+  text-align: center;
+  line-height: 40px;
   border-radius: 15px;
   cursor: pointer;
-  grid-row-start:3;
+  grid-row-start: 3;
+  transition: background 0.3s;
+  position: relative;
+  z-index: 10; /* Asegura que el botón esté por encima */
 }
 
-.intro-btn a {
-  text-decoration: none;
-  color: white;
-}
-
-.intro-btn:hover{
+.intro-btn:hover {
   background: #8d6e63;
 }
 
+/* Cambia el texto del botón cuando está expandido */
+.expand-toggle:checked ~ .intro-btn::after {
+  content: " (Leer menos)";
+}
+
+.expand-toggle:not(:checked) ~ .intro-btn::after {
+  content: " (Leer más)";
+}
 
 /* ------------------------------------------------------------------------ Seccion de info en home ------------------------------------------------------------------------ */
 
