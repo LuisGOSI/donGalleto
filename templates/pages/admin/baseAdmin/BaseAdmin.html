@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Don galleton - {% block title %}{% endblock %}</title>
+		<link
+			rel="stylesheet"
+			href="{{ url_for('static', filename='css/styles.css')}}"
+		/>
+		<link
+			rel="icon"
+			href="{{ url_for('static', filename='img/Don_galleto_icon.png')}}"
+			type="image/x-icon"
+		/>
+	</head>
+	<body>
+        {% include "/pages/admin/baseAdmin/headerAdmin.html" %}
+        {% block content %}{% endblock %}
+		{% include "footer.html" %}
+    </body>
+</html>
