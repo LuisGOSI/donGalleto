@@ -1,15 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
 from werkzeug.security import check_password_hash 
-from werkzeug.security import generate_password_hash 
+from werkzeug.security import generate_password_hash
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 # Llave secreta para la sesion
-app.config['SECRET_KEY'] = '92r8yhfwn;02h3radf'
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 # Configuracion de la base de datos
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "cisco123"
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
 app.config["MYSQL_DB"] = "dongalleto"
 
 
@@ -17,23 +21,7 @@ app.config["MYSQL_DB"] = "dongalleto"
 mysql = MySQL(app)
 
 
-# Rutas -------------------------------------------------------------------------------------------------------------
-@app.route("/sobreNosotros")
-def about_us():
-    user = session.get('user')
-    if user is not None:
-        return render_template("/pages/about_us.html", user=user)
-    else:
-        return render_template("/pages/about_us.html", user=None)
-
-
-
 # Login -------------------------------------------------------------------------------------------------------------
-@app.route("/")
-def home():
-    return render_template("/pages/home.html")
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     user = session.get('user')
@@ -54,7 +42,6 @@ def login():
             else:
                 return render_template("/pages/login.html")
         return render_template("/pages/login.html")
-
 
 
 # Registro de usuario
@@ -83,6 +70,22 @@ def testDb():
 def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
+
+
+# Rutas -------------------------------------------------------------------------------------------------------------
+@app.route("/")
+def home():
+    return render_template("/pages/home.html")
+
+
+@app.route("/sobreNosotros")
+def about_us():
+    user = session.get('user')
+    if user is not None:
+        return render_template("/pages/about_us.html", user=user)
+    else:
+        return render_template("/pages/about_us.html", user=None)
+
 
 # Test -------------------------------------------------------------------------------------------------------------
 @app.route("/test")
