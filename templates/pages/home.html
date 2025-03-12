@@ -1,5 +1,15 @@
 {% extends "baseHome.html" %} {% block title %}Home{% endblock %} 
 {% block content %}
+<div class="header-container">
+    <div class="header-item">
+        <img class="logo" src="{{ url_for('static', filename='img/DonGalleto-logo.png') }}" alt="Logo don galleto"/>
+    </div>
+    <div class="header-item">
+        <a href="{{ url_for('login') }}" >
+            <img class="user" src="/static/img/usuario.png" alt="Usuario" />
+        </a>
+    </div>
+</div>
 <section class="intro-container">
 	<h1 class="intro-title">Pasión por lo crujiente</h1>
 	<p class="intro-text">
@@ -9,7 +19,7 @@
 		Ciudad de México.
 	</p>
 	<button class="intro-btn">
-		<a href="{{url_for('about_us')}}">Acerca de nosotros</a>
+		<a">Acerca de nosotros</a>
 	</button>
 </section>
 <section class="info-container">
@@ -97,7 +107,5 @@
             </div>
         </div>
     </div>
-    
-
 	{% endblock %}
 </section>
