@@ -34,19 +34,29 @@ def login():
             cur = mysql.connection.cursor()
             cur.execute("SELECT * FROM ussertest where email = %s", (email,))
             userDb = cur.fetchone()
-            print(userDb)
             cur.close()
-            if userDb and check_password_hash(userDb[4], password):
+            if userDb and check_password_hash(userDb[3], password):
                 session["user"] = userDb
-                return redirect(url_for("about_us", user=user))
+                print(user)
+                session["role"] = userDb[5]
+                role = userDb[5]
+                if role == "administrador":
+                    return redirect(url_for("admin_dashboard"))
+                elif role == "produccion":
+                    return redirect(url_for("produccion_dashboard"))
+                elif role == "vendedor":
+                    return redirect(url_for("ventas_dashboard"))
+                else:
+                    return redirect(url_for("cliente_dashboard"))
+
             else:
-                return render_template("/pages/login.html")
-        return render_template("/pages/login.html")
+                return render_template("/pages/login.html") # Si falla la autenticación, recarga el login
+        return render_template("/pages/login.html")   # Si es GET, muestra el formulario de login
 
 
-# Registro de usuario
+#Registro de usuario
 @app.route("/register", methods=["POST"])
-def testDb():
+def registerUser():
     if request.method == "POST":
         name = request.form["name"]
         email = request.form["email"]
@@ -62,13 +72,37 @@ def testDb():
         mysql.connection.commit()
         cur.close()
         session["user"] = user[2]
-        return redirect(url_for("index"))
+        return redirect(url_for("about_us"))
+
+
+# Registro de admin
+@app.route("/registroAdmin", methods=["POST", "GET"])
+def registerAdmin():
+    active_user = session.get("user")
+    if active_user and session.get("role") != "administrador":
+        return redirect(url_for("login"))
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        password = generate_password_hash(request.form["password"])
+        phone = request.form["phone"]
+        role = request.form["role"]
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO ussertest (name, email, password, phone, role) VALUES (%s, %s, %s, %s, %s)",
+        (name, email, password, phone, role),)
+        mysql.connection.commit()  
+        cur.close()
+        flash("Usuario registrado con éxito")
+        return redirect(url_for("registerAdmin"))
+    return render_template("/pages/admin/registerAdmin.html")
+
+
 
 
 # Logout
 @app.route("/logout", methods=["POST"])
 def logout():
-    session.pop('user', None)
+    session.pop('user')
     return redirect(url_for('login'))
 
 
@@ -91,3 +125,19 @@ def about_us():
 @app.route("/test")
 def test():
     return render_template("/pages/test.html")
+
+@app.route("/admin")
+def admin_dashboard():
+    return render_template("/pages/admin/admin_dashboard.html")
+
+@app.route("/produccion")
+def produccion_dashboard():
+    return "Bienvenido al panel de producción"
+
+@app.route("/ventas")
+def ventas_dashboard():
+    return "Bienvenido al panel de ventas"
+
+@app.route("/cliente")
+def cliente_dashboard():
+    return "Bienvenido al panel de cliente"
