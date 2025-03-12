@@ -1,0 +1,17 @@
+<form action="/registroAdmin" method="POST">
+    <input type="text" name="name" placeholder="Nombre" required>
+    <input type="email" name="email" placeholder="Correo" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <input type="text" name="phone" placeholder="Teléfono" required>
+    <select name="role">
+        {% for message in get_flashed_messages()%}{% endfor %}
+        <p class="alert alert-danger" role="alert">
+            {{ message }}
+        </p>
+        <option value="cliente">Cliente</option>
+        <option value="produccion">Producción</option>
+        <option value="administrador">Administrador</option>
+        <option value="vendedor">Vendedor</option>
+    </select>
+    <button type="submit">Registrar</button>
+</form>
