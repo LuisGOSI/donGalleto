@@ -1,13 +1,15 @@
 <header>
 	<div class="header-container">
 		<div class="header-item">
-			<img
-				src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}"
+			<img class="logo"
+				src="{{url_for('static', filename='img/DonGalleto-logo.png')}}"
 				alt="Logo don galleto"
 			/>
 		</div>
 		<div class="header-item">
-			<a href="{{url_for('login')}}" class="login-btn">Iniciar sesion</a>
+			<a href="{{ url_for('login') }}" >
+				<img class="user" src="/static/img/usuario.png" alt="Usuario" />
+			</a>
 		</div>
 	</div>
 </header>
