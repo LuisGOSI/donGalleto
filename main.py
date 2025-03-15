@@ -34,7 +34,6 @@ def login():
             password = request.form["password"]
             cur = mysql.connection.cursor()
             cur.execute("SELECT * FROM users where email = %s", (email,))
-            cur.execute("SELECT * FROM users where email = %s", (email,))
             userDb = cur.fetchone()
             print(userDb)
             print(userDb)
@@ -42,12 +41,11 @@ def login():
             if userDb and check_password_hash(userDb[4], password):
                 session["user"] = userDb
                 role = userDb[6]
-                role = userDb[6]
                 if role == "administrador":
                     return redirect(url_for("admin_dashboard"))
                 elif role == "Produccion":
                     return redirect(url_for("produccion_dashboard"))
-                elif role == "vendedor":
+                elif role == "Vendedor":
                     return redirect(url_for("ventas_dashboard"))
                 else:
                     return redirect(url_for("cliente_dashboard"))
@@ -93,25 +91,40 @@ def registerUser():
 # Registro de admin
 @app.route("/registroAdmin", methods=["POST", "GET"])
 def registerAdmin():
-    active_user = session.get("user")
-    if active_user and session.get("role") != "administrador":
+    print(session.get("role"))
+    if session.get("role") != "Administrador":
+        session.pop('role')
+        session.pop('user')
         return redirect(url_for("login"))
     if request.method == "POST":
-        name = request.form["name"]
+        nombre = request.form["name"]
+        apellidoP = request.form["apellidoP"]
+        apellidoM = request.form["apellidoM"]
         email = request.form["email"]
         password = generate_password_hash(request.form["password"])
-        phone = request.form["phone"]
         role = request.form["role"]
+        puesto = request.form["puesto"]
         cur = mysql.connection.cursor()
+        
+
         cur.execute(
-            "INSERT INTO ussertest (name, email, password, phone, role) VALUES (%s, %s, %s, %s, %s)",
-            (name, email, password, phone, role),
+            "INSERT INTO empleado (nombreEmpleado, puesto, apellidoP, apellidoM) VALUES (%s, %s, %s, %s)",
+            (nombre, puesto, apellidoP, apellidoM)
         )
-        mysql.connection.commit()
-        cur.close()
+        idEmpleado = cur.lastrowid 
+        
+        cur.execute(
+            "INSERT INTO usuarios (usuario, contraseña, rol, idEmpleadoFK) VALUES (%s, %s, %s, %s)",
+            (email, password, role, idEmpleado)
+        )
+        
+        mysql.connection.commit()  
+        cur.close() 
         flash("Usuario registrado con éxito")
         return redirect(url_for("registerAdmin"))
     return render_template("/pages/admin/registerAdmin.html")
+
+
 
 
 # Logout
@@ -185,3 +198,15 @@ def ventas_dashboard():
 @app.route("/cliente")
 def cliente_dashboard():
     return "Bienvenido al panel de cliente"
+
+def get_empleados():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT e.idEmpleado, e.nombreEmpleado, e.apellidoP, e.apellidoM, e.puesto, 
+               u.usuario, u.rol 
+        FROM empleado e
+        JOIN usuarios u ON e.idEmpleado = u.idEmpleadoFK
+    """)
+    empleados = cur.fetchall()
+    cur.close()
+    return empleados
