@@ -20,7 +20,6 @@ app.config["MYSQL_DB"] = "dongalleto"
 # Inicializacion de la base de datos
 mysql = MySQL(app)
 
-
 # Login -------------------------------------------------------------------------------------------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
