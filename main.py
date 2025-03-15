@@ -29,8 +29,6 @@ def login():
     if user is not None:
         return redirect(url_for("cliente_dashboard"))
     else:
-        return redirect(url_for("cliente_dashboard"))
-    else:
         if request.method == "POST":
             email = request.form["email"]
             password = request.form["password"]
@@ -41,7 +39,6 @@ def login():
             print(userDb)
             print(userDb)
             cur.close()
-            if userDb and check_password_hash(userDb[4], password):
             if userDb and check_password_hash(userDb[4], password):
                 session["user"] = userDb
                 role = userDb[6]
