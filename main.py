@@ -14,7 +14,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
-app.config["MYSQL_DB"] = "dongalletodev"
+app.config["MYSQL_DB"] = "dongalleto"
 
 
 # Inicializacion de la base de datos
@@ -25,7 +25,6 @@ mysql = MySQL(app)
 @app.route("/login", methods=["GET", "POST"])
 def login():
     user = session.get("user")
-    user = session.get("user")
     if user is not None:
         return redirect(url_for("cliente_dashboard"))
     else:
@@ -33,19 +32,16 @@ def login():
             email = request.form["email"]
             password = request.form["password"]
             cur = mysql.connection.cursor()
-            cur.execute("SELECT * FROM users where email = %s", (email,))
-            cur.execute("SELECT * FROM users where email = %s", (email,))
+            cur.execute("SELECT * FROM usuarios where email = %s", (email,))
             userDb = cur.fetchone()
             print(userDb)
-            print(userDb)
             cur.close()
-            if userDb and check_password_hash(userDb[4], password):
+            if userDb and check_password_hash(userDb[3], password):
                 session["user"] = userDb
-                role = userDb[6]
-                role = userDb[6]
+                role = userDb[4]
                 if role == "administrador":
                     return redirect(url_for("admin_dashboard"))
-                elif role == "Produccion":
+                elif role == "produccion":
                     return redirect(url_for("produccion_dashboard"))
                 elif role == "vendedor":
                     return redirect(url_for("ventas_dashboard"))
@@ -159,7 +155,7 @@ def admin_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    if user[6] != "administrador":
+    if user[4] != "administrador":
         return redirect(url_for("login"))
     return render_template("/pages/admin/admin_dashboard.html")
 
