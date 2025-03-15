@@ -4,21 +4,28 @@
     font-weight: bold;
     font-size: 30px;
     font-family:'Open Sans', sans-serif;
+    margin-top: 25px;
 }
 
 /******************Tabla*******************/
 .tble-Proveedores {
-    width: calc(95% - 30px); /* Ancho total menos margen izquierdo y derecho */
+    width: calc(95% - 30px);
     border-collapse: collapse;
     margin-bottom: 20px;
     border-radius: 20px;
     margin-left: 15px;
     margin-right: 15px;
-    box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+    box-sizing: border-box;
 }
 
+.tble-Proveedores tr {
+    border-bottom: 1px solid #000000; /* Añade una línea horizontal gris claro */
+}
 
-
+/* Opcional: Si no quieres que la última fila tenga borde inferior */
+.tble-Proveedores tr:last-child {
+    border-bottom: none;
+}
 
 /******************Botones*******************/
 .btnEditProveedores, .btnEliminarProveedores {
