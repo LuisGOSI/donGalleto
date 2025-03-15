@@ -14,7 +14,7 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
-app.config["MYSQL_DB"] = "dongalleto"
+app.config["MYSQL_DB"] = "dongalletodev"
 
 
 # Inicializacion de la base de datos
@@ -64,19 +64,25 @@ def registerUser():
         email = request.form["email"]
         password = generate_password_hash(request.form["password"])
         phone = request.form["phone"]
+        role = request.form["role"]
         cur = mysql.connection.cursor()
         cur.execute(
-            "INSERT INTO users (name, email, password, phone) VALUES (%s, %s, %s, %s)",
-            (name, email, password, phone),
+            "INSERT INTO clientes (nombreCliente, telefono) VALUES (%s, %s)",
+            (name, phone),
+        )
+        idCliente = cur.lastrowid 
+        cur.execute(
+            "INSERT INTO usuarios (email, password, rol, idClienteFK) VALUES (%s, %s, %s, %s)",
+            (email, password, role, idCliente),
         )
         cur.execute(
-            "SELECT * FROM users where name = %s and password = %s",
-            (name, password),
+            "SELECT * FROM usuarios where email = %s",
+            (email,),
         )
         user = cur.fetchone()
         mysql.connection.commit()
         cur.close()
-        session["user"] = user[2]
+        session["user"] = user
         return redirect(url_for("about_us"))
 
 
