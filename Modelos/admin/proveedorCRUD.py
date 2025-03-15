@@ -6,9 +6,23 @@ from db import app,mysql
 
 load_dotenv()
 
+@app.route("/eliminarProveedor", methods=["POST", "GET"])
+def eliminarProveedor():
+    if request.method == "POST":
+        idProveedor = request.form["idProveedor"]
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "UPDATE proveedores SET estadoProveedor = 0 WHERE idProveedor = %s;",
+            (idProveedor,),
+        )
+        mysql.connection.commit()
+        cur.close()
 
-
-
+        flash("Proveedor eliminado con éxito", "success")
+        return redirect(url_for("registerProveedor"))
+    
+    proveedores = get_proveedores()
+    return render_template("/pages/production/Proveedores.html", proveedores=proveedores)
 
 @app.route("/registerProveedor", methods=["POST", "GET"])
 def registerProveedor():
@@ -63,6 +77,7 @@ def get_proveedores():
     cur.execute("""
         SELECT idProveedor, nombreProveedor, contacto, telefono, direccion
         FROM proveedores
+        WHERE estadoProveedor = 1
     """)
     columnas = [col[0] for col in cur.description] 
     proveedores = [dict(zip(columnas, fila)) for fila in cur.fetchall()]

@@ -113,9 +113,6 @@ def registerAdmin():
         return redirect(url_for("registerAdmin"))
     return render_template("/pages/admin/registerAdmin.html")
 
-
-
-
 # Logout
 @app.route("/logout", methods=["POST"])
 def logout():
