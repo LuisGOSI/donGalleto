@@ -36,9 +36,9 @@ def login():
             userDb = cur.fetchone()
             print(userDb)
             cur.close()
-            if userDb and check_password_hash(userDb[4], password):
+            if userDb and check_password_hash(userDb[3], password):
                 session["user"] = userDb
-                role = userDb[6]
+                role = userDb[4]
                 if role == "administrador":
                     return redirect(url_for("admin_dashboard"))
                 elif role == "produccion":
@@ -90,7 +90,7 @@ def registerUser():
 @app.route("/registroAdmin", methods=["POST", "GET"])
 def registerAdmin():
     active_user = session.get("user")
-    if active_user and session.get("role") != "administrador":
+    if active_user and active_user[4] != "administrador":
         return redirect(url_for("login"))
     if request.method == "POST":
         name = request.form["name"]
@@ -155,7 +155,7 @@ def admin_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    if user[6] != "administrador":
+    if user[4] != "administrador":
         return redirect(url_for("login"))
     return render_template("/pages/admin/admin_dashboard.html")
 
