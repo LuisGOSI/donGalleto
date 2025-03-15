@@ -32,10 +32,11 @@ def registerProveedor():
     print(proveedores)
     return render_template("/pages/production/Proveedores.html",proveedores=proveedores)
 
-@app.route("/modifyProveedor", methods=["POST"])
+@app.route("/modifyProveedor", methods=["POST", "GET"])
 def modifyProveedor():
     if request.method == "POST":
-        idProveedor = request.form.get("idProveedor")  # Obtener el ID si se está editando
+        idProveedor = request.form.get("idProveedor") 
+        print(idProveedor)
         nombreProveedor = request.form["Nombre"]
         contacto = request.form["Contacto"]
         telefono = request.form["Telefono"]
