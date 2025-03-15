@@ -25,7 +25,6 @@ mysql = MySQL(app)
 @app.route("/login", methods=["GET", "POST"])
 def login():
     user = session.get("user")
-    user = session.get("user")
     if user is not None:
         return redirect(url_for("cliente_dashboard"))
     else:
@@ -33,19 +32,16 @@ def login():
             email = request.form["email"]
             password = request.form["password"]
             cur = mysql.connection.cursor()
-            cur.execute("SELECT * FROM users where email = %s", (email,))
-            cur.execute("SELECT * FROM users where email = %s", (email,))
+            cur.execute("SELECT * FROM usuarios where email = %s", (email,))
             userDb = cur.fetchone()
-            print(userDb)
             print(userDb)
             cur.close()
             if userDb and check_password_hash(userDb[4], password):
                 session["user"] = userDb
                 role = userDb[6]
-                role = userDb[6]
                 if role == "administrador":
                     return redirect(url_for("admin_dashboard"))
-                elif role == "Produccion":
+                elif role == "produccion":
                     return redirect(url_for("produccion_dashboard"))
                 elif role == "vendedor":
                     return redirect(url_for("ventas_dashboard"))
