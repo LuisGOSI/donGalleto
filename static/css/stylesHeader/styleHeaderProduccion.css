@@ -1,0 +1,132 @@
+/*******************Estilo header***********************/
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+  
+  header {
+    background-color: #3E302C;
+    width: 100vw;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .header-container {
+    display: flex;
+    align-items: center;
+    padding: 0.1rem 2rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .header-item {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 1.5rem;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: opacity 0.3s ease;
+  }
+  
+  /************************Botones de la barra de navegación************************/
+  .header-item {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 1.5rem;
+    font-weight: 500;
+    font-size: 1rem;
+    font-family: Verdana, sans-serif;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.25s ease;
+    overflow: hidden;
+  }
+  
+  .header-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #ffd7cb;
+    transition: width 0.3s ease;
+  }
+  
+  .header-item:hover {
+    color: #ffd7cb;
+    transform: translateY(-2px);
+  }
+  
+  .header-item:hover::after {
+    width: 100%;
+  }
+  
+    .logoDG img {
+    max-height: 120px;
+    margin-right: 3rem;
+    margin-left: 3rem;
+  }
+
+  /************************Boton de login de barra de navegacion************************/
+  .logout-btn {
+    margin-left: auto;
+    background-color: #ffffff;
+    color: #3E302C;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .logout-btn:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+  }
+  
+  /* Estilos responsive */
+  @media screen and (max-width: 768px) {
+    .header-container {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem;
+    }
+    
+    .header-item {
+      margin: 0.5rem 0;
+      width: 100%;
+      padding: 0.5rem 0;
+    }
+    
+    .header-item:first-child {
+      margin-bottom: 1rem;
+    }
+    
+    .login-btn {
+      margin: 1rem 0 0 0;
+      width: 100%;
+      text-align: center;
+      padding: 0.7rem;
+    }
+  }
+
+  
+  /* Para pantallas muy pequeñas */
+  @media screen and (max-width: 480px) {
+    .header-container {
+      padding: 0.8rem;
+    }
+    
+    .header-item img {
+      max-height: 40px;
+    }
+  }

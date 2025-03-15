@@ -24,8 +24,8 @@ body{
 
 .img-container{
     position: fixed;
-    top: 10%;
-    height: 100px;
+    top: -14%;
+    transform: scale(0.6);
 }
 
 .main{

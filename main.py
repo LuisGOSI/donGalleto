@@ -1,57 +1,47 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
-from werkzeug.security import check_password_hash 
-from werkzeug.security import generate_password_hash 
+from werkzeug.security import check_password_hash
+from werkzeug.security import generate_password_hash
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
 # Llave secreta para la sesion
-app.config['SECRET_KEY'] = '92r8yhfwn;02h3radf'
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 # Configuracion de la base de datos
 app.config["MYSQL_HOST"] = "localhost"
 app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "root"
-app.config["MYSQL_DB"] = "dongalleto"
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
+app.config["MYSQL_DB"] = "dongalletodev"
 
 
 # Inicializacion de la base de datos
 mysql = MySQL(app)
 
 
-# Rutas -------------------------------------------------------------------------------------------------------------
-@app.route("/sobreNosotros")
-def about_us():
-    user = session.get('user')
-    if user is not None:
-        return render_template("/pages/about_us.html", user=user)
-    else:
-        return render_template("/pages/about_us.html", user=None)
-
-
-
 # Login -------------------------------------------------------------------------------------------------------------
-@app.route("/")
-def home():
-    return render_template("/pages/home.html")
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    user = session.get('user')
+    user = session.get("user")
+    user = session.get("user")
     if user is not None:
-        return redirect(url_for('about_us'))
-    else:   
+        return redirect(url_for("cliente_dashboard"))
+    else:
         if request.method == "POST":
             email = request.form["email"]
             password = request.form["password"]
             cur = mysql.connection.cursor()
-            cur.execute("SELECT * FROM usuarios where usuario = %s", (email,))
+            cur.execute("SELECT * FROM users where email = %s", (email,))
             userDb = cur.fetchone()
+            print(userDb)
+            print(userDb)
             cur.close()
-            if userDb and check_password_hash(userDb[2], password):
+            if userDb and check_password_hash(userDb[4], password):
                 session["user"] = userDb
-                session["role"] = userDb[3]
-                role = userDb[3]
-                if role == "Administrador":
+                role = userDb[6]
+                if role == "administrador":
                     return redirect(url_for("admin_dashboard"))
                 elif role == "Produccion":
                     return redirect(url_for("produccion_dashboard"))
@@ -59,37 +49,42 @@ def login():
                     return redirect(url_for("ventas_dashboard"))
                 else:
                     return redirect(url_for("cliente_dashboard"))
-
             else:
-                return render_template("/pages/login.html") # Si falla la autenticación, recarga el login
-        return render_template("/pages/login.html")   # Si es GET, muestra el formulario de login
+                return render_template(
+                    "/pages/login.html"
+                )  # Si falla la autenticación, recarga el login
+        return render_template(
+            "/pages/login.html"
+        )  # Si es GET, muestra el formulario de login
 
 
-#Registro de usuario
+# Registro de usuario
 @app.route("/register", methods=["POST"])
 def registerUser():
     if request.method == "POST":
-        nombre = request.form["name"]
-        telefono = request.form["phone"]
-        usuario = request.form["email"]
-        contraseña = generate_password_hash(request.form["password"])
-        
+        name = request.form["name"]
+        email = request.form["email"]
+        password = generate_password_hash(request.form["password"])
+        phone = request.form["phone"]
+        role = request.form["role"]
         cur = mysql.connection.cursor()
         cur.execute(
             "INSERT INTO clientes (nombreCliente, telefono) VALUES (%s, %s)",
-            (nombre, telefono)
+            (name, phone),
         )
-        idCliente = cur.lastrowid  # Obtener el ID del cliente recién insertado
-        
+        idCliente = cur.lastrowid 
         cur.execute(
-            "INSERT INTO usuarios (usuario, contraseña, rol, idClienteFK) VALUES (%s, %s, 'Cliente', %s)",
-            (usuario, contraseña, idCliente)
+            "INSERT INTO usuarios (email, password, rol, idClienteFK) VALUES (%s, %s, %s, %s)",
+            (email, password, role, idCliente),
         )
-        
+        cur.execute(
+            "SELECT * FROM usuarios where email = %s",
+            (email,),
+        )
+        user = cur.fetchone()
         mysql.connection.commit()
         cur.close()
-        
-        session["user"] = usuario
+        session["user"] = user
         return redirect(url_for("about_us"))
 
 
@@ -127,9 +122,7 @@ def registerAdmin():
         cur.close() 
         flash("Usuario registrado con éxito")
         return redirect(url_for("registerAdmin"))
-    empleados=get_empleados()
-    print(empleados)
-    return render_template("/pages/admin/registerAdmin.html", empleado=empleados)
+    return render_template("/pages/admin/registerAdmin.html")
 
 
 
@@ -137,26 +130,70 @@ def registerAdmin():
 # Logout
 @app.route("/logout", methods=["POST"])
 def logout():
-    session.pop('user')
-    session.pop('role')
-    return redirect(url_for('login'))
+    if session.get("user") is not None:
+        session.pop("user")
+        return redirect(url_for("login"))
+    else:
+        return redirect(url_for("login"))
+
+# Checar sesion
+@app.route("/checkSession", methods=["POST"])
+def checkSession():
+    user_active = session.get("user")
+    if user_active is not None:
+        return render_template("/pages/test.html", user=user_active)
+    else:
+        return render_template("/pages/test.html", user=user_active)
+
+
+# Rutas -------------------------------------------------------------------------------------------------------------
+@app.route("/")
+def home():
+    return render_template("/pages/home.html")
+
+
+@app.route("/sobreNosotros")
+def about_us():
+    user = session.get("user")
+    if user is not None:
+        return render_template("/pages/about_us.html", user=user)
+    else:
+        return render_template("/pages/about_us.html", user=None)
+
 
 # Test -------------------------------------------------------------------------------------------------------------
 @app.route("/test")
 def test():
     return render_template("/pages/test.html")
 
+
 @app.route("/admin")
 def admin_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[6] != "administrador":
+        return redirect(url_for("login"))
     return render_template("/pages/admin/admin_dashboard.html")
+
 
 @app.route("/produccion")
 def produccion_dashboard():
-    return "Bienvenido al panel de producción"
+    return render_template("/pages/production/baseProduccion/baseProduccion.html", is_base_template=True)
+
+@app.route('/inventario-insumos')
+def insumos_inventory():
+    return render_template('pages/production/InveInsumos.html', is_base_template=False)
+
+@app.route("/proveedores")
+def proveedores():
+    return render_template('pages/production/Proveedores.html', is_base_template = False)
+
 
 @app.route("/ventas")
 def ventas_dashboard():
     return "Bienvenido al panel de ventas"
+
 
 @app.route("/cliente")
 def cliente_dashboard():

@@ -1,0 +1,53 @@
+/******************Titulos y textos*******************/
+.titleProveedores {
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    font-family:'Open Sans', sans-serif;
+}
+
+/******************Tabla*******************/
+.tble-Proveedores {
+    width: calc(95% - 30px); /* Ancho total menos margen izquierdo y derecho */
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    margin-left: 15px;
+    margin-right: 15px;
+    box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+}
+
+
+
+
+/******************Botones*******************/
+.btnEditProveedores, .btnEliminarProveedores {
+    padding: 8px 16px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.btnEditProveedores {
+    background-color: #f2fa5e;
+    border: 1px solid #ced4da;
+    color: #495057;
+}
+
+.btnEliminarProveedores {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+}
+
+.btnEditProveedores:hover {
+    background-color: #ffe633;
+}
+
+.btnEliminarProveedores:hover {
+    background-color: #f1aeb5;
+}
