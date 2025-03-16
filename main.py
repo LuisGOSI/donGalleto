@@ -3,24 +3,14 @@ from flask_mysqldb import MySQL
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
-import os
+from Modelos.admin import proveedorCRUD
+from db import app,mysql 
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 load_dotenv()
-
-app = Flask(__name__)
-# Llave secreta para la sesion
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-# Configuracion de la base de datos
-app.config["MYSQL_HOST"] = "localhost"
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
-app.config["MYSQL_DB"] = "dongalletodev"
-
-
-# Inicializacion de la base de datos
-mysql = MySQL(app)
-
-
+proveedorCRUD.registerProveedor
 # Login -------------------------------------------------------------------------------------------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -93,28 +83,39 @@ def registerAdmin():
     if active_user and active_user[4] != "administrador":
         return redirect(url_for("login"))
     if request.method == "POST":
-        name = request.form["name"]
+        nombre = request.form["name"]
+        apellidoP = request.form["apellidoP"]
+        apellidoM = request.form["apellidoM"]
         email = request.form["email"]
         password = generate_password_hash(request.form["password"])
-        phone = request.form["phone"]
         role = request.form["role"]
+        puesto = request.form["puesto"]
         cur = mysql.connection.cursor()
+        
+
         cur.execute(
-            "INSERT INTO ussertest (name, email, password, phone, role) VALUES (%s, %s, %s, %s, %s)",
-            (name, email, password, phone, role),
+            "INSERT INTO empleado (nombreEmpleado, puesto, apellidoP, apellidoM) VALUES (%s, %s, %s, %s)",
+            (nombre, puesto, apellidoP, apellidoM)
         )
-        mysql.connection.commit()
-        cur.close()
+        idEmpleado = cur.lastrowid 
+        
+        cur.execute(
+            "INSERT INTO usuarios (usuario, contraseña, rol, idEmpleadoFK) VALUES (%s, %s, %s, %s)",
+            (email, password, role, idEmpleado)
+        )
+        
+        mysql.connection.commit()  
+        cur.close() 
         flash("Usuario registrado con éxito")
         return redirect(url_for("registerAdmin"))
     return render_template("/pages/admin/registerAdmin.html")
-
 
 # Logout
 @app.route("/logout", methods=["POST"])
 def logout():
     if session.get("user") is not None:
         session.pop("user")
+        
         return redirect(url_for("login"))
     else:
         return redirect(url_for("login"))
@@ -181,6 +182,7 @@ def ventas_dashboard():
 @app.route("/cliente")
 def cliente_dashboard():
     return "Bienvenido al panel de cliente"
+
 
 # Ruta de CRUD Insumos
 @app.route("/CRUD_Insumos")
@@ -275,3 +277,16 @@ def asignar_proveedor_presentacion():
 
         print("Prov y presentacion asignados")
         return redirect(url_for("CRUD_Insumos"))
+
+def get_empleados():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT e.idEmpleado, e.nombreEmpleado, e.apellidoP, e.apellidoM, e.puesto, 
+               u.usuario, u.rol 
+        FROM empleado e
+        JOIN usuarios u ON e.idEmpleado = u.idEmpleadoFK
+    """)
+    empleados = cur.fetchall()
+    cur.close()
+    return empleados
+
