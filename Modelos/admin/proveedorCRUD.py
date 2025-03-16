@@ -42,6 +42,21 @@ def activarProveedor():
     proveedores = get_proveedores()
     return render_template("/pages/production/Proveedores.html", proveedores=proveedores)
 
+@app.route("/eliminarDefProveedor", methods=["POST", "GET"])
+def deleteProveedor():
+    if request.method == "POST":
+        idProveedor = request.form["idProveedor"]
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "DELETE FROM proveedores WHERE idProveedor = %s;",
+            (idProveedor,),
+        )
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Proveedor activado con éxito", "success")
+        return redirect(url_for("registerProveedor"))
+
 @app.route("/registerProveedor", methods=["POST", "GET"])
 def registerProveedor():
     if request.method == "POST":
