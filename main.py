@@ -3,28 +3,17 @@ from flask_mysqldb import MySQL
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
-import os
+from Modelos.admin import proveedorCRUD
+from db import app,mysql 
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 load_dotenv()
-
-app = Flask(__name__)
-# Llave secreta para la sesion
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-# Configuracion de la base de datos
-app.config["MYSQL_HOST"] = "localhost"
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
-app.config["MYSQL_DB"] = "dongalletodev"
-
-
-# Inicializacion de la base de datos
-mysql = MySQL(app)
-
-
+proveedorCRUD.registerProveedor
 # Login -------------------------------------------------------------------------------------------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    user = session.get("user")
     user = session.get("user")
     if user is not None:
         return redirect(url_for("cliente_dashboard"))
@@ -33,19 +22,19 @@ def login():
             email = request.form["email"]
             password = request.form["password"]
             cur = mysql.connection.cursor()
-            cur.execute("SELECT * FROM users where email = %s", (email,))
+            cur.execute("SELECT * FROM usuarios where email = %s", (email,))
             userDb = cur.fetchone()
             print(userDb)
-            print(userDb)
             cur.close()
-            if userDb and check_password_hash(userDb[4], password):
+            if userDb and check_password_hash(userDb[3], password):
                 session["user"] = userDb
-                role = userDb[6]
+                role = userDb[4]
+                print(role)
                 if role == "administrador":
                     return redirect(url_for("admin_dashboard"))
-                elif role == "Produccion":
+                elif role == "produccion":
                     return redirect(url_for("produccion_dashboard"))
-                elif role == "Vendedor":
+                elif role == "vendedor":
                     return redirect(url_for("ventas_dashboard"))
                 else:
                     return redirect(url_for("cliente_dashboard"))
@@ -91,9 +80,9 @@ def registerUser():
 # Registro de admin
 @app.route("/registroAdmin", methods=["POST", "GET"])
 def registerAdmin():
-    print(session.get("role"))
-    if session.get("role") != "Administrador":
-        session.pop('role')
+    activate_user=session.get("user")
+    print(activate_user[4])
+    if activate_user[4] != "administrador":
         session.pop('user')
         return redirect(url_for("login"))
     if request.method == "POST":
@@ -124,14 +113,12 @@ def registerAdmin():
         return redirect(url_for("registerAdmin"))
     return render_template("/pages/admin/registerAdmin.html")
 
-
-
-
 # Logout
 @app.route("/logout", methods=["POST"])
 def logout():
     if session.get("user") is not None:
         session.pop("user")
+        
         return redirect(url_for("login"))
     else:
         return redirect(url_for("login"))
@@ -172,7 +159,7 @@ def admin_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    if user[6] != "administrador":
+    if user[4] != "administrador":
         return redirect(url_for("login"))
     return render_template("/pages/admin/admin_dashboard.html")
 
