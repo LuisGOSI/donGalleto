@@ -170,6 +170,101 @@ def cliente_dashboard():
     return "Bienvenido al panel de cliente"
 
 
+# Ruta de CRUD Insumos
+@app.route("/CRUD_Insumos")
+def CRUD_Insumos():
+    cur = mysql.connection.cursor()
+
+    # consulta para traer los prov
+    cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
+    proveedores = cur.fetchall()
+
+    # cargar los insumos
+    cur.execute("""
+        SELECT 
+            i.idInsumo, 
+            i.nombreInsumo, 
+            i.unidadMedida, 
+            i.cantidadInsumo, 
+            COALESCE(p.nombrePresentacion, 'No asignado') AS nombrePresentacion, 
+            COALESCE(pr.nombreProveedor, 'No asignado') AS nombreProveedor
+        FROM insumos i
+        LEFT JOIN presentacionesinsumos p ON i.idInsumo = p.idInsumoFK
+        LEFT JOIN proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
+        LEFT JOIN proveedores pr ON pi.idProveedorFK = pr.idProveedor
+    """)
+    insumos = cur.fetchall()
+
+    cur.close()
+
+    return render_template('pages/admin/CRUD_Insumos.html', proveedores=proveedores, insumos=insumos)
+
+# registar un insumo
+@app.route("/register_insumo", methods=["POST"])
+def register_insumo():
+    if request.method == "POST":
+        nombreInsumo = request.form["nombreInsumo"]
+        unidadMedida = request.form["unidadMedida"]
+
+        cur = mysql.connection.cursor()
+
+        cur.execute(
+            "INSERT INTO insumos (nombreInsumo, unidadMedida, cantidadInsumo) VALUES (%s, %s, %s)",
+            (nombreInsumo, unidadMedida, 0),  # cantidadInsumo = 0 por default :v - podemos eliminarlo de la bd pq es un campo calculado
+        )
+        mysql.connection.commit()
+        cur.close()
+
+        print("Insumo registrado")
+        return redirect(url_for("CRUD_Insumos"))
+    
+@app.route("/get_insumo/<int:idInsumo>")
+def get_insumo(idInsumo):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos WHERE idInsumo = %s", (idInsumo,))
+    insumo = cur.fetchone()
+    cur.close()
+
+    if insumo:
+        return {
+            "idInsumo": insumo[0],
+            "nombreInsumo": insumo[1],
+            "unidadMedida": insumo[2],
+        }
+    else:
+        return {"error": "Insumo no encontrado"}, 404
+    
+
+@app.route("/asignar_proveedor_presentacion", methods=["POST"])
+def asignar_proveedor_presentacion():
+    if request.method == "POST":
+        idInsumo = request.form["idInsumo"]
+        idProveedorFK = request.form["idProveedorFK"]
+        precioProveedor = float(request.form["precioProveedor"])
+        nombrePresentacion = request.form["nombrePresentacion"]
+        cantidadBase = float(request.form["cantidadBase"])
+        unidadBase = request.form["unidadMedidaAsignar"]
+
+        cur = mysql.connection.cursor()
+
+        cur.execute(
+            "INSERT INTO presentacionesinsumos (idInsumoFK, nombrePresentacion, cantidadBase, unidadBase) VALUES (%s, %s, %s, %s)",
+            (idInsumo, nombrePresentacion, cantidadBase, unidadBase),
+        )
+        idPresentacion = cur.lastrowid
+
+        cur.execute(
+            "INSERT INTO proveedoresinsumos (idProveedorFK, idPresentacionFK, precioProveedor) VALUES (%s, %s, %s)",
+            (idProveedorFK, idPresentacion, precioProveedor),
+        )
+
+        mysql.connection.commit()
+        cur.close()
+
+        print("Prov y presentacion asignados")
+        return redirect(url_for("CRUD_Insumos"))
+
+
 # Checar sesion
 @app.route("/checkSession", methods=["POST"])
 def checkSession():
@@ -191,3 +286,4 @@ def get_empleados():
     empleados = cur.fetchall()
     cur.close()
     return empleados
+
