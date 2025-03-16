@@ -28,7 +28,7 @@
 }
 
 /******************Botones*******************/
-.btnEditProveedores, .btnEliminarProveedores {
+.btnEditProveedores, .btnEliminarProveedores, .btnActivarProveedores {
     padding: 8px 16px;
     border-radius: 4px;
     display: inline-flex;
@@ -37,6 +37,7 @@
     font-size: 14px;
     cursor: pointer;
     margin-right: 8px;
+    
 }
 
 .btnEditProveedores {
@@ -51,6 +52,20 @@
     color: #842029;
 }
 
+.btnActivarProveedores {
+    background-color: #28a745; /* Color verde para activar */
+    color: white;
+    border: 1px solid #28a745; /* Agregar borde verde */
+    border-radius: 4px; /* Hacer los bordes redondeados igual que los otros botones */
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease;
+}
+
 .btnEditProveedores:hover {
     background-color: #ffe633;
 }
@@ -58,6 +73,11 @@
 .btnEliminarProveedores:hover {
     background-color: #f1aeb5;
 }
+
+.btnActivarProveedores:hover {
+    background-color: #218838; /* Cambio a un verde más oscuro */
+}
+
 
 /********** Switch de activos e inactivos ********************/
 .action-container {

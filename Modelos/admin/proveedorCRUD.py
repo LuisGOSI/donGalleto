@@ -24,6 +24,24 @@ def eliminarProveedor():
     proveedores = get_proveedores()
     return render_template("/pages/production/Proveedores.html", proveedores=proveedores)
 
+@app.route("/activarProveedor", methods=["POST", "GET"])
+def activarProveedor():
+    if request.method == "POST":
+        idProveedor = request.form["idProveedor"]
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "UPDATE proveedores SET estadoProveedor = 1 WHERE idProveedor = %s;",
+            (idProveedor,),
+        )
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Proveedor activado con éxito", "success")
+        return redirect(url_for("registerProveedor"))
+    
+    proveedores = get_proveedores()
+    return render_template("/pages/production/Proveedores.html", proveedores=proveedores)
+
 @app.route("/registerProveedor", methods=["POST", "GET"])
 def registerProveedor():
     if request.method == "POST":
@@ -56,7 +74,7 @@ def modifyProveedor():
         telefono = request.form["Telefono"]
         direccion = request.form["Direccion"]
 
-        if idProveedor:  # Si hay un ID, actualizar el proveedor
+        if idProveedor:
             cur = mysql.connection.cursor()
             cur.execute(
                 "UPDATE proveedores SET nombreProveedor=%s, contacto=%s, telefono=%s, direccion=%s WHERE idProveedor=%s",
@@ -86,6 +104,6 @@ def get_proveedores(estado=1):
 
 @app.route("/getProveedores", methods=["GET"])
 def get_proveedores_json():
-    estado = request.args.get("estado", default=1, type=int)  # Obtener el estado (1 para activos, 0 para inactivos)
+    estado = request.args.get("estado", default=1, type=int)
     proveedores = get_proveedores(estado)
-    return {"proveedores": proveedores}  # Devolver los proveedores como un JSON
+    return {"proveedores": proveedores}
