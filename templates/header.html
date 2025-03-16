@@ -1,4 +1,5 @@
 <header>
+	{% if user %}
 	<div class="header-container">
 		<a href="#" class="header-item">Ventas</a>
 		<a href="#" class="header-item">Inventario de Galletas</a>
@@ -9,4 +10,18 @@
 		<a href="#" class="header-item">Producción</a>
 		<a href="#" class="header-item">Insumos</a>
 	</div>
+	{% else %}
+		<div class="header-container-2">
+			<div class="header-item-2">
+				<a href="{{url_for('home')}}"><img
+					src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}"
+					alt="Logo don galleto"
+				/></a>
+			</div>
+			<div class="header-item-2">
+				<a href="{{url_for('login')}}" class="login-btn">Iniciar sesion</a>
+			</div>
+		</div>
+	
+	{% endif %}
 </header>

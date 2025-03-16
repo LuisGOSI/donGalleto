@@ -1,0 +1,17 @@
+<header>
+	<div class="header-container">
+		<a href="#" class="header-item">Dashboard</a>
+        <a href="{{url_for('registerAdmin')}}" class="header-item">Usuarios</a>
+		<a href="#" class="header-item">Proveedores</a>
+		<a href="#" class="header-item"
+			><img src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}" alt="Logo don galleto"/></a>
+		<a href="#" class="header-item">Clientes</a>
+		<a href="#" class="header-item">Recetas</a>
+		<a href="#" class="header-item">Insumos</a>
+		<a href="#" class="header-item" onclick="document.getElementById('logout-form').submit();">logOut</a>
+
+<form id="logout-form" action="{{ url_for('logout') }}" method="POST" style="display: none;">
+</form>
+
+	</div>
+</header>

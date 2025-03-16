@@ -1,0 +1,13 @@
+<header>
+	<div class="header-container">
+		
+		<a href="#" class="header-item">Inventario de Galletas</a>
+		<a href="#" class="header-item">Producción</a>
+		<a href="{{url_for('registerProveedor')}}" class="header-item">Proveedores</a>
+		<a href="produccion" class="logoDG"> <img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" />
+		<a href="#" class="header-item">Insumos</a>
+		<a href="{{url_for('insumos_inventory')}}" class="header-item">Inventario de Insumos</a>
+        <a class="logout-btn" href="{{url_for('test')}}">Cerrar sesión</a>
+	</div>
+	
+</header>

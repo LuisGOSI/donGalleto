@@ -1,11 +1,12 @@
 {% extends "baseLogin.html" %} {% block title %}Iniciar Sesion{% endblock %}
 {% block content %}
-<div class="button-back-container">
-	<a href="{{url_for('home')}}" class="button-back">Volver a inicio</a>
-</div>
-<div class="img-container"><img src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}" alt="Logo don galleto" ></div>
+
+<div class="img-container"><img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo don galleto" ></div>
 
 <div class="main">
+	<div class="button-back">
+	<a href="{{url_for('home')}}"><img src="{{url_for('static', filename='img/arrow-small-left.png')}}" alt="Logo don galleto" ></a>
+	</div>
 	<input type="checkbox" id="chk" aria-hidden="true" />
 	
 	<div class="login">
@@ -24,6 +25,7 @@
 			<input type="email" name="email" placeholder="Email" required />
 			<input type="number" name="phone" placeholder="Telefono" required />
 			<input type="password" name="password" placeholder="Contraseña" required />
+			<input type="hidden" name="role" value="cliente" />
 			<button type="submit">Registrarse</button>
 		</form>
 	</div>
