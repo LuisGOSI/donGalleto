@@ -72,14 +72,20 @@ def modifyProveedor():
     return render_template("/pages/production/Proveedores.html", proveedores=proveedores)
 
 
-def get_proveedores():
+def get_proveedores(estado=1):
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT idProveedor, nombreProveedor, contacto, telefono, direccion
         FROM proveedores
-        WHERE estadoProveedor = 1
-    """)
-    columnas = [col[0] for col in cur.description] 
+        WHERE estadoProveedor = %s
+    """, (estado,))
+    columnas = [col[0] for col in cur.description]
     proveedores = [dict(zip(columnas, fila)) for fila in cur.fetchall()]
     cur.close()
     return proveedores
+
+@app.route("/getProveedores", methods=["GET"])
+def get_proveedores_json():
+    estado = request.args.get("estado", default=1, type=int)  # Obtener el estado (1 para activos, 0 para inactivos)
+    proveedores = get_proveedores(estado)
+    return {"proveedores": proveedores}  # Devolver los proveedores como un JSON
