@@ -58,17 +58,14 @@ def registerUser():
         cur = mysql.connection.cursor()
         cur.execute(
             "INSERT INTO clientes (nombreCliente, telefono) VALUES (%s, %s)",
-            (name, phone),
-        )
+            (name, phone),)
         idCliente = cur.lastrowid 
         cur.execute(
             "INSERT INTO usuarios (email, password, rol, idClienteFK) VALUES (%s, %s, %s, %s)",
-            (email, password, role, idCliente),
-        )
+            (email, password, role, idCliente),)
         cur.execute(
             "SELECT * FROM usuarios where email = %s",
-            (email,),
-        )
+            (email,),)
         user = cur.fetchone()
         mysql.connection.commit()
         cur.close()
@@ -91,19 +88,13 @@ def registerAdmin():
         role = request.form["role"]
         puesto = request.form["puesto"]
         cur = mysql.connection.cursor()
-        
-
         cur.execute(
             "INSERT INTO empleado (nombreEmpleado, puesto, apellidoP, apellidoM) VALUES (%s, %s, %s, %s)",
-            (nombre, puesto, apellidoP, apellidoM)
-        )
+            (nombre, puesto, apellidoP, apellidoM),)
         idEmpleado = cur.lastrowid 
-        
         cur.execute(
             "INSERT INTO usuarios (usuario, contraseña, rol, idEmpleadoFK) VALUES (%s, %s, %s, %s)",
-            (email, password, role, idEmpleado)
-        )
-        
+            (email, password, role, idEmpleado),)
         mysql.connection.commit()  
         cur.close() 
         flash("Usuario registrado con éxito")
@@ -115,41 +106,15 @@ def registerAdmin():
 def logout():
     if session.get("user") is not None:
         session.pop("user")
-        
         return redirect(url_for("login"))
     else:
         return redirect(url_for("login"))
-
-# Checar sesion
-@app.route("/checkSession", methods=["POST"])
-def checkSession():
-    user_active = session.get("user")
-    if user_active is not None:
-        return render_template("/pages/test.html", user=user_active)
-    else:
-        return render_template("/pages/test.html", user=user_active)
 
 
 # Rutas -------------------------------------------------------------------------------------------------------------
 @app.route("/")
 def home():
     return render_template("/pages/home.html")
-
-
-@app.route("/sobreNosotros")
-def about_us():
-    user = session.get("user")
-    if user is not None:
-        return render_template("/pages/about_us.html", user=user)
-    else:
-        return render_template("/pages/about_us.html", user=None)
-
-
-# Test -------------------------------------------------------------------------------------------------------------
-@app.route("/test")
-def test():
-    return render_template("/pages/test.html")
-
 
 @app.route("/admin")
 def admin_dashboard():
@@ -165,13 +130,34 @@ def admin_dashboard():
 def produccion_dashboard():
     return render_template("/pages/production/baseProduccion/baseProduccion.html", is_base_template=True)
 
+
 @app.route('/inventario-insumos')
 def insumos_inventory():
     return render_template('pages/production/InveInsumos.html', is_base_template=False)
 
+
 @app.route("/proveedores")
 def proveedores():
     return render_template('pages/production/Proveedores.html', is_base_template = False)
+
+
+@app.route("/sobreNosotros")
+def about_us():
+    user = session.get("user")
+    if user is not None:
+        return render_template("/pages/about_us.html", user=user)
+    else:
+        return render_template("/pages/about_us.html", user=None)
+    
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template("pages/error404.html"), 404
+
+
+# Test -------------------------------------------------------------------------------------------------------------
+@app.route("/test")
+def test():
+    return render_template("/pages/test.html")
 
 
 @app.route("/ventas")
@@ -183,11 +169,22 @@ def ventas_dashboard():
 def cliente_dashboard():
     return "Bienvenido al panel de cliente"
 
+
+# Checar sesion
+@app.route("/checkSession", methods=["POST"])
+def checkSession():
+    user_active = session.get("user")
+    if user_active is not None:
+        return render_template("/pages/test.html", user=user_active)
+    else:
+        return render_template("/pages/test.html", user=user_active)
+
+
 def get_empleados():
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT e.idEmpleado, e.nombreEmpleado, e.apellidoP, e.apellidoM, e.puesto, 
-               u.usuario, u.rol 
+        u.usuario, u.rol 
         FROM empleado e
         JOIN usuarios u ON e.idEmpleado = u.idEmpleadoFK
     """)
