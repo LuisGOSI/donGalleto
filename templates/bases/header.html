@@ -1,14 +1,12 @@
 <header>
-	{% if user %}
+	{% if user[4] == "cliente" %}
 	<div class="header-container">
-		<a href="#" class="header-item">Ventas</a>
-		<a href="#" class="header-item">Inventario de Galletas</a>
-		<a href="#" class="header-item">Corte de venta</a>
+		<a href="#" class="header-item">Inicio</a>
+		<a href="#" class="header-item">Catalogo</a>
 		<a href="#" class="header-item"
-			><img src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}" alt="Logo don galleto"/></a>
+			><img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo don galleto" class="header-logo"/></a>
 		<a href="#" class="header-item">Destacados</a>
-		<a href="#" class="header-item">Producción</a>
-		<a href="#" class="header-item">Insumos</a>
+		<a href="#" class="header-item">Carrito</a>
 	</div>
 	{% else %}
 		<div class="header-container-2">

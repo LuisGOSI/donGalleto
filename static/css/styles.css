@@ -36,7 +36,11 @@ header {
     background-color: #5E4D48;
 }
 
-/* ------------------------------------------------------------------------ Header para cuando la sesion no esta iniciada -------------------------------------------------------------  */
+.header-logo{
+    height: 180px;
+}
+
+/* ------------------------------------------------------------------------ Header para cuando la sesion no esta iniciada ------------------------------------------------------------- */
 
 .header-container-2 {
     display: flex;
@@ -109,109 +113,5 @@ header {
     background-color: #3E302C;
     height: 10px;
     margin-bottom: 6px;
-}
+} 
 
-/* ------------------------------------------------------------------------ Footer ------------------------------------------------------------------------ */
-.footer{
-    margin-top: 20px;
-    background: #3E302C;
-    padding-bottom: 10px;
-    text-align:center;
-    }
-    
-    .footer .row{
-    width:100%;
-    margin:1% 0%;
-    padding:0.2% 0%;
-    color:rgb(226, 223, 223);
-    font-size:0.8em;
-    }
-    
-    .footer .row a{
-    text-decoration:none;
-    color: rgb(226, 223, 223);
-    transition:0.5s;
-    }
-    
-    .footer .row a:hover{
-    color:#fff;
-    }
-    
-    .footer .row ul{
-    width:100%;
-    }
-    
-    .footer .row ul li{
-    display:inline-block;
-    margin:0px 30px;
-    }
-    
-    .footer .row a i{
-    font-size:2em;
-    margin:0% 1%;
-    }
-    
-    @media (max-width:720px){
-    .footer{
-    text-align:left;
-    padding:5%;
-    }
-    .footer .row ul li{
-    display:block;
-    margin:10px 0px;
-    text-align:left;
-    }
-    .footer .row a i{
-    margin:0% 3%;
-    }
-    }
-
-/* ------------------------------------------------------------------------ Media Queries ------------------------------------------------------------------- */
-@media (max-width: 1200px) {
-    .header-item {
-        width: 18%;
-        font-size: 18px;
-    }
-
-    .index-info-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .header-item {
-        width: 25%;
-        font-size: 16px;
-    }
-
-    .index-info-container {
-        grid-template-columns: 1fr;
-    }
-
-    .img-index-container img {
-        margin-top: 60px;
-    }
-}
-
-@media (max-width: 480px) {
-    header {
-        height: 60px;
-    }
-
-    .header-item {
-        width: 100%;
-        font-size: 14px;
-    }
-
-    .img-index-container img {
-        margin-top: 50px;
-    }
-
-    .index-info-container h2 {
-        font-size: 24px;
-    }
-
-    .index-info-container p {
-        font-size: 16px;
-    }
-}

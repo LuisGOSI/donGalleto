@@ -1,0 +1,428 @@
+{% extends '/production/baseProduccion/baseProduccion.html' %} {% block
+    title %}Inventario de Insumos{% endblock %} {% block content %}
+    <div class="container">
+        <section class="intro-container">
+            <h1 class="titleInsumos">Gestion de Insumos</h1>
+            <div class="inventario-container" style="display: flex; gap: 20px">
+                <div class="tabla-inventario" style="flex: 1; position: relative">
+                    <div style="text-align: right; margin-bottom: 10px">
+                        <!-- btn para modal de registrar -->
+                        <button
+                            class="registrar-btn"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#registrarInsumoModal"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                class="bi bi-plus"
+                                viewBox="0 0 16 16"
+                            >
+                                <path
+                                    d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+                                />
+                            </svg>
+                            Registrar
+                        </button>
+                    </div>
+                    <table style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Producto</th>
+                                <th>Unidad de Medida</th>
+                                <th>Precio</th>
+                                <th>Presentación</th>
+                                <th>Proveedor</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for insumo in insumos %}
+                            <tr>
+                                <td>{{ insumo[0] }}</td>
+                                <td>{{ insumo[1] }}</td>
+                                <td>{{ insumo[2] | title }}</td>
+                                <td>{{ insumo[3] }}</td>
+                                <td>{{ insumo[4] }}</td>
+                                <td>{{ insumo[5] }}</td>
+                                <td>
+                                    <button
+                                        class="mermas-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#asignarProveedorModal"
+                                        data-insumo-id="{{ insumo[0]}}"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            fill="currentColor"
+                                            class="bi bi-graph-down-arrow"
+                                            viewBox="0 0 16 16"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"
+                                            />
+                                        </svg>
+                                        Asignar
+                                    </button>
+                                    <button 
+                                        class="mermas-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editarInsumoModal"
+                                        data-insumo-id="{{ insumo[0] }}">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            fill="currentColor"
+                                            class="bi bi-graph-down-arrow"
+                                            viewBox="0 0 16 16"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"
+                                            />
+                                        </svg>
+                                        Editar
+                                    </button>
+                                    <button class="mermas-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#eliminarInsumoModal"
+                                            data-insumo-id="{{ insumo[0] }}">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="16"
+                                            height="16"
+                                            fill="currentColor"
+                                            class="bi bi-graph-down-arrow"
+                                            viewBox="0 0 16 16"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"
+                                            />
+                                        </svg>
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Modal para registrar insumos -->
+    <div
+        class="modal fade"
+        id="registrarInsumoModal"
+        tabindex="-1"
+        aria-labelledby="registrarInsumoModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registrarInsumoModalLabel">
+                        Registrar Insumo
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/register_insumos" method="POST">
+                        <!-- Sección: Insumo -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold">Insumo</h6>
+                            <div class="mb-3">
+                                <label for="nombreInsumo" class="form-label"
+                                    >Nombre del Insumo</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="nombreInsumo"
+                                    name="nombreInsumo"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-3">
+                                <label for="unidadMedida" class="form-label"
+                                    >Unidad de Medida</label
+                                >
+                                <select
+                                    class="form-select"
+                                    id="unidadMedida"
+                                    name="unidadMedida"
+                                    required
+                                >
+                                    <option value="gramo">Gramo (gr)</option>
+                                    <option value="mililitro">Mililitro (ml)</option>
+                                    <option value="pieza">Pieza</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Cerrar
+                            </button>
+                            <button type="submit" class="btn btn-primary">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para asignar proveedor y presentacion -->
+
+    <div
+        class="modal fade"
+        id="asignarProveedorModal"
+        name="asignarProveedorModal"
+        tabindex="-1"
+        aria-labelledby="asignarProveedorModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="asignarProveedorModalLabel">
+                        Asignar Proveedor y Presentación
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/asignar_proveedor_presentacion" method="POST">
+                        <input type="hidden" id="idInsumo" name="idInsumo" />
+                        <div class="mb-3">
+                            <label for="idProveedorFK" class="form-label">Proveedor</label>
+                            <select
+                                class="form-select"
+                                id="idProveedorFK"
+                                name="idProveedorFK"
+                                required
+                            >
+                                <option value="" disabled selected>Seleccione un proveedor</option>
+                                {% for proveedor in proveedores %}
+                                <option value="{{ proveedor[0] }}">{{ proveedor[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="unidadMedidaAsignar" class="form-label"
+                                >Unidad de medida</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="unidadMedidaAsignar"
+                                name="unidadMedidaAsignar"
+                                readonly
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="nombrePresentacion" class="form-label"
+                                >Nombre de la presentación</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="nombrePresentacion"
+                                name="nombrePresentacion"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="precioProveedor" class="form-label"
+                                >Precio del proveedor</label
+                            >
+                            <input
+                                type="number"
+                                step="0.01"
+                                class="form-control"
+                                id="precioProveedor"
+                                name="precioProveedor"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="cantidad" class="form-label">Contenido presentacion</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                class="form-control"
+                                id="cantidad"
+                                name="cantidad"
+                                required
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="formato" class="form-label">Formato</label>
+                            <select class="form-select" id="formato" name="formato" required>
+                                <!-- Carga dinamica de las opciones -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cantidadBase" class="form-label">Cantidad Base</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="cantidadBase"
+                                name="cantidadBase"
+                                readonly
+                            />
+                        </div>
+                        <div class="modal-footer">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Cerrar
+                            </button>
+                            <button type="submit" class="btn btn-primary">Asignar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar los insumos -->
+
+    <div
+        class="modal fade"
+        id="editarInsumoModal"
+        name="editarInsumoModal"
+        tabindex="-1"
+        aria-labelledby="editarInsumoModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarInsumoModalLabel">
+                        Editar insumo
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/editarInsumo" method="POST">
+                        <input type="hidden" id="idInsumoEditar" name="idInsumoEditar" />
+                        <input type="hidden" id="idPresentacionEditar" name="idPresentacionEditar" />
+                        <input type="hidden" id="idProveedorInsumoEditar" name="idProveedorInsumoEditar" />
+                        <div class="mb-3">
+                            <label for="nombreInsumo" class="form-label">Nombre del Insumo</label>
+                            <input type="text" class="form-control" id="nombreInsumoEditar" name="nombreInsumoEditar" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="cantidad" class="form-label">Cantidad</label>
+                            <input type="number" step="0.01" class="form-control" id="cantidadEditar" name="cantidadEditar" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="presentacion" class="form-label">Presentación</label>
+                            <input type="text" class="form-control" id="presentacionEditar" name="presentacionEditar" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="unidadMedida" class="form-label">Unidad de Medida</label>
+                            <select class="form-select" id="unidadMedidaEditar" name="unidadMedidaEditar" required>
+                                <option value="gramo">Gramo (gr)</option>
+                                <option value="mililitro">Mililitro (ml)</option>
+                                <option value="pieza">Pieza</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cantidadBase" class="form-label">Cantidad Base</label>
+                            <input type="text" class="form-control" id="cantidadBaseEditar" name="cantidadBaseEditar" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="proveedor" class="form-label">Proveedor</label>
+                            <select class="form-select" id="proveedorEditar" name="proveedorEditar" required>
+                                {% for proveedor in proveedores %}
+                                <option value="{{ proveedor[0] }}">{{ proveedor[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="precio" class="form-label">Precio</label>
+                            <input type="number" step="0.01" class="form-control" id="precioEditar" name="precioEditar" required />
+                        </div>
+
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Editar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para confirmacion de eliminacion -->
+    <div
+        class="modal fade"
+        id="eliminarInsumoModal"
+        name="eliminarInsumoModal"
+        tabindex="-1"
+        aria-labelledby="eliminarInsumoModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eliminarInsumoModalLabel">
+                        Eliminar Insumo
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/eliminarInsumo" method="POST">
+                        <input type="hidden" id="idInsumoEliminar" name="idInsumoEliminar" />
+                        <p>¿Está seguro que desea eliminar este insumo?</p>
+                        <div class="modal-footer">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </div>
+                    </form>
+                
+</div>
+
+    <script src="{{ url_for('static', filename='functions/funcionesInsumos.js')}}" defer></script>
+    {% endblock %}
+    

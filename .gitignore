@@ -1,6 +1,5 @@
 .vscode
 venv
-.gitgnore
+.gitignore
 __pycache__
 .env
-requirements.txt
