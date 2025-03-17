@@ -1,17 +1,6 @@
-{% extends "/pages/admin/baseAdmin/BaseAdmin.html" %} {% block title %}Principal{% endblock %} 
+{% extends "/admin/baseAdmin/BaseAdmin.html" %} {% block title %}Principal{% endblock %} 
 {% block content %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Don Galleto</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-
-
+    <div class="espacio"></div>
     <!-- Contenedor principal -->
     <div class="container mt-4">
         <h2 class="text-center">Dashboard de Administrador</h2>
@@ -56,7 +45,7 @@
                 <div class="card text-white bg-dark mb-3">
                     <div class="card-header">Usuarios</div>
                     <div class="card-body text-center">
-                        <a href="/usuarios" class="btn btn-light">Gestionar Usuarios</a>
+                        <a href="/usuarios" class="btn btn-light">Gestionar usuarios</a>
                     </div>
                 </div>
             </div>
@@ -65,7 +54,7 @@
                 <div class="card text-white bg-dark mb-3">
                     <div class="card-header">Proveedores</div>
                     <div class="card-body text-center">
-                        <a href="/proveedores" class="btn btn-light">Gestionar Proveedores</a>
+                        <a href="/proveedores" class="btn btn-light">Gestionar proveedores</a>
                     </div>
                 </div>
             </div>
@@ -74,7 +63,7 @@
                 <div class="card text-white bg-dark mb-3">
                     <div class="card-header">Clientes</div>
                     <div class="card-body text-center">
-                        <a href="/clientes" class="btn btn-light">Gestionar Clientes</a>
+                        <a href="/clientes" class="btn btn-light">Gestionar clientes</a>
                     </div>
                 </div>
             </div>
@@ -83,25 +72,25 @@
                 <div class="card text-white bg-dark mb-3">
                     <div class="card-header">Recetas</div>
                     <div class="card-body text-center">
-                        <a href="/recetas" class="btn btn-light">Gestionar Recetas</a>
+                        <a href="/recetas" class="btn btn-light">Gestionar recetas</a>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-4">
                 <div class="card text-white bg-dark mb-3">
-                    <div class="card-header">Inventario Materias Primas</div>
+                    <div class="card-header">Inventario de insumos</div>
                     <div class="card-body text-center">
-                        <a href="/inventario_materias" class="btn btn-light">Gestionar Inventario</a>
+                        <a href="/inventario-insumos" class="btn btn-light">Gestionar inventario</a>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-4">
                 <div class="card text-white bg-dark mb-3">
-                    <div class="card-header">Inventario Producto Terminado</div>
+                    <div class="card-header">Inventario producto terminado</div>
                     <div class="card-body text-center">
-                        <a href="/inventario_productos" class="btn btn-light">Gestionar Productos</a>
+                        <a href="/inventario_productos" class="btn btn-light">Gestionar productos</a>
                     </div>
                 </div>
             </div>
@@ -137,8 +126,6 @@
             });
         });
     </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
 {% endblock %}

@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_mysqldb import MySQL
+from flask import render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
 
 from db import app,mysql  
 
 load_dotenv()
+
 
 @app.route("/eliminarProveedor", methods=["POST", "GET"])
 def eliminarProveedor():
@@ -17,12 +17,11 @@ def eliminarProveedor():
         )
         mysql.connection.commit()
         cur.close()
-
         flash("Proveedor eliminado con éxito", "success")
         return redirect(url_for("registerProveedor"))
-    
     proveedores = get_proveedores()
-    return render_template("/pages/production/Proveedores.html", proveedores=proveedores)
+    return render_template("/production/Proveedores.html", proveedores=proveedores)
+
 
 @app.route("/activarProveedor", methods=["POST", "GET"])
 def activarProveedor():
@@ -35,12 +34,11 @@ def activarProveedor():
         )
         mysql.connection.commit()
         cur.close()
-
         flash("Proveedor activado con éxito", "success")
         return redirect(url_for("registerProveedor"))
-    
     proveedores = get_proveedores()
-    return render_template("/pages/production/Proveedores.html", proveedores=proveedores)
+    return render_template("/production/Proveedores.html", proveedores=proveedores)
+
 
 @app.route("/eliminarDefProveedor", methods=["POST", "GET"])
 def deleteProveedor():
@@ -53,9 +51,9 @@ def deleteProveedor():
         )
         mysql.connection.commit()
         cur.close()
-
         flash("Proveedor activado con éxito", "success")
         return redirect(url_for("registerProveedor"))
+
 
 @app.route("/registerProveedor", methods=["POST", "GET"])
 def registerProveedor():
@@ -64,7 +62,6 @@ def registerProveedor():
         contacto = request.form["contacto"]
         telefono = request.form["telefono"]
         direccion = request.form["direccion"]
-
         cur = mysql.connection.cursor()
         cur.execute(
             "INSERT INTO proveedores (nombreProveedor, contacto, telefono, direccion) VALUES (%s, %s, %s, %s)",
@@ -72,12 +69,12 @@ def registerProveedor():
         )
         mysql.connection.commit()
         cur.close()
-
         flash("Proveedor registrado con éxito", "success")
         return redirect(url_for("registerProveedor"))
     proveedores=get_proveedores()
     print(proveedores)
-    return render_template("/pages/production/Proveedores.html",proveedores=proveedores)
+    return render_template("/production/Proveedores.html",proveedores=proveedores)
+
 
 @app.route("/modifyProveedor", methods=["POST", "GET"])
 def modifyProveedor():
@@ -88,7 +85,6 @@ def modifyProveedor():
         contacto = request.form["Contacto"]
         telefono = request.form["Telefono"]
         direccion = request.form["Direccion"]
-
         if idProveedor:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -98,11 +94,9 @@ def modifyProveedor():
             mysql.connection.commit()
             cur.close()
             flash("Proveedor actualizado con éxito", "success")
-
         return redirect(url_for("registerProveedor"))
-
     proveedores = get_proveedores()
-    return render_template("/pages/production/Proveedores.html", proveedores=proveedores)
+    return render_template("/production/Proveedores.html", proveedores=proveedores)
 
 
 def get_proveedores(estado=1):
@@ -116,6 +110,7 @@ def get_proveedores(estado=1):
     proveedores = [dict(zip(columnas, fila)) for fila in cur.fetchall()]
     cur.close()
     return proveedores
+
 
 @app.route("/getProveedores", methods=["GET"])
 def get_proveedores_json():
