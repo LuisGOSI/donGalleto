@@ -1,0 +1,42 @@
+.header-admin-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.header-admin-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 14%;
+    font-size: 20px;
+    color: white;
+    background-color: #3E302C;
+    text-decoration: none;
+}
+
+.header-admin-item button {
+    background-color: #3E302C;
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.header-admin-item button:hover {
+    background-color: #5E4D48;
+}
+
+.header-admin-logo {
+    height: 180px;
+}
+
+.espacio{
+    margin-top: 70px;
+}
+

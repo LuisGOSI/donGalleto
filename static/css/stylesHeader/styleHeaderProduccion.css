@@ -21,6 +21,7 @@ body {
   .header-container {
     display: flex;
     align-items: center;
+    justify-content: space-around;
     padding: 0.1rem 2rem;
     width: 100%;
     box-sizing: border-box;
