@@ -1,0 +1,65 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  padding-top: clamp(250px, 30vh, 200px);
+}
+
+header {
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: url('/static/img/fondoClientes.jpg') center/cover no-repeat fixed;
+  height: clamp(250px, 30vh, 200px);
+  transition: transform 0.3s ease-in-out;
+  will-change: transform;
+}
+
+.hidden {
+  transform: translateY(-100%);
+}
+
+.header-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.header-logo {
+  max-height: 250px;
+}
+
+.header-icons {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-icon {
+  width: 35px;
+  height: 35px;
+}
+
+@media (max-width: 200px) {
+  header {
+    height: 48vh;
+  }
+}
+
+@media (max-width: 280px) {
+  header {
+    height: 300px;
+  }
+}
