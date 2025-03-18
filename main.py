@@ -366,10 +366,11 @@ def test():
 def ventas_dashboard():
     return "Bienvenido al panel de ventas"
 
-
 @app.route("/cliente")
 def cliente_dashboard():
-    return "Bienvenido al panel de cliente"
+    user = session.get("user")
+    return render_template('/client/Cliente.html', is_base_template = False,user=user)
+    
 
 
 # Checar sesion
