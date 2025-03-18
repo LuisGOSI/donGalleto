@@ -1,0 +1,187 @@
+{% extends '/production/baseProduccion/baseProduccion.html' %}
+{% block title %}Proveedores{% endblock %}
+{% block content %}
+<div class="container">
+    <section class="tble-Proveedores">
+        <h1 class="titleProveedores">Proveedores</h1>
+        <div class="inventario-container" style="display: flex; gap: 20px;">
+            <div class="tabla-inventario" style="flex: 1; position: relative;">
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <button class="registrar-btn" type="button" data-bs-toggle="modal" data-bs-target="#registroModal">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-plus" viewBox="0 0 16 16">
+                            <path
+                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                        </svg>
+                        Registrar
+                    </button>
+                </div>
+
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" id="statusSwitch">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="switch-label" id="statusLabel">Activos</span>
+                </div>
+
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Contacto</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proveedor in proveedores %}
+                        <tr>
+                            <td>{{ proveedor.nombreProveedor }}</td>
+                            <td>{{ proveedor.contacto }}</td>
+                            <td>{{ proveedor.telefono }}</td>
+                            <td>{{ proveedor.direccion }}</td>
+                            <td>
+                                <button class="btnEditProveedores" data-bs-toggle="modal"
+                                    data-bs-target="#editProveedorModal" idProveedor="{{ proveedor['idProveedor'] }}"
+                                    nombreProveedor="{{ proveedor['nombreProveedor'] }}"
+                                    contacto="{{ proveedor['contacto'] }}" telefono="{{ proveedor['telefono'] }}"
+                                    direccion="{{ proveedor['direccion'] }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path
+                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                        <path fill-rule="evenodd"
+                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                                    </svg>
+                                    Modificar
+                                </button>
+
+                                <button class="btnEliminarProveedores" data-bs-toggle="modal"
+                                    data-bs-target="#deleteProveedorModal" data-id="{{ proveedor['idProveedor'] }}"
+                                    nombreProveedor="{{ proveedor['nombreProveedor'] }}"
+                                    contacto="{{ proveedor['contacto'] }}" telefono="{{ proveedor['telefono'] }}"
+                                    direccion="{{ proveedor['direccion'] }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path
+                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                        <path fill-rule="evenodd"
+                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                    </svg>
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </section>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form action="/registerProveedor" method="POST" class="container mt-4 p-4 border rounded bg-light">
+                    <h2 class="text-center mb-4">Registrar Proveedor</h2>
+
+                    <div class="mb-3">
+                        <label for="nombreProveedor" class="form-label">Nombre del Proveedor</label>
+                        <input type="text" class="form-control" id="nombreProveedor" name="nombreProveedor" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contacto" class="form-label">Persona de Contacto</label>
+                        <input type="text" class="form-control" id="contacto" name="contacto" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <textarea class="form-control" id="direccion" name="direccion" rows="3" required></textarea>
+                    </div>
+                    <div class="modal-footer" class="text">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar Proveedor</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar proveedores -->
+<div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form id="editProveedorForm" method="POST" action="/modifyProveedor">
+                    <input type="hidden" id="IdProveedor" name="idProveedor">
+                    <h2 class="text-center mb-4">Modificar Proveedor</h2>
+                    <div class="mb-3">
+                        <label for="Nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="Nombre" name="Nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Contacto" class="form-label">Contacto</label>
+                        <input type="text" class="form-control" id="Contacto" name="Contacto" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Telefono" class="form-label">Teléfono</label>
+                        <input type="number" class="form-control" id="Telefono" name="Telefono" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="Direccion" name="Direccion" required>
+                    </div>
+                    <div class="modal-footer" class="text">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Modificar Proveedor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para eliminar proveedores -->
+<div class="modal fade" id="deleteProveedorModal" tabindex="-1" aria-labelledby="deleteProveedorLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form id="deleteProveedorForm" method="POST" action="/eliminarProveedor">
+                    <input type="hidden" id="deleteIdProveedor" name="idProveedor">
+                    <h2 class="text-center mb-4">Eliminar Proveedor</h2>
+                    <div class="mb-3">
+                        <p>¿Está seguro que desea eliminar al siguiente proveedor?</p>
+                        <p><strong>Nombre:</strong> <span id="deleteNombre"></span></p>
+                        <p><strong>Contacto:</strong> <span id="deleteContacto"></span></p>
+                        <p><strong>Teléfono:</strong> <span id="deleteTelefono"></span></p>
+                        <p><strong>Dirección:</strong> <span id="deleteDireccion"></span></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Eliminar Proveedor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='functions/funcionesProveedores.js')}}"></script>
+
+{% endblock %}

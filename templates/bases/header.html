@@ -1,0 +1,30 @@
+<header>
+	{% if user[4] == "cliente" %}
+	<div class="header-container">
+		<a href="{{url_for('home')}}" class="header-item">
+		  <img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo Don Galleto" class="header-logo"/>
+		</a>
+		<div class="header-icons">
+		  <a href="#" class="header-item">
+			<img src="{{url_for('static', filename='img/usuario.png')}}" alt="Iniciar sesión" class="header-icon"/>
+		  </a>
+		  <a href="#" class="header-item">
+			<img src="{{url_for('static', filename='img/compra.png')}}" alt="Carrito de compras" class="header-icon"/>
+		  </a>
+		</div>
+	  </div>			
+	{% else %}
+		<div class="header-container-2">
+			<div class="header-item-2">
+				<a href="{{url_for('home')}}"><img
+					src="{{url_for('static', filename='img/Don_Galleto-logo.png')}}"
+					alt="Logo don galleto"
+				/></a>
+			</div>
+			<div class="header-item-2">
+				<a href="{{url_for('login')}}" class="login-btn">Iniciar sesion</a>
+			</div>
+		</div>
+	
+	{% endif %}
+</header>
