@@ -14,7 +14,6 @@ html {
 body {
   margin: 0;
   padding: 0;
-  padding-top: clamp(250px, 30vh, 300px);
   font-family: 'Poppins', sans-serif;
 }
 
@@ -91,9 +90,59 @@ body {
 }
 
 /* ------------------------------------------------------------------------ Productos ------------------------------------------------------------------------ */
+/*Tool tip añadido*/
 .unit-badge {
-  cursor: pointer; /* Cambia el cursor al estilo de un botón */
+  cursor: pointer;
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: #f5f5f5;
+  color: #6d4c41;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  text-align: center;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
 }
+
+.unit-badge:hover {
+  background: #e0c3a3;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.unit-badge::after {
+  content: "Haz clic para cambiar el tipo de venta";
+  position: absolute;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 11px;
+  padding: 6px;
+  border-radius: 5px;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.unit-badge:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(5px);
+}
+
+.card-container {
+  position: relative;
+  overflow: visible;
+}
+
+
 .product-container {
   display: flex;
   flex-wrap: wrap;

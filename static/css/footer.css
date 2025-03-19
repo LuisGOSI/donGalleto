@@ -7,6 +7,7 @@
     background: #b89f88;
     padding-bottom: 10px;
     text-align: center;
+    font-family: Arial, sans-serif; /* Cambia la fuente del footer */
 }
 
 .footer .row {
@@ -149,7 +150,7 @@
     list-style: none;
     padding: 0;
     margin-bottom: 20px;
-    margin-left: 70px;
+    margin-left: 120px;
 }
 
 .footer-links li {
