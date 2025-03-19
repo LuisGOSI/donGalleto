@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
 from database.admin import proveedorCRUD
+from database import TiendaGalletas
 from db import app,mysql 
 
 if __name__ == "__main__":
@@ -369,7 +370,12 @@ def ventas_dashboard():
 @app.route("/cliente")
 def cliente_dashboard():
     user = session.get("user")
-    return render_template('/client/Cliente.html', is_base_template = False,user=user)
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM galletas')
+    data = cur.fetchall()
+    cur.close()
+    print(data)
+    return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
     
 
 
