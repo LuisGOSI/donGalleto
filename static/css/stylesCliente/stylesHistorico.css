@@ -1,0 +1,26 @@
+.titulo-historico {
+    text-align: center;
+    font-size: 44px;
+    margin-bottom: 20px;
+}
+
+.tabla-compras {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 16px;
+}
+
+.tabla-compras thead tr {
+    border-bottom: 2px solid #000;
+    border-top: 2px solid #000;
+}
+
+.tabla-compras th, .tabla-compras td {
+    padding: 10px;
+}
+
+.tabla-compras tbody tr {
+    border-bottom: 1px solid #ccc;
+}

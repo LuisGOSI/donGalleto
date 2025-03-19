@@ -370,6 +370,11 @@ def ventas_dashboard():
 def cliente_dashboard():
     user = session.get("user")
     return render_template('/client/Cliente.html', is_base_template = False,user=user)
+
+@app.route("/historico")
+def historico_dashboard():
+    user = session.get("user")
+    return render_template('/client/Historico.html', is_base_template = False,user=user)
     
 
 
