@@ -82,7 +82,7 @@ def registerUser():
         mysql.connection.commit()
         cur.close()
         session["user"] = user
-        return redirect(url_for("about_us"))
+        return redirect(url_for("cliente_dashboard"))
 
 
 # Registro de admin
