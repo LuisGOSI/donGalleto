@@ -376,6 +376,12 @@ def cliente_dashboard():
     cur.close()
     print(data)
     return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+
+
+@app.route("/historico")
+def historico_dashboard():
+    user = session.get("user")
+    return render_template('/client/Historico.html', is_base_template = False,user=user)
     
 
 

@@ -1,0 +1,33 @@
+{% extends '/client/baseCliente/baseCliente.html' %}
+
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{url_for('home')}}">INICIO</a>
+    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+    <a href="{{url_for('cliente_dashboard')}}">PRODUCTOS</a>
+    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+    <a href="#">HISTÓRICO</a>
+</nav>
+<h1 class="titulo-historico">Histórico de compras</h1>
+
+<table class="tabla-compras">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+            <th>Fecha de compra</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Galleta de Brownie</td>
+            <td>$120.00</td>
+            <td>2 Paquete(s) con <br> 12 unidades</td>
+            <td>$278.40</td>
+            <td>12/03/2025</td>
+        </tr>
+    </tbody>
+</table>
+{% endblock %}
