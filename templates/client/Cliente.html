@@ -10,133 +10,18 @@
 <h1 class="title-client">Productos</h1>
 
 <div class="product-container">
-    <!-- Producto 1: Galletas de chispas de chocolate -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/GalletaChispasChocolate.jpeg" alt="Galletas de chispas de chocolate">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de chispas de chocolate</h3>
-            <p class="product-price">3.255 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Producto 2: Galleta de vainilla -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/GalletaImagen4.jpg" alt="Galleta de vainilla">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de vainilla</h3>
-            <p class="product-price">2.850 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Producto 3: Galleta de nuez "Don Galleto" -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/GalletaImagen3.jpg" alt="Galleta de nuez">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de nuez "Don Galleto"</h3>
-            <p class="product-price">2.500 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Producto 4: Galleta de cajeta" -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/GalletaImagen2.jpg" alt="Galleta de cajeta">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de cajeta</h3>
-            <p class="product-price">2.500 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
-    <!-- Producto 5: Galleta de Alfajores con relleno de maní" -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/GalletaImagen2.jpg" alt="Galleta de Alfajores con relleno de maní">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de Alfajores con relleno de mani</h3>
-            <p class="product-price">2.500 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
-    <!-- Producto 6: Galleta de Mermelada de fresa" -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/Galleta6.jpg" alt="Galleta de Mermelada de fresa">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de Mermelada de fresa</h3>
-            <p class="product-price">2.500 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
+    {% block catalogo %}
 
-    <!-- Producto 7: Galleta de mantequilla" -->
+    {% for galleta in data %}
     <div class="product-card">
         <div class="product-image">
-            <img src="/static/imgGalletas/Galleta8.jpg" alt="Galleta de mantequilla">
+            <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
             <div class="unit-badge">Unidad</div>
         </div>
         <div class="product-info">
-            <h3 class="product-title">Galleta de Mermelada de fresa</h3>
-            <p class="product-price">2.500 ₡/U</p>
+            <h3 class="product-title">{{ galleta[1] }}</h3>
+            <p class="product-price">{{ galleta[2] }} ₡/U</p>
             <div class="product-actions">
                 <div class="quantity-selector">
                     <button class="quantity-btn">+</button>
@@ -147,63 +32,9 @@
             </div>
         </div>
     </div>
+    {% endfor %}
+    {% endblock %}
 
-    <!-- Producto 8: Galleta de avellanas" -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/Galleta7.jpg" alt="Galleta de avellanas">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de avellanas</h3>
-            <p class="product-price">2.500 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
-    <!-- Producto 9: Galleta de brownie" -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/Galleta9.jpg" alt="Galleta de brownie">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de brownie</h3>
-            <p class="product-price">2.500 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
-    <!-- Producto 10: Galleta de avena" -->
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/static/imgGalletas/Galleta10.jpg" alt="Galleta de avena">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">Galleta de avena</h3>
-            <p class="product-price">2.500 ₡/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
-                </div>
-                <button class="add-to-cart">Añadir al carrito</button>
-            </div>
-        </div>
-    </div>
+
 </div>
 {% endblock %}
