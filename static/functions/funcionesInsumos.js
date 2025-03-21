@@ -10,11 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((response) => response.json())
             .then((data) => {
                 document.getElementById("idInsumo").value = data.idInsumo;
-                document.getElementById("idProveedorFK").value = data.idProveedorFK;
                 document.getElementById("unidadMedidaAsignar").value = data.unidadMedida;
-                document.getElementById("nombrePresentacion").value = data.nombrePresentacion;
-                document.getElementById("precioProveedor").value = data.precioProveedor;
-                document.getElementById("cantidad").value = data.cantidadBase;
                 actualizarFormatos();
             })
             .catch((error) =>
@@ -98,31 +94,20 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //! Funciones de edicion en la tabla de insumos
-
 document.addEventListener("DOMContentLoaded", function () {
     const editarInsumoModal = document.getElementById("editarInsumoModal");
     editarInsumoModal.addEventListener("show.bs.modal", function (event) {
-        const button = event.relatedTarget; // Boton que activa el modal
+        const button = event.relatedTarget; // Botón que activa el modal
         const idInsumo = button.getAttribute("data-insumo-id");
-        console.log(idInsumo);
+        
         fetch(`/get_insumo/${idInsumo}`)
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
                 document.getElementById("idInsumoEditar").value = data.idInsumo;
                 document.getElementById("nombreInsumoEditar").value = data.nombreInsumo;
                 document.getElementById("unidadMedidaEditar").value = data.unidadMedida;
-                document.getElementById("presentacionEditar").value = data.nombrePresentacion;
-                document.getElementById("cantidadEditar").value = data.cantidadInsumo;
-                document.getElementById("proveedorEditar").value = data.idProveedorFK
-                document.getElementById("precioEditar").value = data.precioProveedor;
-                document.getElementById("cantidadBaseEditar").value = data.cantidadBase;
-                document.getElementById("idPresentacionEditar").value = data.idPresentacion;
-                document.getElementById("idProveedorInsumoEditar").value = data.idProveedorInsumo;
             })
-            .catch((error) =>
-                console.error("Error al obtener los datos del insumo:", error)
-            );
+            .catch((error) => console.error("Error al obtener los datos del insumo:", error));
     });
 });
 
@@ -130,16 +115,38 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener("DOMContentLoaded", function () {
     const eliminarInsumoModal = document.getElementById("eliminarInsumoModal");
     eliminarInsumoModal.addEventListener("show.bs.modal", function (event) {
-        const button = event.relatedTarget; // Boton que activa el modal
+        const button = event.relatedTarget; // Botón que activa el modal
         const idInsumo = button.getAttribute("data-insumo-id");
-        console.log(idInsumo);
-        fetch(`/get_insumo/${idInsumo}`)
+        document.getElementById("idInsumoEliminar").value = idInsumo;
+    });
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Cargar datos en el modal de editar
+    const editarPresentacionModal = document.getElementById("editarPresentacionModal");
+    editarPresentacionModal.addEventListener("show.bs.modal", function (event) {
+        const button = event.relatedTarget; // Botón que activa el modal
+        const idPresentacion = button.getAttribute("data-presentacion-id");
+        
+        fetch(`/get_presentacion/${idPresentacion}`)
             .then((response) => response.json())
             .then((data) => {
-                document.getElementById("idInsumoEliminar").value = data.idInsumo;
+                document.getElementById("idPresentacionEditar").value = data.idPresentacion;
+                document.getElementById("idInsumoEditar").value = data.idInsumoFK;
+                document.getElementById("nombrePresentacionEditar").value = data.nombrePresentacion;
+                document.getElementById("cantidadBaseEditar").value = data.cantidadBase;
+                document.getElementById("proveedorEditar").value = data.idProveedorFK;
+                document.getElementById("precioProveedorEditar").value = data.precioProveedor;
             })
-            .catch((error) =>
-                console.error("Error al obtener los datos del insumo:", error)
-            );
+            .catch((error) => console.error("Error al obtener los datos de la presentación:", error));
+    });
+
+    // Cargar datos en el modal de eliminar
+    const eliminarPresentacionModal = document.getElementById("eliminarPresentacionModal");
+    eliminarPresentacionModal.addEventListener("show.bs.modal", function (event) {
+        const button = event.relatedTarget; // Botón que activa el modal
+        const idPresentacion = button.getAttribute("data-presentacion-id");
+        document.getElementById("idPresentacionEliminar").value = idPresentacion;
     });
 });

@@ -147,26 +147,39 @@ def produccion_dashboard():
 @app.route('/gestion-insumos')
 def gestion_insumos():
     cur = mysql.connection.cursor()
-    # consulta para traer los prov
-    cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
-    proveedores = cur.fetchall()
-    # cargar los insumos
+    
+    # Cargar los insumos
+    cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos")
+    insumos = cur.fetchall()
+    
+    # Cargar las presentaciones y proveedores
     cur.execute("""
         SELECT 
             i.idInsumo, 
             i.nombreInsumo, 
-            i.unidadMedida, 
-            COALESCE(pi.precioProveedor, 'No asignado') AS precioProveedor, 
-            COALESCE(p.nombrePresentacion, 'No asignado') AS nombrePresentacion, 
-            COALESCE(pr.nombreProveedor, 'No asignado') AS nombreProveedor
-        FROM insumos i
-        LEFT JOIN presentacionesinsumos p ON i.idInsumo = p.idInsumoFK
-        LEFT JOIN proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
-        LEFT JOIN proveedores pr ON pi.idProveedorFK = pr.idProveedor
+            p.idPresentacion, 
+            p.nombrePresentacion, 
+            p.cantidadBase, 
+            pr.nombreProveedor, 
+            pi.precioProveedor
+        FROM 
+            insumos i
+        LEFT JOIN 
+            presentacionesinsumos p ON i.idInsumo = p.idInsumoFK
+        LEFT JOIN 
+            proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
+        LEFT JOIN 
+            proveedores pr ON pi.idProveedorFK = pr.idProveedor
     """)
-    insumos = cur.fetchall()
+    presentaciones = cur.fetchall()
+    
+    # Cargar los proveedores
+    cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
+    proveedores = cur.fetchall()
+    
     cur.close()
-    return render_template('/production/gestionInsumos.html', proveedores=proveedores, insumos=insumos, is_base_template=False)
+    
+    return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, is_base_template=False)
 
 
 @app.route("/inventario-insumos")
@@ -309,34 +322,22 @@ def editar_insumo():
         idInsumo = request.form["idInsumoEditar"]
         nombreInsumo = request.form["nombreInsumoEditar"]
         unidadMedida = request.form["unidadMedidaEditar"]
-        idPresentacion = request.form["idPresentacionEditar"]
-        nombrePresentacion = request.form["presentacionEditar"]
-        cantidad = request.form["cantidadEditar"]
-        cantidadBase = request.form["cantidadBaseEditar"]
-        idProveedorInsumo = request.form["idProveedorInsumoEditar"]
-        idProveedorFK = request.form["proveedorEditar"]
-        precioProveedor = request.form["precioEditar"]
+        
         cur = mysql.connection.cursor()
         try:
+            # Solo actualizamos los datos del insumo
             cur.execute(
-                "UPDATE insumos SET nombreInsumo = %s, unidadMedida = %s, cantidadInsumo = %s WHERE idInsumo = %s",
-                (nombreInsumo, unidadMedida, cantidad, idInsumo),
-            )
-            cur.execute(
-                "UPDATE presentacionesinsumos SET nombrePresentacion = %s, cantidadBase = %s WHERE idPresentacion = %s",
-                (nombrePresentacion, cantidadBase, idPresentacion),
-            )
-            cur.execute(
-                "UPDATE proveedoresinsumos SET idProveedorFK = %s, precioProveedor = %s WHERE idProveedorInsumo = %s",
-                (idProveedorFK, precioProveedor, idProveedorInsumo),
+                "UPDATE insumos SET nombreInsumo = %s, unidadMedida = %s WHERE idInsumo = %s",
+                (nombreInsumo, unidadMedida, idInsumo),
             )
             mysql.connection.commit()
-            print("Insumo, presentación y proveedor actualizados correctamente.")
+            print("Insumo actualizado correctamente.")
         except Exception as e:
             mysql.connection.rollback()
             print(f"Error al actualizar el insumo: {e}")
         finally:
             cur.close()
+        
         return redirect(url_for("gestion_insumos"))
 
 
@@ -344,13 +345,120 @@ def editar_insumo():
 def eliminar_insumo():
     idInsumo = request.form["idInsumoEliminar"]
     cur = mysql.connection.cursor()
-    cur.execute("""DELETE FROM proveedoresinsumos WHERE idPresentacionFK IN (SELECT idPresentacion FROM presentacionesinsumos WHERE idInsumoFK = %s)""", (idInsumo,))
-    cur.execute("DELETE FROM presentacionesinsumos WHERE idInsumoFK = %s", (idInsumo,))
-    cur.execute("DELETE FROM insumos WHERE idInsumo = %s", (idInsumo,))
-    mysql.connection.commit()
-    cur.close()
-    print("Insumo eliminado")
+    
+    try:
+        # Eliminar las relaciones con proveedores
+        cur.execute("""
+            DELETE FROM proveedoresinsumos 
+            WHERE idPresentacionFK IN (
+                SELECT idPresentacion 
+                FROM presentacionesinsumos 
+                WHERE idInsumoFK = %s
+            )
+        """, (idInsumo,))
+        
+        # Eliminar las presentaciones del insumo
+        cur.execute("DELETE FROM presentacionesinsumos WHERE idInsumoFK = %s", (idInsumo,))
+        
+        # Eliminar el insumo
+        cur.execute("DELETE FROM insumos WHERE idInsumo = %s", (idInsumo,))
+        
+        mysql.connection.commit()
+        print("Insumo y todo lo relacionado eliminado correctamente.")
+    except Exception as e:
+        mysql.connection.rollback()
+        print(f"Error al eliminar el insumo: {e}")
+    finally:
+        cur.close()
+    
     return redirect(url_for("gestion_insumos"))
+
+# Endpoint para obtener los datos de una presentación
+@app.route("/get_presentacion/<int:idPresentacion>")
+def get_presentacion(idPresentacion):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 
+            p.idPresentacion,
+            p.idInsumoFK,
+            p.nombrePresentacion,
+            p.cantidadBase,
+            pi.idProveedorFK,
+            pi.precioProveedor
+        FROM 
+            presentacionesinsumos p
+        LEFT JOIN 
+            proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
+        WHERE 
+            p.idPresentacion = %s;
+    """, (idPresentacion,))
+    presentacion = cur.fetchone()
+    cur.close()
+    
+    if presentacion:
+        return {
+            "idPresentacion": presentacion[0],
+            "idInsumoFK": presentacion[1],
+            "nombrePresentacion": presentacion[2],
+            "cantidadBase": presentacion[3],
+            "idProveedorFK": presentacion[4],
+            "precioProveedor": presentacion[5],
+        }
+    else:
+        return {"error": "Presentación no encontrada"}, 404
+
+# Endpoint para editar presentación y proveedor
+@app.route("/editarPresentacionProveedor", methods=["POST"])
+def editar_presentacion_proveedor():
+    if request.method == "POST":
+        idPresentacion = request.form["idPresentacionEditar"]
+        nombrePresentacion = request.form["nombrePresentacionEditar"]
+        cantidadBase = request.form["cantidadBaseEditar"]
+        idProveedorFK = request.form["proveedorEditar"]
+        precioProveedor = request.form["precioProveedorEditar"]
+        
+        cur = mysql.connection.cursor()
+        try:
+            # Actualizar la presentación
+            cur.execute(
+                "UPDATE presentacionesinsumos SET nombrePresentacion = %s, cantidadBase = %s WHERE idPresentacion = %s",
+                (nombrePresentacion, cantidadBase, idPresentacion),
+            )
+            # Actualizar el proveedor
+            cur.execute(
+                "UPDATE proveedoresinsumos SET idProveedorFK = %s, precioProveedor = %s WHERE idPresentacionFK = %s",
+                (idProveedorFK, precioProveedor, idPresentacion),
+            )
+            mysql.connection.commit()
+            print("Presentación y proveedor actualizados correctamente.")
+        except Exception as e:
+            mysql.connection.rollback()
+            print(f"Error al actualizar la presentación y proveedor: {e}")
+        finally:
+            cur.close()
+        
+        return redirect(url_for("gestion_insumos"))
+
+# Endpoint para eliminar presentación
+@app.route("/eliminarPresentacion", methods=["POST"])
+def eliminar_presentacion():
+    if request.method == "POST":
+        idPresentacion = request.form["idPresentacionEliminar"]
+        cur = mysql.connection.cursor()
+        try:
+            # Eliminar la relación con el proveedor
+            cur.execute("DELETE FROM proveedoresinsumos WHERE idPresentacionFK = %s", (idPresentacion,))
+            # Eliminar la presentación
+            cur.execute("DELETE FROM presentacionesinsumos WHERE idPresentacion = %s", (idPresentacion,))
+            mysql.connection.commit()
+            print("Presentación y relación con proveedor eliminados correctamente.")
+        except Exception as e:
+            mysql.connection.rollback()
+            print(f"Error al eliminar la presentación: {e}")
+        finally:
+            cur.close()
+        
+        return redirect(url_for("gestion_insumos"))
 
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
