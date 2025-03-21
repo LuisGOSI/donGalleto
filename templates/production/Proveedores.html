@@ -1,6 +1,18 @@
 {% extends '/production/baseProduccion/baseProduccion.html' %}
 {% block title %}Proveedores{% endblock %}
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
 <div class="container">
     <section class="tble-Proveedores">
         <h1 class="titleProveedores">Proveedores</h1>
