@@ -4,7 +4,6 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
 from database.admin import proveedorCRUD
-from database import TiendaGalletas
 from db import app,mysql 
 
 if __name__ == "__main__":
@@ -243,13 +242,16 @@ def cliente_dashboard():
     print(data)
     return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
 
+@app.route("/carrito")
+def carrito_dashboard():
+    user = session.get("user")
+    return render_template('/client/Carrito.html', is_base_template = False,user=user)
 
 @app.route("/historico")
 def historico_dashboard():
     user = session.get("user")
     return render_template('/client/Historico.html', is_base_template = False,user=user)
     
-
 
 # Checar sesion
 @app.route("/checkSession", methods=["POST"])
