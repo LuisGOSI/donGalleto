@@ -1,0 +1,132 @@
+/* =========================== */
+/* Estilos para títulos       */
+/* =========================== */
+.titleInsumos {
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    font-family:'Open Sans', sans-serif;
+}
+
+/* =========================== */
+/* Estilos para contenedores  */
+/* =========================== */
+.resumenGalletas {
+    background-color: #e0c9a6;
+    border: 1px solid #8b5a2b;
+    border-radius: 5px;
+    padding: 10px;
+    width: calc(100% - 30px); /* Ancho total menos margen izquierdo y derecho */
+    max-width: 400px; /* Ancho máximo */
+    margin-left: 15px;
+    margin-right: 15px;
+    float: right;
+    box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+}
+
+.caducar-header {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.alerta {
+    color: red;
+}
+
+/* =========================== */
+/* Estilos para la tabla      */
+/* =========================== */
+table {
+    width: calc(100% - 30px); /* Ancho total menos margen izquierdo y derecho */
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    margin-left: 15px;
+    margin-right: 15px;
+    box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+}
+
+th, td {
+    border-right: 1px solid #000000;
+}
+
+th:last-child, td:last-child {
+    border-right: none; /* Elimina el borde derecho de la última columna */
+}
+
+th {
+    background-color: #4a342e;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+.thead{
+    border-radius: 15px;
+}
+
+td {
+    background-color: #d2b48c;
+    text-align: center;
+    padding: 10px;
+    margin-right: 10px;
+}
+
+/* =========================== */
+/* Estilos para botones       */
+/* =========================== */
+.registrar-btn {
+    background-color: #add8e6;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    float: right;
+    transition: all 0.2s ease;
+    position: relative;
+    top: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.registrar-btn:active {
+    top: 2px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
+    background-color: #9cc9d7;
+}
+
+.registrar-btn:hover {
+    background-color: #b8e0eb;
+    cursor: pointer;
+}
+
+.mermas-btn {
+    background-color: #90ee90;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 20px;
+    transition: all 0.2s ease;
+    position: relative;
+    top: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.mermas-btn:active {
+    top: 2px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
+    background-color: #00ff08;
+}
+
+.mermas-btn:hover {
+    background-color: #00ff51;
+    cursor: pointer;
+}
+
+
+@media (max-width: 768px) {
+    .proximos-caducar {
+        float: none;
+        max-width: none;
+        margin-bottom: 20px;
+    }
+}

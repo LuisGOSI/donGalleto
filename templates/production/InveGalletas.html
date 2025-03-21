@@ -1,0 +1,129 @@
+{% extends '/production/baseProduccion/baseProduccion.html' %}
+
+{% block title %}Inventario de Insumos{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <section class="intro-container">
+            <h1 class="titleInsumos">Inventario Galletas</h1>
+            <div class="inventario-container" style="display: flex; gap: 20px;">
+                <div class="tabla-inventario" style="flex: 1; position: relative;">
+                    <div style="text-align: right; margin-bottom: 10px;">
+                        <button class="registrar-btn" type="input">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
+                            Agregar Paquete
+                        </button>
+                    </div>
+                    
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Lote</th>
+                                <th>Nombre</th>
+                                <th>Mermas</th>
+                                <th>Fecha De Caducidad</th>
+                                <th>Cantidad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Leche</td>
+                                <td>55 lts</td>
+                                <td>10/11/2024</td>
+                                <td></td>
+                                <!--Este td del botón merma debe ir cada que se exista un insumo-->
+                                <td>
+                                    <button class="mermas-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"/>
+                                        </svg>
+                                        Mermas
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--Div para la card de próximos a caducar-->
+                <div class="resumenGalletas">
+                    <div class="caducar-header">Resumen de Galletas</div>
+                    <table style="width: 95%">
+                        <caption>• Galletas con Chispas de chocolate:</caption>
+                        <tr>
+                            <td style="text-align: left; background: none; padding: 2px;">Cantidad actual:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;">750 u.</td>
+                        </tr>
+
+                        <tr>
+                            <td style="text-align: left; background: none; padding: 2px;">Cantidad próximas a caducar:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;"> 135 u</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #000000;">
+                            <td style="text-align: left; background: none; padding: 2px; ">Fecha de Caducidad:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;">
+                                <!--Cargar datos próximos a caducar-->
+                                01/11/2024
+                                <!--Cargar datos próximos a caducar-->
+                                <span class="alerta">⚠</span>
+                            </td>
+                        </tr>
+                        
+                    </table>
+                    <table style="width: 95%">
+                        <div clascaducar-header>• Galletas con Chispas de chocolate:</caption>
+                        <tr>
+                            <td style="text-align: left; background: none; padding: 2px;">Cantidad actual:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;">750 u.</td>
+                        </tr>
+
+                        <tr>
+                            <td style="text-align: left; background: none; padding: 2px;">Cantidad próximas a caducar:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;"> 135 u</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #000000;">
+                            <td style="text-align: left; background: none; padding: 2px; ">Fecha de Caducidad:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;">
+                                <!--Cargar datos próximos a caducar-->
+                                01/11/2024
+                                <!--Cargar datos próximos a caducar-->
+                                <span class="alerta">⚠</span>
+                            </td>
+                        </tr>
+                        <caption>• Galletas con Chispas de chocolate:</caption>
+                        <tr>
+                            <td style="text-align: left; background: none; padding: 2px;">Cantidad actual:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;">750 u.</td>
+                        </tr>
+
+                        <tr>
+                            <td style="text-align: left; background: none; padding: 2px;">Cantidad próximas a caducar:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;"> 135 u</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #000000;">
+                            <td style="text-align: left; background: none; padding: 2px; ">Fecha de Caducidad:</td>
+                            <!--Cargar datos próximos a caducar-->
+                            <td style="text-align: center; background: none; padding: 2px;">
+                                <!--Cargar datos próximos a caducar-->
+                                01/11/2024
+                                <!--Cargar datos próximos a caducar-->
+                                <span class="alerta">⚠</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}
