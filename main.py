@@ -4,7 +4,6 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
 from database.admin import proveedorCRUD
-from database import TiendaGalletas
 from db import app,mysql 
 
 if __name__ == "__main__":
@@ -167,7 +166,7 @@ def gestion_insumos():
             pi.precioProveedor
         FROM 
             insumos i
-        LEFT JOIN 
+        INNER JOIN 
             presentacionesinsumos p ON i.idInsumo = p.idInsumoFK
         LEFT JOIN 
             proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
@@ -261,7 +260,6 @@ def get_insumo(idInsumo):
             p.idPresentacion,
             p.nombrePresentacion,
             p.cantidadBase,
-            p.unidadBase,
             pr.idProveedorInsumo,
             pr.idProveedorFK,
             pr.precioProveedor
@@ -285,10 +283,9 @@ def get_insumo(idInsumo):
             "idPresentacion": insumo[4],
             "nombrePresentacion": insumo[5],
             "cantidadBase": insumo[6],
-            "unidadBase": insumo[7],
-            "idProveedorInsumo": insumo[8],
-            "idProveedorFK": insumo[9],
-            "precioProveedor": insumo[10],
+            "idProveedorInsumo": insumo[7],
+            "idProveedorFK": insumo[8],
+            "precioProveedor": insumo[9],
         }
     else:
         return {"error": "Insumo no encontrado"}, 404
@@ -302,11 +299,10 @@ def asignar_proveedor_presentacion():
         precioProveedor = float(request.form["precioProveedor"])
         nombrePresentacion = request.form["nombrePresentacion"]
         cantidadBase = float(request.form["cantidadBase"])
-        unidadBase = request.form["unidadMedidaAsignar"]
         cur = mysql.connection.cursor()
         cur.execute(
-            "INSERT INTO presentacionesinsumos (idInsumoFK, nombrePresentacion, cantidadBase, unidadBase) VALUES (%s, %s, %s, %s)",
-            (idInsumo, nombrePresentacion, cantidadBase, unidadBase),
+            "INSERT INTO presentacionesinsumos (idInsumoFK, nombrePresentacion, cantidadBase) VALUES (%s, %s, %s)",
+            (idInsumo, nombrePresentacion, cantidadBase),
         )
         idPresentacion = cur.lastrowid
         cur.execute(

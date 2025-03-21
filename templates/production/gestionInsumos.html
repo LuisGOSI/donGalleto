@@ -17,7 +17,6 @@
                     <table style="width: 100%">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Producto</th>
                                 <th>Unidad de Medida</th>
                                 <th>Acciones</th>
@@ -26,7 +25,6 @@
                         <tbody>
                             {% for insumo in insumos %}
                             <tr>
-                                <td>{{ insumo[0] }}</td>
                                 <td>{{ insumo[1] }}</td>
                                 <td>{{ insumo[2] | title }}</td>
                                 <td>
@@ -57,9 +55,7 @@
                     <table style="width: 100%">
                         <thead>
                             <tr>
-                                <th>ID Insumo</th>
                                 <th>Nombre Insumo</th>
-                                <th>ID Presentación</th>
                                 <th>Nombre Presentación</th>
                                 <th>Cantidad Base</th>
                                 <th>Proveedor</th>
@@ -70,9 +66,7 @@
                         <tbody>
                             {% for presentacion in presentaciones %}
                             <tr>
-                                <td>{{ presentacion[0] }}</td> 
                                 <td>{{ presentacion[1] }}</td> 
-                                <td>{{ presentacion[2] }}</td> 
                                 <td>{{ presentacion[3] }}</td> 
                                 <td>{{ presentacion[4] }}</td> 
                                 <td>{{ presentacion[5] }}</td> 
@@ -328,7 +322,7 @@
                 <div class="modal-body">
                     <form action="/eliminarInsumo" method="POST">
                         <input type="hidden" id="idInsumoEliminar" name="idInsumoEliminar" />
-                        <p>¿Está seguro que desea eliminar este insumo?</p>
+                        <p>¿Está seguro que deseas eliminar este insumo?</p>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-danger">Eliminar</button>
@@ -392,7 +386,7 @@
                 <div class="modal-body">
                     <form action="/eliminarPresentacion" method="POST">
                         <input type="hidden" id="idPresentacionEliminar" name="idPresentacionEliminar" />
-                        <p>¿Está seguro que desea eliminar esta presentación y su relación con el proveedor?</p>
+                        <p>¿Está seguro que deseas eliminar esta presentación?</p>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-danger">Eliminar</button>
