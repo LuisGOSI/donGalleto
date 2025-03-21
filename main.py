@@ -140,10 +140,19 @@ def admin_dashboard():
         return redirect(url_for("login"))
     return render_template("/admin/admin_dashboard.html")
 
+@app.route("/gestionUsuarios")
+def usuarios_dashboard():
+    user = session.get("user")
+    return render_template('/usuario/Usuario.html', is_base_template = False, user=user)
+
 
 @app.route("/produccion")
 def produccion_dashboard():
-    return render_template("/production/baseProduccion/baseProduccion.html", is_base_template=True)
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] != "administrador":
+        return render_template("/production/baseProduccion/baseProduccion.html",user=user, is_base_template=True)
 
 
 @app.route('/gestion-insumos')

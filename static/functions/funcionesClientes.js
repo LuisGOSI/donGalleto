@@ -1,22 +1,3 @@
-let lastScrollY = window.scrollY;
-let ticking = false;
-const header = document.querySelector("header");
-
-window.addEventListener("scroll", () => {
-	if (!ticking) {
-		window.requestAnimationFrame(() => {
-			if (window.scrollY > lastScrollY + 5) {
-				header.style.transform = "translateY(-100%)";
-			} else if (window.scrollY < lastScrollY - 15) {
-				header.style.transform = "translateY(0)";
-			}
-			lastScrollY = window.scrollY;
-			ticking = false;
-		});
-		ticking = true;
-	}
-});
-
 document.addEventListener("DOMContentLoaded", function () {
 	document.querySelectorAll(".product-card").forEach(product => {
 		const btnIncrease = product.querySelector(".quantity-btn:first-child"); // Botón "+"
