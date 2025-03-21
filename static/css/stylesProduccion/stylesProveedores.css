@@ -78,6 +78,36 @@
     background-color: #218838; /* Cambio a un verde más oscuro */
 }
 
+.alert {
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 6px solid #ffcc00;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 6px solid #28a745;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.alert-icon {
+    font-size: 20px;
+}
+
+
 
 /********** Switch de activos e inactivos ********************/
 .action-container {
