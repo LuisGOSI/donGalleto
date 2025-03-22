@@ -1,10 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
-
 from db import app,mysql  
 
 load_dotenv()
-
 
 @app.route("/eliminarProveedor", methods=["POST", "GET"])
 def eliminarProveedor():

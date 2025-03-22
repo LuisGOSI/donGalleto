@@ -1,17 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_mysqldb import MySQL
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
+from database.production import insumosCRUD
 from database.admin import proveedorCRUD
-from database import TiendaGalletas
 from db import app,mysql 
 
 if __name__ == "__main__":
     app.run(debug=True)
 
 load_dotenv()
-proveedorCRUD.registerProveedor
+
 
 #! ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Logica de sesiones de la app ///////////////////////////////////////////////////////////////////////
