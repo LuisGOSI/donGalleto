@@ -50,39 +50,57 @@ def login():
                 else:
                     return redirect(url_for("cliente_dashboard"))
             else:
-                return render_template(
-                    "/pages/login.html"
-                )  # Si falla la autenticación, recarga el login
-        return render_template(
-            "/pages/login.html"
-        )  # Si es GET, muestra el formulario de login
+                flash("Usuario o contraseña incorrectos")
+                return render_template("/pages/login.html")
+        return render_template("/pages/login.html")
 
 
 # Registro de usuario
 @app.route("/register", methods=["POST"])
 def registerUser():
-    if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        password = generate_password_hash(request.form["password"])
-        phone = request.form["phone"]
-        role = request.form["role"]
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "INSERT INTO clientes (nombreCliente, telefono) VALUES (%s, %s)",
-            (name, phone),)
-        idCliente = cur.lastrowid 
-        cur.execute(
-            "INSERT INTO usuarios (email, password, rol, idClienteFK) VALUES (%s, %s, %s, %s)",
-            (email, password, role, idCliente),)
-        cur.execute(
-            "SELECT * FROM usuarios where email = %s",
-            (email,),)
-        user = cur.fetchone()
-        mysql.connection.commit()
+    try:
+        if request.method == "POST":
+            name = request.form["name"]
+            email = request.form["email"]
+            password = generate_password_hash(request.form["password"])
+            phone = request.form["phone"]
+            role = request.form["role"]
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "INSERT INTO clientes (nombreCliente, telefono) VALUES (%s, %s)",
+                (name, phone),)
+            idCliente = cur.lastrowid 
+            cur.execute(
+                "INSERT INTO usuarios (email, password, rol, idClienteFK) VALUES (%s, %s, %s, %s)",
+                (email, password, role, idCliente),)
+            cur.execute(
+                "SELECT * FROM usuarios where email = %s",
+                (email,),)
+            user = cur.fetchone()
+            mysql.connection.commit()
+            cur.close()
+            session["user"] = user
+            return redirect(url_for("cliente_dashboard"))
+    except(Exception) as error:
+        if "Duplicate entry" in str(error):
+            flash("El correo ya está registrado")
+            return redirect(url_for("login"))
+        elif "email" in str(error):
+            flash("El correo no es válido")
+            return redirect(url_for("login"))
+        elif "phone" in str(error):
+            flash("El teléfono no es válido")
+            return redirect(url_for("login"))
+        elif "name" in str(error):
+            flash("El nombre no es válido")
+            return redirect(url_for("login"))
+        elif "password" in str(error):
+            flash("La contraseña no es válida")
+            return redirect(url_for("login"))
+    finally:
         cur.close()
-        session["user"] = user
-        return redirect(url_for("cliente_dashboard"))
+        return redirect(url_for("login"))
+    
 
 
 # Registro de admin
@@ -144,18 +162,24 @@ def admin_dashboard():
 
 @app.route("/produccion")
 def produccion_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] != "produccion" or user[4] != "administrador":
+        return redirect(url_for("login"))
     return render_template("/production/baseProduccion/baseProduccion.html", is_base_template=True)
 
 
 @app.route('/gestion-insumos')
 def gestion_insumos():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] != "produccion" or user[4] != "administrador":
+        return redirect(url_for("login"))
     cur = mysql.connection.cursor()
-    
-    # Cargar los insumos
     cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos")
     insumos = cur.fetchall()
-    
-    # Cargar las presentaciones y proveedores
     cur.execute("""
         SELECT 
             i.idInsumo, 
@@ -175,23 +199,22 @@ def gestion_insumos():
             proveedores pr ON pi.idProveedorFK = pr.idProveedor
     """)
     presentaciones = cur.fetchall()
-    
-    # Cargar los proveedores
     cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
     proveedores = cur.fetchall()
-    
     cur.close()
-    
     return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, is_base_template=False)
 
 
 @app.route("/inventario-insumos")
 def insumos_inventory():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] != "produccion" or user[4] != "administrador":
+        return redirect(url_for("login"))
     cur = mysql.connection.cursor()
-    # consulta para traer los prov
     cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
     proveedores = cur.fetchall()
-    # cargar los insumos
     cur.execute("""
         SELECT 
             i.idInsumo, 
@@ -212,7 +235,41 @@ def insumos_inventory():
 
 @app.route("/proveedores")
 def proveedores():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] != "produccion" or user[4] != "administrador":
+        return redirect(url_for("login"))
     return render_template('/production/Proveedores.html', is_base_template = False)
+
+
+@app.route("/cliente")
+def cliente_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM galletas')
+    data = cur.fetchall()
+    cur.close()
+    print(data)
+    return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+
+
+@app.route("/carrito")
+def carrito_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    return render_template('/client/Carrito.html', is_base_template = False,user=user)
+
+
+@app.route("/historico")
+def historico_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    return render_template('/client/Historico.html', is_base_template = False,user=user)
 
 
 @app.route("/sobreNosotros")
@@ -244,27 +301,6 @@ def test():
 @app.route("/ventas")
 def ventas_dashboard():
     return "Bienvenido al panel de ventas"
-
-@app.route("/cliente")
-def cliente_dashboard():
-    user = session.get("user")
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM galletas')
-    data = cur.fetchall()
-    cur.close()
-    print(data)
-    return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
-
-@app.route("/carrito")
-def carrito_dashboard():
-    user = session.get("user")
-    return render_template('/client/Carrito.html', is_base_template = False,user=user)
-
-@app.route("/historico")
-def historico_dashboard():
-    user = session.get("user")
-    return render_template('/client/Historico.html', is_base_template = False,user=user)
-    
 
 # Checar sesion
 @app.route("/checkSession", methods=["POST"])
