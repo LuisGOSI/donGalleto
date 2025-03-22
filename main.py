@@ -61,28 +61,49 @@ def login():
 # Registro de usuario
 @app.route("/register", methods=["POST"])
 def registerUser():
-    if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        password = generate_password_hash(request.form["password"])
-        phone = request.form["phone"]
-        role = request.form["role"]
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "INSERT INTO clientes (nombreCliente, telefono) VALUES (%s, %s)",
-            (name, phone),)
-        idCliente = cur.lastrowid 
-        cur.execute(
-            "INSERT INTO usuarios (email, password, rol, idClienteFK) VALUES (%s, %s, %s, %s)",
-            (email, password, role, idCliente),)
-        cur.execute(
-            "SELECT * FROM usuarios where email = %s",
-            (email,),)
-        user = cur.fetchone()
-        mysql.connection.commit()
+    try:
+        if request.method == "POST":
+            name = request.form["name"]
+            email = request.form["email"]
+            password = generate_password_hash(request.form["password"])
+            phone = request.form["phone"]
+            role = request.form["role"]
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "INSERT INTO clientes (nombreCliente, telefono) VALUES (%s, %s)",
+                (name, phone),)
+            idCliente = cur.lastrowid 
+            cur.execute(
+                "INSERT INTO usuarios (email, password, rol, idClienteFK) VALUES (%s, %s, %s, %s)",
+                (email, password, role, idCliente),)
+            cur.execute(
+                "SELECT * FROM usuarios where email = %s",
+                (email,),)
+            user = cur.fetchone()
+            mysql.connection.commit()
+            cur.close()
+            session["user"] = user
+            return redirect(url_for("cliente_dashboard"))
+    except(Exception) as error:
+        if "Duplicate entry" in str(error):
+            flash("El correo ya está registrado")
+            return redirect(url_for("login"))
+        elif "email" in str(error):
+            flash("El correo no es válido")
+            return redirect(url_for("login"))
+        elif "phone" in str(error):
+            flash("El teléfono no es válido")
+            return redirect(url_for("login"))
+        elif "name" in str(error):
+            flash("El nombre no es válido")
+            return redirect(url_for("login"))
+        elif "password" in str(error):
+            flash("La contraseña no es válida")
+            return redirect(url_for("login"))
+    finally:
         cur.close()
-        session["user"] = user
-        return redirect(url_for("cliente_dashboard"))
+        return redirect(url_for("login"))
+    
 
 
 # Registro de admin
