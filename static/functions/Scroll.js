@@ -48,3 +48,24 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	});
 });
+
+function toggleDropdown(event) {
+    event.preventDefault();
+    document.getElementById("userDropdownMenu").classList.toggle("show");
+  }
+
+function cerrarSesion(event) {
+    event.preventDefault();
+    document.getElementById("logoutForm").submit();
+  }
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropdown-toggle') && !event.target.matches('.header-icon')) {
+      var dropdowns = document.getElementsByClassName("dropdown-menu");
+      for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }

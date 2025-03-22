@@ -4,21 +4,35 @@ from db import app,mysql
 
 load_dotenv()
 
-@app.route("/eliminarProveedor", methods=["POST", "GET"])
+
+@app.route("/eliminarProveedor", methods=["POST"])
 def eliminarProveedor():
-    if request.method == "POST":
-        idProveedor = request.form["idProveedor"]
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "UPDATE proveedores SET estadoProveedor = 0 WHERE idProveedor = %s;",
-            (idProveedor,),
-        )
-        mysql.connection.commit()
-        cur.close()
-        flash("Proveedor eliminado con éxito", "success")
+    idProveedor = request.form["idProveedor"]
+    cur = mysql.connection.cursor()
+
+    # 🔹 Verificar si el proveedor tiene insumos asociados
+    cur.execute("""
+        SELECT i.nombreInsumo 
+        FROM insumos i
+        INNER JOIN presentacionesinsumos pi ON i.idInsumo = pi.idInsumoFK
+        INNER JOIN proveedoresinsumos pvi ON pi.idPresentacion = pvi.idPresentacionFK
+        WHERE pvi.idProveedorFK = %s;
+    """, (idProveedor,))
+    
+    insumos = cur.fetchall()
+    if insumos:
+        nombres_insumos = ", ".join(row[0] for row in insumos)
+        flash(f"⚠️ Antes de eliminar este proveedor, cambia los siguientes insumos a otro proveedor: {nombres_insumos}", "warning")
         return redirect(url_for("registerProveedor"))
-    proveedores = get_proveedores()
-    return render_template("/production/Proveedores.html", proveedores=proveedores)
+    cur.execute(
+        "UPDATE proveedores SET estadoProveedor = 0 WHERE idProveedor = %s;",
+        (idProveedor,)
+    )
+    mysql.connection.commit()
+    cur.close()
+
+    flash("✅Proveedor eliminado con éxito", "success")
+    return redirect(url_for("registerProveedor"))
 
 
 @app.route("/activarProveedor", methods=["POST", "GET"])
