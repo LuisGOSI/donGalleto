@@ -1,22 +1,81 @@
 {% extends '/production/baseProduccion/baseProduccion.html' %}
-
 {% block title %}Inventario de Insumos{% endblock %}
-
 {% block content %}
     <div class="container">
         <section class="intro-container">
             <h1 class="titleInsumos">Inventario Galletas</h1>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        let messages = {{ messages | tojson }};
+                        let flashList = document.getElementById("flashMessagesList");
+                        flashList.innerHTML = "";
+                        messages.forEach(([category, message]) => {
+                            let li = document.createElement("li");
+                            li.textContent = message;
+                            li.classList.add("alert", "rounded", "p-2", "mb-2");
+                            if (category === "success" || category === "danger" || category === "warning" || category === "info") {
+                                li.classList.add("fw-bold");
+                            }
+                            flashList.appendChild(li);
+                        });
+                        let flashModal = new bootstrap.Modal(document.getElementById("flashModal"));
+                        flashModal.show();
+                    });
+                </script>
+            {% endif %}
+        {% endwith %}
+<div class="modal fade" id="alertaGalletasAmarilla" tabindex="-1" aria-labelledby="alertaGalletasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title text-center w-100" id="alertaGalletasLabel">🚨¡Atención!🚨</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% for datos in lotesResumen %}
+                    {% if datos.dias_restantes is not none and datos.dias_restantes <= 3 and datos.dias_restantes > 0 %}
+                        <p>
+                            Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> galletas de 
+                            "<strong>{{ datos.nombre }}</strong>" que caducarán en 
+                            <strong>{{ datos.dias_restantes }}</strong> día(s).
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="alertaGalletasRoja" tabindex="-1" aria-labelledby="alertaGalletasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title text-center w-100" id="alertaGalletasLabel">⚠️ ¡Cuidado!⚠️ </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% for datos in lotesResumen %}
+                    {% if datos.dias_restantes is not none and datos.dias_restantes == 0 %}
+                        <p>
+                            Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> galletas de 
+                            "<strong>{{ datos.nombre }}</strong>" que caducan hoy.
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
             <div class="inventario-container" style="display: flex; gap: 20px;">
                 <div class="tabla-inventario" style="flex: 1; position: relative;">
-                    <div style="text-align: right; margin-bottom: 10px;">
-                        <button class="registrar-btn" type="input">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                            </svg>
-                            Agregar Paquete
-                        </button>
-                    </div>
-                    
+                    <br>
                     <table style="width: 100%;">
                         <thead>
                             <tr>
@@ -29,15 +88,15 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for galletas in galletasTabla %}
                             <tr>
-                                <td>1</td>
-                                <td>Leche</td>
-                                <td>55 lts</td>
-                                <td>10/11/2024</td>
-                                <td></td>
-                                <!--Este td del botón merma debe ir cada que se exista un insumo-->
+                                <td>{{ galletas.idInvGalleta }}</td>
+                                <td>{{ galletas.nombreGalleta }}</td>
+                                <td>{{ galletas.mermas | int}}</td>
+                                <td>{{ galletas.fechaCaducidad.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ galletas.cantidad }}</td>
                                 <td>
-                                    <button class="mermas-btn">
+                                    <button class="mermas-btn" data-bs-target="#registroMermaModal" data-bs-toggle="modal">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
                                             <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"/>
                                         </svg>
@@ -45,85 +104,88 @@
                                     </button>
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
-                    </table>
+                    </table>                    
                 </div>
-                <!--Div para la card de próximos a caducar-->
                 <div class="resumenGalletas">
                     <div class="caducar-header">Resumen de Galletas</div>
-                    <table style="width: 95%">
-                        <caption>• Galletas con Chispas de chocolate:</caption>
-                        <tr>
-                            <td style="text-align: left; background: none; padding: 2px;">Cantidad actual:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;">750 u.</td>
-                        </tr>
-
-                        <tr>
-                            <td style="text-align: left; background: none; padding: 2px;">Cantidad próximas a caducar:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;"> 135 u</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #000000;">
-                            <td style="text-align: left; background: none; padding: 2px; ">Fecha de Caducidad:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;">
-                                <!--Cargar datos próximos a caducar-->
-                                01/11/2024
-                                <!--Cargar datos próximos a caducar-->
-                                <span class="alerta">⚠</span>
-                            </td>
-                        </tr>
-                        
-                    </table>
-                    <table style="width: 95%">
-                        <div clascaducar-header>• Galletas con Chispas de chocolate:</caption>
-                        <tr>
-                            <td style="text-align: left; background: none; padding: 2px;">Cantidad actual:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;">750 u.</td>
-                        </tr>
-
-                        <tr>
-                            <td style="text-align: left; background: none; padding: 2px;">Cantidad próximas a caducar:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;"> 135 u</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #000000;">
-                            <td style="text-align: left; background: none; padding: 2px; ">Fecha de Caducidad:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;">
-                                <!--Cargar datos próximos a caducar-->
-                                01/11/2024
-                                <!--Cargar datos próximos a caducar-->
-                                <span class="alerta">⚠</span>
-                            </td>
-                        </tr>
-                        <caption>• Galletas con Chispas de chocolate:</caption>
-                        <tr>
-                            <td style="text-align: left; background: none; padding: 2px;">Cantidad actual:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;">750 u.</td>
-                        </tr>
-
-                        <tr>
-                            <td style="text-align: left; background: none; padding: 2px;">Cantidad próximas a caducar:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;"> 135 u</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #000000;">
-                            <td style="text-align: left; background: none; padding: 2px; ">Fecha de Caducidad:</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;">
-                                <!--Cargar datos próximos a caducar-->
-                                01/11/2024
-                                <!--Cargar datos próximos a caducar-->
-                                <span class="alerta">⚠</span>
-                            </td>
-                        </tr>
-                    </table>
+                    <ul>
+                        {% for nombre, datos in galletasResumen.items() %}
+                        <li><strong>{{ nombre }}</strong>
+                            <ul>
+                                <li>Cantidad total: {{ datos.cantidad_total }} u.</li>
+                                <li>Cantidad próxima a caducar: {{ datos.cantidad_proxima_caducar }} u.</li>
+                                <li>Fecha de caducidad más próxima: 
+                                    <span {% if datos.fecha_mas_proxima == hoy %}style="color: red;"{% endif %}>
+                                        {{ datos.fecha_mas_proxima.strftime('%d/%m/%Y') }}
+                                    </span>
+                                    {% if datos.cantidad_proxima_caducar > 0 %}
+                                        {% set dias_restantes = (datos.fecha_mas_proxima - hoy).days %}
+                                        {% if dias_restantes <= 3 and dias_restantes > 0 %}
+                                            <span class="alerta" style="color: orange;">⚠</span>
+                                        {% elif dias_restantes == 0 %}
+                                            <span class="alerta"><img src="static/img/advertencia.png" style="height: 1em; vertical-align: middle;"></span> {# Advertencia roja (vence hoy) #}
+                                        {% endif %}
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </section>
     </div>
+<div class="modal fade" id="registroMermaModal" tabindex="-1" aria-labelledby="modalMermaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form action="/registrarMermaGalleta" method="POST" class="container mt-4 p-4 border rounded bg-light">
+                    <h2 class="text-center mb-4">Registrar Merma</h2>
+                    <input type="hidden" id="idInventarioGalletaFK" name="idInventarioGalletaFK">
+                    <input type="hidden" id="cantidadActual" name="cantidadActual">
+                    <div class="mb-3">
+                        <label for="tipoMerma" class="form-label">Motivo de Merma</label>
+                        <select class="form-control" id="tipoMerma" name="tipoMerma" required>
+                            <option value="Producto dañado">Producto dañado</option>
+                            <option value="Insumo desperdiciado">Insumo desperdiciado</option>
+                            <option value="Insumo caduco">Insumo caduco</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cantidad" class="form-label">Cantidad</label>
+                        <input type="number" class="form-control" id="cantidad" name="cantidad" required oninput="this.value = this.value.replace(/\./g, '')">
+                    </div>
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Registrar Merma</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="alertaGalletasCafe" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded">
+            <div class="modal-header text-white" style="background-color: #6F4E37;">
+                <h5 class="modal-title text-center w-100" id="flashModalLabel">Notificación</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="background-color: #E0C9A6;">
+                <ul id="flashMessagesList" class="list-unstyled m-0"></ul>
+            </div>
+            <div class="modal-footer" style="background-color: #D2B48C;"> 
+                <button type="button" class="btn text-white" style="background-color: #8B5A2B;" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='functions/funcionesInvGalletas.js')}}" defer></script>
 {% endblock %}
