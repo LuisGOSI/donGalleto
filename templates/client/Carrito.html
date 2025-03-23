@@ -1,0 +1,53 @@
+{% extends '/client/baseCliente/baseCliente.html' %}
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{url_for('home')}}">INICIO</a>
+    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+    <a href="{{url_for('cliente_dashboard')}}">PRODUCTOS</a>
+    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+    <a href="{{url_for('cliente_dashboard')}}">CARRITO DE COMPRAS</a>
+</nav>
+
+<h1 class="title-client">Carrito de compras</h1>
+    
+    <div class="order-container">
+        <div class="order-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Galleta de Brownie</td>
+                        <td>$ 120.00</td>
+                        <td class="quantity">2 Paquete(s) con 12 unidades</td>
+                        <td>$278.40</td>
+                        <td><button class="delete-btn">🗑️</button></td>
+                    </tr>
+                    <!-- Puedes agregar más filas de productos aquí -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="summary">
+            <div class="summary-row">
+                <div>2 artículos</div>
+                <div>$278.40</div>
+            </div>
+            <hr>
+            <div class="summary-row">
+                <div><strong>Total</strong></div>
+                <div><strong>$274.16</strong></div>
+            </div>
+            <button class="finalizar-btn">Finalizar pedido</button>
+        </div>
+    </div>
+
+
+{% endblock %}

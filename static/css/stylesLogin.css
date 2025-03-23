@@ -88,7 +88,7 @@ input{
     border-radius: 5px;
 }
 
-button{
+.buttonLogin{
     width: 60%;
     height: 40px;
     margin: 10px auto;
@@ -106,7 +106,7 @@ button{
     cursor: pointer;
 }
 
-button:hover{
+.buttonLogin:hover{
     background: #8d6e63;
 }
 
