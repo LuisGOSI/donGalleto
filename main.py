@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
 from database.admin import proveedorCRUD
+from database.usuario import usuariosCRUD
 from db import app,mysql 
 
 if __name__ == "__main__":

@@ -27,13 +27,13 @@
 	{% else %}
 	<div class="header2">
 		<div class="header-container-2">
-			<a class="logoDonGalleto" href="{{url_for('home')}}"><img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo don galleto" /></a>
-			<a href="#" class="header-item-2">Usuarios</a>
-			<a href="#" class="header-item-2">Proveedores</a>
-			<a href="{{url_for('registerProveedor')}}" class="header-item-2">Clientes</a>
-			<a href="{{url_for('gestion_insumos')}}" class="header-item-2">Recetas</a>
-			<a href="{{url_for('insumos_inventory')}}" class="header-item-2">Inventario de Insumos</a>
-			<a href="{{url_for('insumos_inventory')}}" class="header-item-2">Inventario producto terminado</a>
+			<a class="logoDonGalleto" href="{{url_for('admin_dashboard')}}"><img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo don galleto" /></a>
+			<a href="" class="header-item-2">Usuarios</a>
+			<a href="{{url_for('registerProveedor')}}" class="header-item-2">Proveedores</a>
+			<a href="#" class="header-item-2">Clientes</a>
+			<a href="#" class="header-item-2">Recetas</a>
+			<a href="#" class="header-item-2">Inventario de Insumos</a>
+			<a href="#" class="header-item-2">Inventario producto terminado</a>
 
 			<form method="POST" action="/logout">
 				<button type="submit" class="logout-btn-2">Cerrar sesion</button>
