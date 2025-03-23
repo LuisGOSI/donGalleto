@@ -40,6 +40,8 @@
                     <thead>
                         <tr>
                             <th>Nombre del empleado</th>
+                            <th>Apellido Paterno</th>
+                            <th>Apellido Materno</th>
                             <th>Correo electrónico</th>
                             <th>Puesto</th>
                             <th>Rol</th>
@@ -51,6 +53,8 @@
                         {% for usuario in usuarios %}
                         <tr>
                             <td>{{ usuario.nombreEmpleado }}</td>
+                            <td>{{ usuario.apellidoP }}</td>
+                            <td>{{ usuario.apellidoM }}</td>
                             <td>{{ usuario.email }}</td>
                             <td>{{ usuario.puesto }}</td>
                             <td>{{ usuario.rol }}</td>
@@ -60,6 +64,8 @@
                                     data-bs-target="#editUsuarioModal" 
                                     idUsuario="{{ usuario['idUsuario'] }}"
                                     data-nombreEmpleado="{{ usuario['nombreEmpleado'] }}"
+                                    apellidoP="{{ usuario['apellidoP'] }}"
+                                    apellidoM="{{ usuario['apellidoM'] }}"
                                     email="{{ usuario['email'] }}"
                                     puesto="{{ usuario['puesto'] }}"
                                     rol="{{ usuario['rol'] }}"
@@ -79,6 +85,8 @@
                                     data-bs-target="#deleteUsuarioModal" 
                                     data-id="{{ usuario['idUsuario'] }}"
                                     nombreEmpleado="{{ usuario['nombreEmpleado'] }}" 
+                                    apellidoP="{{ usuario['apellidoP'] }}"
+                                    apellidoM="{{ usuario['apellidoM'] }}"
                                     email="{{ usuario['email'] }}"
                                     rol="{{ usuario['rol'] }}" 
                                     telefono="{{ usuario['telefono'] }}">
@@ -115,11 +123,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="puesto" class="form-label">Puesto</label>
-                        <input type="text" class="form-control" id="puesto" name="puesto" required>
-                    </div>
-
-                    <div class="mb-3">
                         <label for="apellidoP" class="form-label">Apellido Paterno</label>
                         <input type="text" class="form-control" id="apellidoP" name="apellidoP" required>
                     </div>
@@ -127,6 +130,11 @@
                     <div class="mb-3">
                         <label for="apellidoM" class="form-label">Apellido Materno</label>
                         <input type="text" class="form-control" id="apellidoM" name="apellidoM" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="puesto" class="form-label">Puesto</label>
+                        <input type="text" class="form-control" id="puesto" name="puesto" required>
                     </div>
 
                     <div class="mb-3">
@@ -175,6 +183,16 @@
                     <div class="mb-3">
                         <label for="nombreEmpleado" class="form-label">Nombre del empleado</label>
                         <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
+                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
+                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" required>
                     </div>
 
                     <div class="mb-3">

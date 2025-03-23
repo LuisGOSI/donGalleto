@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", function () {
             document.getElementById("IdUsuario").value = this.getAttribute("idUsuario");
             document.getElementById("NombreEmpleado").value = this.getAttribute("nombreEmpleado");
+            document.getElementById("apellidoPaterno").value = this.getAttribute("apellidoP");
+            document.getElementById("apellidoMaterno").value = this.getAttribute("apellidoM");
             document.getElementById("puesto").value = this.getAttribute("puesto");
             document.getElementById("telefono").value = this.getAttribute("telefono");
             document.getElementById("correo").value = this.getAttribute("email");
@@ -36,6 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                     <td>${usuario.nombreEmpleado}</td>
+                    <td>${usuario.apellidoP}</td>
+                    <td>${usuario.apellidoM}</td>
                     <td>${usuario.email}</td>
                     <td>${usuario.puesto}</td>
                     <td>${usuario.rol}</td>
@@ -48,6 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             data-bs-target="#editUsuarioModal"
                             idUsuario="${usuario.idUsuario}"
                             nombreEmpleado="${usuario.nombreEmpleado}"
+                            apellidoP = "${usuario.apellidoP}"
+                            apellidoM = "${usuario.apellidoM}"
                             email="${usuario.email}"
                             puesto="${usuario.puesto}"
                             rol="${usuario.rol}"
@@ -65,6 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                 data-bs-target="#deleteUsuarioModal" 
                                 data-id="${usuario.idUsuario}"
                                 nombreEmpleado="${usuario.nombreEmpleado}"
+                                apellidoP="${usuario.apellidoP}"
+                                apellidoM="${usuario.apellidoM}"
                                 email="${usuario.email}"
                                 puesto="${usuario.puesto}"
                                 rol="${usuario.rol}"
@@ -112,6 +120,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     button.addEventListener("click", function () {
                         document.getElementById("IdUsuario").value = this.getAttribute("idUsuario");
                         document.getElementById("NombreEmpleado").value = this.getAttribute("nombreEmpleado");
+                        document.getElementById("apellidoPaterno").value = this.getAttribute("apellidoP");
+                        document.getElementById("apellidoMaterno").value = this.getAttribute("apellidoM");
                         document.getElementById("puesto").value = this.getAttribute("puesto");
                         document.getElementById("telefono").value = this.getAttribute("telefono");
                         document.getElementById("correo").value = this.getAttribute("email");
@@ -151,6 +161,8 @@ function cargarUsuarios(estado = 1) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${usuario.nombreEmpleado}</td>
+                    <td>${usuario.apellidoP}</td>
+                    <td>${usuario.apellidoM}</td>
                     <td>${usuario.email}</td>
                     <td>${usuario.puesto}</td>
                     <td>${usuario.rol}</td>
@@ -163,6 +175,8 @@ function cargarUsuarios(estado = 1) {
                             data-bs-target="#editUsuarioModal"
                             idUsuario="${usuario.idUsuario}"
                             nombreEmpleado="${usuario.nombreEmpleado}"
+                            apellidoP="${usuario.apellidoP}"
+                            apellidoM="${usuario.apellidoM}"
                             puesto="${usuario.puesto}"
                             telefono="${usuario.telefono}"
                             email="${usuario.email}"
@@ -180,6 +194,8 @@ function cargarUsuarios(estado = 1) {
                                 data-bs-target="#deleteUsuarioModal" 
                                 data-id="${usuario.idUsuario}"
                                 nombreEmpleado="${usuario.nombreEmpleado}"
+                                apellidoP="${usuario.nombreEmpleado}"
+                                apellidoM="${usuario.nombreEmpleado}"
                                 puesto="${usuario.puesto}"
                                 telefono="${usuario.telefono}"
                                 email="${usuario.email}"
@@ -233,6 +249,8 @@ function configurarEventos() {
         button.addEventListener("click", function () {
             document.getElementById("IdUsuario").value = this.getAttribute("idUsuario");
             document.getElementById("nombre").value = this.getAttribute("nombreEmpleado");
+            document.getElementById("apellidoPaterno").value = this.getAttribute("apellidoP");
+            document.getElementById("apellidoMaterno").value = this.getAttribute("apellidoM");
             document.getElementById("pues").value = this.getAttribute("puesto");
             document.getElementById("telefono").value = this.getAttribute("telefono");
             document.getElementById("correo").value = this.getAttribute("email");
