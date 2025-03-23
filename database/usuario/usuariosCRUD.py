@@ -18,7 +18,7 @@ def eliminarUsuario():
     mysql.connection.commit()
     cur.close()
 
-    flash("✅ Usuario eliminado con éxito", "success")
+    flash("Usuario eliminado con éxito", "success")
     return redirect(url_for("usuarios"))
 
 
@@ -113,7 +113,7 @@ def modifyUsuario():
             mysql.connection.commit()
             cur.close()
             flash("Usuario actualizado con éxito", "success")
-        return redirect(url_for("usuarios_dashboard"))
+        return redirect(url_for("usuarios"))
     usuarios = get_users()
     return render_template("/usuario/Usuario.html", usuarios=usuarios)
 
@@ -121,7 +121,7 @@ def modifyUsuario():
 def get_users(estado=1):
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT idUsuario, email,e.puesto,password, rol, CONCAT(e.nombreEmpleado, ' ', e.apellidoP,' ',e.apellidoM) as nombreEmpleado,e.telefono
+        SELECT idUsuario, email,e.puesto,password, rol, e.nombreEmpleado, e.apellidoP,e.apellidoM,e.telefono
         FROM usuarios u
         LEFT JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
         WHERE u.status = %s;

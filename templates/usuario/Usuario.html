@@ -39,7 +39,7 @@
                 <table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th>Nombre del Usuario</th>
+                            <th>Nombre del empleado</th>
                             <th>Correo electrónico</th>
                             <th>Puesto</th>
                             <th>Rol</th>
@@ -222,7 +222,7 @@
         <div class="modal-content">
             <div class="modal-body">
                 <form id="deleteUsuarioForm" method="POST" action="/eliminarUsuario">
-                    <input type="hidden" id="deleteIdUsuario">
+                    <input type="hidden" id="deleteIdUsuario" name="idUsuario">
                     <h2 class="text-center mb-4">Eliminar Usuario</h2>
                     <div class="mb-3">
                         <p>¿Está seguro que desea eliminar al siguiente usuario?</p>

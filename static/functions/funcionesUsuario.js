@@ -233,7 +233,6 @@ function configurarEventos() {
         button.addEventListener("click", function () {
             document.getElementById("IdUsuario").value = this.getAttribute("idUsuario");
             document.getElementById("nombre").value = this.getAttribute("nombreEmpleado");
-            console.log("Nombre Empleado:", this.getAttribute("nombreEmpleado"));
             document.getElementById("pues").value = this.getAttribute("puesto");
             document.getElementById("telefono").value = this.getAttribute("telefono");
             document.getElementById("correo").value = this.getAttribute("email");
