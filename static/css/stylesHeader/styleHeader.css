@@ -1,0 +1,179 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.header-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100vw;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: url('/static/img/fondoClientes.jpg') center/cover no-repeat fixed;
+  height: clamp(250px, 30vh, 200px);
+  box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.5);
+  will-change: transform;
+}
+
+.header-logo {
+  max-height: 300px;
+}
+
+.header-icons {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-icon {
+  width: 35px;
+  height: 35px;
+}
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  min-width: 180px;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 8px 0;
+  z-index: 1000;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #333;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+/* Clase para mostrar el menú */
+.show {
+  display: block;
+}
+
+/*******************Estilo header 2***********************/
+
+.header2 {
+  background-color: #3E302C;
+  width: 100vw;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-container-2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.1rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.header-item-2 {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.header-item-2 {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  font-family: Verdana, sans-serif;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+
+.header-item-2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #ffd7cb;
+  transition: width 0.3s ease;
+}
+
+.header-item-2:hover {
+  color: #ffd7cb;
+  transform: translateY(-2px);
+}
+
+.header-item-2:hover::after {
+  width: 100%;
+}
+
+.logoDonGalleto img {
+  max-height: 120px;
+  margin-right: 3rem;
+  margin-left: 3rem;
+}
+
+.logout-btn-2 {
+  margin-left: auto;
+  background-color: #ffffff;
+  color: #3E302C;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn-2:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+
+
+@media (max-width: 200px) {
+  header {
+    height: 48vh;
+  }
+}
+
+@media (max-width: 280px) {
+  header {
+    height: 300px;
+  }
+}

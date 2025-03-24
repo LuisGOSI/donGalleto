@@ -1,5 +1,10 @@
 /* ------------------------------------------------------------------------ Footer ------------------------------------------------------------------------ */
 .footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
@@ -7,6 +12,8 @@
     background: #b89f88;
     padding-bottom: 10px;
     text-align: center;
+    font-family: Arial, sans-serif;
+    z-index: 100; 
 }
 
 .footer .row {
@@ -149,7 +156,7 @@
     list-style: none;
     padding: 0;
     margin-bottom: 20px;
-    margin-left: 70px;
+    margin-left: 120px;
 }
 
 .footer-links li {

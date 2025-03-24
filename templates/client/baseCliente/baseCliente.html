@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Cliente {% block title %}{% endblock %}</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/stylesCliente/stylesCliente.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/stylesCliente/stylesHistorico.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/stylesHeader/styleHeader.css') }}">
+	<link rel="icon" href="{{ url_for('static', filename='img/Don_galleto_icon.png')}}" type="image/x-icon" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css')}}" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="/static/css/stylesCliente/styleCarrito.css">
+	
+</head>
+
+<body>
+	{% include "bases/header.html" %}
+	{% block content %}{% endblock %}
+	{% include "bases/footer.html" %}
+	<script src="/static/functions/funcionesClientes.js"></script>
+</body>
+
+</html>

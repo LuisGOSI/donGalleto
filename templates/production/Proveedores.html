@@ -1,6 +1,18 @@
 {% extends '/production/baseProduccion/baseProduccion.html' %}
 {% block title %}Proveedores{% endblock %}
 {% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+
 <div class="container">
     <section class="tble-Proveedores">
         <h1 class="titleProveedores">Proveedores</h1>
@@ -44,9 +56,11 @@
                             <td>{{ proveedor.direccion }}</td>
                             <td>
                                 <button class="btnEditProveedores" data-bs-toggle="modal"
-                                    data-bs-target="#editProveedorModal" idProveedor="{{ proveedor['idProveedor'] }}"
+                                    data-bs-target="#editProveedorModal" 
+                                    idProveedor="{{ proveedor['idProveedor'] }}"
                                     nombreProveedor="{{ proveedor['nombreProveedor'] }}"
-                                    contacto="{{ proveedor['contacto'] }}" telefono="{{ proveedor['telefono'] }}"
+                                    contacto="{{ proveedor['contacto'] }}" 
+                                    telefono="{{ proveedor['telefono'] }}"
                                     direccion="{{ proveedor['direccion'] }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -97,7 +111,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="contacto" class="form-label">Nombre de Contacto</label>
+                        <label for="contacto" class="form-label">Persona de Contacto</label>
                         <input type="text" class="form-control" id="contacto" name="contacto" required>
                     </div>
 
@@ -123,7 +137,7 @@
 </div>
 
 <!-- Modal para editar proveedores -->
-<div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorLabel" aria-hidden="true">
+<div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorLabel">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">

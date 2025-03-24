@@ -1,6 +1,14 @@
 {% extends "/bases/baseLogin.html" %} {% block title %}Iniciar Sesion{% endblock %}
 {% block content %}
 
+<div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1100; max-width: 500px;">
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+</div>
+
 <div class="img-container"><img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo don galleto" ></div>
 
 <div class="main">
@@ -14,7 +22,7 @@
 			<label for="chk" aria-hidden="true">Iniciar sesión</label>
 			<input type="email" name="email" placeholder="Email" required />
 			<input type="password" name="password" placeholder="Contraseña" required />
-			<button type ="submit">Iniciar sesión</button>
+			<button type ="submit" class="buttonLogin">Iniciar sesión</button>
 		</form>
 	</div>
 	
@@ -26,7 +34,7 @@
 			<input type="number" name="phone" placeholder="Telefono" required />
 			<input type="password" name="password" placeholder="Contraseña" required />
 			<input type="hidden" name="role" value="cliente" />
-			<button type="submit">Registrarse</button>
+			<button type="submit" class="buttonLogin">Registrarse</button>
 		</form>
 	</div>
 </div>

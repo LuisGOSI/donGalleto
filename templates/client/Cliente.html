@@ -1,0 +1,40 @@
+{% extends '/client/baseCliente/baseCliente.html' %}
+
+{% block content %}
+<nav class="breadcrumb">
+    <a href="{{url_for('home')}}">INICIO</a>
+    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+    <a href="{{url_for('cliente_dashboard')}}">PRODUCTOS</a>
+</nav>
+
+<h1 class="title-client">Productos</h1>
+
+<div class="product-container">
+
+    {% block catalogo %}
+
+    {% for galleta in data %}
+    <div class="product-card">
+        <div class="product-image">
+            <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
+            <div class="unit-badge">Unidad</div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-title">{{ galleta[1] }}</h3>
+            <p class="product-price">{{ galleta[2] }} ₡/U</p>
+            <div class="product-actions">
+                <div class="quantity-selector">
+                    <button class="quantity-btn">+</button>
+                    <input type="text" class="quantity-input" value="1">
+                    <button class="quantity-btn">-</button>
+                </div>
+                <button class="add-to-cart">Añadir al carrito</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endblock %}
+
+
+</div>
+{% endblock %}
