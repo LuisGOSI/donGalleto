@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD
-from database.admin import proveedorCRUD
+from database.admin import proveedorCRUD, clientesCRUD
 from database.production import inventarioDeGalletas
 from database.cliente import clientes
 from db import app,mysql 
@@ -119,6 +119,41 @@ def cliente_dashboard():
     cur.close()
     print(data)
     return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+
+@app.route("/clientes")
+def clientes():
+    if "user" not in session:
+        return redirect(url_for("login"))
+    
+    active_user = session.get("user")
+
+    if active_user[4] != "administrador":
+        return render_template("pages/error404.html"), 404
+
+    status = request.args.get("status", default=1, type=int)  # Por defecto activos
+    
+    cur = mysql.connection.cursor()
+    
+    cur.execute("""
+        SELECT 
+            c.idCliente,
+            c.nombreCliente,
+            c.telefono,
+            u.email,
+            u.rol,
+            u.status
+        FROM 
+            clientes c
+        INNER JOIN 
+            usuarios u ON c.idCliente = u.idClienteFK
+        WHERE 
+            u.status = %s;
+    """, (status,))
+    
+    clientes = cur.fetchall()
+    cur.close()
+    
+    return render_template('/admin/gestionClientes.html', clientes=clientes, status=status, is_base_template=False)
 
 
 @app.route("/carrito")

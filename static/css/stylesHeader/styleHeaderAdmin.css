@@ -1,3 +1,17 @@
+body {
+    margin: 0;
+    padding: 70px 0 0 0;;
+    overflow-x: hidden;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; 
+    background-color: #3E302C; 
+}
+
 .header-admin-container {
     display: flex;
     justify-content: space-between;
