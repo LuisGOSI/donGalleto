@@ -101,7 +101,7 @@ def modifyUsuario():
     cur.execute(
                 """ 
                 UPDATE usuarios u
-                LEFT JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
+                INNER JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
                 SET 
                 e.nombreEmpleado = %s,
                 e.apellidoP = %s,
