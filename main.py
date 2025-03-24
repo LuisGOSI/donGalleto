@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD
 from database.admin import proveedorCRUD, clientesCRUD
+from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas
 from database.cliente import clientes
 from db import app,mysql 
@@ -13,7 +14,6 @@ from sessions import *
 @app.route("/")
 def home():
     return render_template("/pages/home.html")
-
 
 @app.route("/admin")
 def admin_dashboard():
