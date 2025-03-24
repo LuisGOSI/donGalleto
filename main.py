@@ -224,4 +224,3 @@ def get_empleados():
     empleados = cur.fetchall()
     cur.close()
     return empleados
-
