@@ -86,42 +86,43 @@ def registerUsuario():
     flash("Usuario registrado con éxito", "success")
     return redirect(url_for("usuarios"))
 
-@app.route("/modifyUsuario", methods=["POST", "GET"])
+@app.route("/modifyUsuario", methods=["POST"])
 def modifyUsuario():
-    if request.method == "POST":
-        idEmpleado = request.form.get("idEmpleado")
-        idUsuario = request.form.get("idUsuario")
-        nombreEmpleado = request.form.get("nombreEmpleado")
-        apellidoP = request.form.get("apellidoP")
-        apellidoM = request.form.get("apellidoM")
-        puesto = request.form.get("puesto")
-        telefono = request.form.get("telefono")
-        idUsuario = request.form.get("idUsuario") 
-        email = request.form["email"]
-        rol = request.form["rol"]
-        password = request.form["contrasenia"]
-        if idUsuario:
-            cur = mysql.connection.cursor()
-            cur.execute(
-                "UPDATE empleado SET nombreEmpleado = %s, apellidoP = %s, apellidoM = %s, puesto = %s, telefono = %s WHERE idEmpleado=%s",
-                (nombreEmpleado, apellidoP, apellidoM, puesto, telefono, idEmpleado)
+    idUsuario = request.form["idUsuario"]
+    nombreEmpleado = request.form["nombre"]
+    apellidoP = request.form["apellidoPaterno"]
+    apellidoM = request.form["apellidoMaterno"]
+    puesto = request.form["puesto"]
+    telefono = request.form["tel"]
+    email = request.form["email"]
+    rol = request.form["rol"]
+    password =  generate_password_hash(request.form["contrasenia"])
+    cur = mysql.connection.cursor()
+    cur.execute(
+                """ 
+                UPDATE usuarios u
+                LEFT JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
+                SET 
+                e.nombreEmpleado = %s,
+                e.apellidoP = %s,
+                e.apellidoM = %s,
+                e.telefono = %s,
+                e.puesto = %s,
+                u.email = %s,
+                u.password = %s,
+                u.rol = %s
+                WHERE u.idUsuario = %s;
+                """,
+                (nombreEmpleado, apellidoP, apellidoM, telefono, puesto, email, password, rol, idUsuario)
             )
-            cur.execute(
-                "UPDATE usuarios SET password=%s, email=%s, rol=%s WHERE idUsuario=%s",
-                (email, rol,password, idUsuario),
-            )
-            mysql.connection.commit()
-            cur.close()
-            flash("Usuario actualizado con éxito", "success")
-        return redirect(url_for("usuarios"))
-    usuarios = get_users()
-    return render_template("/usuario/Usuario.html", usuarios=usuarios)
-
+    mysql.connection.commit()
+    print("Usuario actualizado correctamente.")
+    return redirect(url_for("usuarios"))
 
 def get_users(estado=1):
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT idUsuario, email,e.puesto,password, rol, e.nombreEmpleado, e.apellidoP,e.apellidoM,e.telefono
+        SELECT idUsuario, idEmpleado, email,e.puesto,password, rol, e.nombreEmpleado, e.apellidoP,e.apellidoM,e.telefono
         FROM usuarios u
         LEFT JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
         WHERE u.status = %s;
