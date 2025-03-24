@@ -9,8 +9,6 @@ load_dotenv()
 def eliminarProveedor():
     idProveedor = request.form["idProveedor"]
     cur = mysql.connection.cursor()
-
-    # 🔹 Verificar si el proveedor tiene insumos asociados
     cur.execute("""
         SELECT i.nombreInsumo 
         FROM insumos i
@@ -18,7 +16,6 @@ def eliminarProveedor():
         INNER JOIN proveedoresinsumos pvi ON pi.idPresentacion = pvi.idPresentacionFK
         WHERE pvi.idProveedorFK = %s;
     """, (idProveedor,))
-    
     insumos = cur.fetchall()
     if insumos:
         nombres_insumos = ", ".join(row[0] for row in insumos)
@@ -30,7 +27,6 @@ def eliminarProveedor():
     )
     mysql.connection.commit()
     cur.close()
-
     flash("✅Proveedor eliminado con éxito", "success")
     return redirect(url_for("registerProveedor"))
 
