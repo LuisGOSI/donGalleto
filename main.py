@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from dotenv import load_dotenv
 from database.production import insumosCRUD
-from database.admin import proveedorCRUD
+from database.admin import proveedorCRUD, clientesCRUD
 from database.production import inventarioDeGalletas
 from database.cliente import clientes
 from db import app,mysql 
