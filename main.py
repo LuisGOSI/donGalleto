@@ -30,7 +30,7 @@ def produccion_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    if user[4] != "produccion" or user[4] != "administrador":
+    if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
     return render_template("/production/baseProduccion/baseProduccion.html", is_base_template=True)
 
@@ -40,7 +40,7 @@ def gestion_insumos():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    if user[4] != "produccion" or user[4] != "administrador":
+    if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
     cur = mysql.connection.cursor()
     cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos")
@@ -75,7 +75,7 @@ def insumos_inventory():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    if user[4] != "produccion" or user[4] != "administrador":
+    if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
     cur = mysql.connection.cursor()
     cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
@@ -103,7 +103,7 @@ def proveedores():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    if user[4] != "produccion" or user[4] != "administrador":
+    if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
     return render_template('/production/Proveedores.html', is_base_template = False)
 
