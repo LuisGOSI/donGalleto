@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD
 from database.admin import proveedorCRUD, clientesCRUD
+from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas
 from database.cliente import clientes
 from db import app,mysql 
@@ -14,7 +15,6 @@ from sessions import *
 def home():
     return render_template("/pages/home.html")
 
-
 @app.route("/admin")
 def admin_dashboard():
     if session.get("user") is None:
@@ -23,6 +23,11 @@ def admin_dashboard():
     if user[4] != "administrador":
         return redirect(url_for("login"))
     return render_template("/admin/admin_dashboard.html")
+
+@app.route("/gestionUsuarios")
+def usuarios_dashboard():
+    user = session.get("user")
+    return render_template('/usuario/Usuario.html', is_base_template = False, user=user)
 
 
 @app.route("/produccion")
