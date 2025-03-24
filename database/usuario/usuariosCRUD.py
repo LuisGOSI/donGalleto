@@ -101,7 +101,7 @@ def modifyUsuario():
     cur.execute(
                 """ 
                 UPDATE usuarios u
-                INNER JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
+                LEFT JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
                 SET 
                 e.nombreEmpleado = %s,
                 e.apellidoP = %s,
@@ -124,7 +124,7 @@ def get_users(estado=1):
     cur.execute("""
         SELECT idUsuario, idEmpleado, email,e.puesto,password, rol, e.nombreEmpleado, e.apellidoP,e.apellidoM,e.telefono
         FROM usuarios u
-        LEFT JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
+        INNER JOIN empleado e ON u.idEmpleadoFK = e.idEmpleado
         WHERE u.status = %s;
     """, (estado,))
     columnas = [col[0] for col in cur.description]
