@@ -56,9 +56,11 @@
                             <td>{{ proveedor.direccion }}</td>
                             <td>
                                 <button class="btnEditProveedores" data-bs-toggle="modal"
-                                    data-bs-target="#editProveedorModal" idProveedor="{{ proveedor['idProveedor'] }}"
+                                    data-bs-target="#editProveedorModal" 
+                                    idProveedor="{{ proveedor['idProveedor'] }}"
                                     nombreProveedor="{{ proveedor['nombreProveedor'] }}"
-                                    contacto="{{ proveedor['contacto'] }}" telefono="{{ proveedor['telefono'] }}"
+                                    contacto="{{ proveedor['contacto'] }}" 
+                                    telefono="{{ proveedor['telefono'] }}"
                                     direccion="{{ proveedor['direccion'] }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -135,7 +137,7 @@
 </div>
 
 <!-- Modal para editar proveedores -->
-<div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorLabel" aria-hidden="true">
+<div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorLabel">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
