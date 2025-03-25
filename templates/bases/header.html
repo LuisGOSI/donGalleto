@@ -13,8 +13,10 @@
 				</a>
 				<div class="dropdown-menu" id="userDropdownMenu">
 					<a href="{{url_for('historico_dashboard')}}" class="dropdown-item">Mi histórico de compras</a>
-					<form id="logoutForm" method="POST" action="/logout" style="display: none;"></form>
-					<a href="#" class="dropdown-item" onclick="cerrarSesion(event)">Cerrar sesión</a>
+					<form method="POST" action="/logout">
+						<button type="submit" class="dropdown-item logout-btn">Cerrar sesión</button>
+					</form>
+					
 				</div>
 			</div>
 
