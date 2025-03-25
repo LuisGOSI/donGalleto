@@ -7,10 +7,6 @@
   --shadow-medium: rgba(0, 0, 0, 0.15);
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   margin: 0;
   padding: 0;
@@ -87,6 +83,12 @@ body {
   text-align: center;
   margin-top: 55px;
   line-height: 1.2;
+}
+.subtitle-client{
+  font-size: 35px;
+  font-weight: 100;
+  text-align: center;
+  margin-top: -15px;
 }
 
 /* ------------------------------------------------------------------------ Productos ------------------------------------------------------------------------ */
