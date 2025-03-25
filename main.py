@@ -208,7 +208,7 @@ def test():
 
 @app.route("/ventas")
 def ventas_dashboard():
-    return "Bienvenido al panel de ventas"
+    return render_template("/sales/sales.html")
 
 # Checar sesion
 @app.route("/checkSession", methods=["POST"])
