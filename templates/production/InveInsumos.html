@@ -1,7 +1,5 @@
 {% extends '/production/baseProduccion/baseProduccion.html' %}
-
 {% block title %}Inventario de Insumos{% endblock %}
-
 {% block content %}
     <div class="container">
         <section class="intro-container">
@@ -29,13 +27,13 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for insumo in insumosTabla %}
                             <tr>
-                                <td>1</td>
-                                <td>Leche</td>
-                                <td>55 lts</td>
-                                <td>10/11/2024</td>
-                                <td></td>
-                                <!--Este td del botón merma debe ir cada que se exista un insumo-->
+                                <td>{{insumo.idInsumo}}</td>
+                                <td>{{insumo.nombreInsumo}}</td>
+                                <td>{{insumo.cantidadInsumo}}</td>
+                                <td>{{insumo.fechaCaducidad.strftime('%d/%m/%Y')}}</td>
+                                <td>{{ galletas.mermas | int}}</td>
                                 <td>
                                     <button class="mermas-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
@@ -45,6 +43,7 @@
                                     </button>
                                 </td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
