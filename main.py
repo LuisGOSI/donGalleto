@@ -161,6 +161,16 @@ def clientes():
     return render_template('/admin/gestionClientes.html', clientes=clientes, status=status, is_base_template=False)
 
 
+@app.route("/receta")
+def receta():
+    if "user" not in session:
+        return redirect(url_for("login"))
+    active_user = session.get("user")
+    if active_user[4] not in ["produccion", "administrador"]:
+        return render_template("pages/error404.html"), 404
+    return render_template('/production/Receta.html', is_base_template = False)
+
+
 @app.route("/carrito")
 def carrito_dashboard():
     if session.get("user") is None:
