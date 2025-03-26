@@ -112,6 +112,13 @@ def proveedores():
         return redirect(url_for("login"))
     return render_template('/production/Proveedores.html', is_base_template = False)
 
+@app.route("/moduloProduccion")
+def moduloProduccion():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    return render_template('/production/Produccion.html', is_base_template = False,user=user)
+
 
 @app.route("/cliente")
 def cliente_dashboard():
@@ -211,7 +218,7 @@ def test():
 
 @app.route("/ventas")
 def ventas_dashboard():
-    return "Bienvenido al panel de ventas"
+    return render_template("/sales/sales.html")
 
 # Checar sesion
 @app.route("/checkSession", methods=["POST"])

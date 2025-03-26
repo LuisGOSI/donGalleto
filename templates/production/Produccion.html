@@ -1,0 +1,44 @@
+{% extends '/production/baseProduccion/baseProduccion.html' %}
+{% block title %}Producción{% endblock %}
+{% block content %}
+
+<h1 class="title-produccion">Producción</h1>
+<div class="product-grid">
+
+    <div class="product-container">
+        <img src="/static/imgGalletas/GalletaChispasChocolate.webp" alt="Galleta chipas">
+        <div class="product-details">
+            <h6>Galleta Chispas de Chocolate</h6>
+            <div class="product-actions">
+                <button class="btn custom-buttonReceta" onclick="mostrarReceta('Galleta Oreo');">Receta de galleta</button>
+                <button class="btn custom-buttonProducir" onclick="iniciarProduccion('Galleta Oreo', '../imgCookies/Galleta Oreo.png')">Producir</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="product-container">
+        <img src="/static/imgGalletas/GalletaVainilla.webp" alt="Galleta de vainilla">
+        <div class="product-details">
+            <h6>Galleta de vainilla</h6>
+            <div class="product-actions">
+                <button class="btn custom-buttonReceta" onclick="mostrarReceta('Galleta Mamut');">Receta de galleta</button>
+                <button class="btn custom-buttonProducir" onclick="iniciarProduccion('Galleta Mamut', '../imgCookies/Galleta Mamut.jpeg')">Producir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-container">
+        <img src="/static/imgGalletas/GalletaNuez.webp" alt="Galleta de nuez">
+        <div class="product-details">
+            <h6>Galleta Mamut</h6>
+            <div class="product-actions">
+                <button class="btn custom-buttonReceta" onclick="mostrarReceta('Galleta Mamut');">Receta de galleta</button>
+                <button class="btn custom-buttonProducir" onclick="iniciarProduccion('Galleta Mamut', '../imgCookies/Galleta Mamut.jpeg')">Producir</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+{% endblock %}
