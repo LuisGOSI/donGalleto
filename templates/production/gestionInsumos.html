@@ -19,6 +19,7 @@
                             <tr>
                                 <th>Producto</th>
                                 <th>Unidad de Medida</th>
+                                <th>Asiganciones</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -29,8 +30,13 @@
                                 <td>{{ insumo[2] | title }}</td>
                                 <td>
                                     <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#asignarProveedorModal" data-insumo-id="{{ insumo[0] }}">
-                                        Asignar
+                                        Presentacion Compra
                                     </button>
+                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#asignarProveedorModal" data-insumo-id="{{ insumo[0] }}">
+                                        Formato de Receta
+                                    </button>
+                                </td>
+                                <td>
                                     <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#editarInsumoModal" data-insumo-id="{{ insumo[0] }}">
                                         Editar
                                     </button>
