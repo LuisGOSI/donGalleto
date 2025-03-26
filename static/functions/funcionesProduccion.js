@@ -310,3 +310,5 @@ function ocultarTarjetasListas() {
         estadoProduccion.style.display = "none"; 
     }
 }
+
+// ---- Funciones para modal de despliegue de ordenes ----

@@ -4,9 +4,23 @@
 
 <h1 class="title-produccion">Producción</h1>
 <div class="icono-ordenes-container">
-    <img class="icono-ordenes" src="/static/img/iconOrdenesProduccion.webp" alt="icono-ordenes">
+    <img src="/static/img/iconOrdenesProduccion.webp" alt="icono-ordenes" class="icono-ordenes"
+        data-bs-toggle="offcanvas" data-bs-target="#ordenesProduccion" aria-controls="offcanvasRight" style="cursor: pointer;">
+
+    <!-- Panel Lateral Bootstrap -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="ordenesProduccion" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header">
+          <h5 class="title-panel-lateral">Solicitudes de ordenes de galletas</h5>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          Tu canasta de ordenes de galletas esta vacia
+        </div>
+      </div>
 </div>
+
 <div id="estado-produccion" style="display: none;"></div>
+
 <div class="product-grid">
 
     {% block catalogo %}
@@ -28,5 +42,6 @@
     {% endblock %}
 </div>
 </div>
+
 
 {% endblock %}
