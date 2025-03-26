@@ -168,7 +168,7 @@ def receta():
     active_user = session.get("user")
     if active_user[4] not in ["produccion", "administrador"]:
         return render_template("pages/error404.html"), 404
-    return render_template('/production/Receta.html', is_base_template = False)
+    return render_template('/production/Recetas.html', is_base_template = False)
 
 
 @app.route("/carrito")
