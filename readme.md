@@ -8,7 +8,6 @@ Este proyecto es una aplicación diseñada para gestionar la producción, admini
 - **database/**: Contiene los módulos para la gestión de datos, como CRUD de clientes, proveedores, inventarios, etc.
 - **static/**: Archivos estáticos como CSS, imágenes y funciones auxiliares.
 - **templates/**: Plantillas HTML organizadas por módulos (administración, cliente, producción, etc.).
-- **.vscode/**: Configuración específica del entorno de desarrollo en Visual Studio Code.
 
 ---
 
