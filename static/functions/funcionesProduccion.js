@@ -1,5 +1,4 @@
-// ---- Funcion para modal de recetas ----
-// Crear un modal para mostrar recetas de cocina
+// ---------------------------------------------------- Funcion para modal de recetas ----------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
     const modalContainer = document.createElement('div');
     modalContainer.id = 'recipeModal';
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalContent = document.getElementById('recipe-content');
     const closeButton = modal.querySelector('.close-button');
 
-    // Función para abrir el modal
     function openModal(receta) {
         modalContent.innerHTML = `
             <h2>${receta.nombre}</h2>
@@ -30,8 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         modal.classList.add('show-modal');
     }
-
-    // Función para cerrar el modal
     function closeModal() {
         modal.classList.remove('show-modal');
     }
@@ -69,15 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const recetaButtons = document.querySelectorAll('.custom-buttonReceta');
         
         recetaButtons.forEach((button, index) => {
-            // Primero, eliminar cualquier listener previo para evitar duplicados
             button.removeEventListener('click', recipeClickHandler);
-            
-            // Añadir nuevo listener
             button.addEventListener('click', recipeClickHandler);
         });
 
         function recipeClickHandler(event) {
-            // Encontrar el índice del botón clickeado
             const index = Array.from(recetaButtons).indexOf(event.target);
             
             if (recetas[index]) {
@@ -88,10 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     escucharRecetas();
-
-    // Cerrar modal al hacer clic en la X
     closeButton.addEventListener('click', closeModal);
-    // Cerrar modal al hacer clic fuera del contenido
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeModal();
@@ -99,8 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// ---------------------------------------------------- Funciones para estados de producción ----------------------------------------------------
 
-// ---- Funciones para estados de producción ----
 let produccionesEnCurso = 0;
 var galletaEncontrada = null;
 var estado = "Listas";
@@ -120,7 +109,39 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+function actualizarControlesSwiper() {
+    const swiperWrapper = document.querySelector(".swiper-wrapper");
+    const slides = swiperWrapper.querySelectorAll(".swiper-slide");
 
+    let nextButton = document.querySelector(".swiper-button-next");
+    let prevButton = document.querySelector(".swiper-button-prev");
+
+    if (!nextButton) {
+        nextButton = document.createElement("div");
+        nextButton.classList.add("swiper-button-next");
+        document.querySelector(".swiper-container").appendChild(nextButton);
+    }
+    if (!prevButton) {
+        prevButton = document.createElement("div");
+        prevButton.classList.add("swiper-button-prev");
+        document.querySelector(".swiper-container").appendChild(prevButton);
+    }
+    if (slides.length > 2) {
+        nextButton.style.display = "block";
+        prevButton.style.display = "block";
+    } else {
+        nextButton.style.display = "none";
+        prevButton.style.display = "none";
+    }
+    if (window.mySwiper) {
+        window.mySwiper.params.navigation.nextEl = nextButton;
+        window.mySwiper.params.navigation.prevEl = prevButton;
+        window.mySwiper.navigation.init();
+        window.mySwiper.navigation.update();
+    }
+}
+
+// ---------------------------------------------------- Función para desplegar y producir galletas ----------------------------------------------------
 function iniciarProduccion(nombre, rutaImagen, idGalleta) {
     Swal.fire({
         title: 'La galleta está lista para producir',
@@ -136,27 +157,33 @@ function iniciarProduccion(nombre, rutaImagen, idGalleta) {
         buttonsStyling: false
     }).then((result) => {
         if (result.isConfirmed) {
-            
             Swal.fire({
                 title: '¡La producción de galletas está en marcha!',
                 icon: 'success',
                 confirmButtonText: 'Aceptar',
-                customClass: {
-                    confirmButton: 'btn-confirm'
-                },
+                customClass: { confirmButton: 'btn-confirm' },
                 buttonsStyling: false
             });
 
             const estadoProduccion = document.getElementById("estado-produccion");
-            estadoProduccion.style.display = "flex";
-            estadoProduccion.style.flexDirection = "row";
-            estadoProduccion.style.flexWrap = "wrap";
-            estadoProduccion.style.justifyContent = "center";
-            estadoProduccion.style.alignItems = "center";
-            estadoProduccion.style.minHeight = "60vh";
+            estadoProduccion.style.display = "block";
+            let swiperContainer = document.querySelector(".swiper-container");
+            if (!swiperContainer) {
+                swiperContainer = document.createElement("div");
+                swiperContainer.classList.add("swiper-container");
+                swiperContainer.innerHTML = `
+                    <div class="swiper-wrapper"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                `;
+                estadoProduccion.appendChild(swiperContainer);
+            }
+
+            const swiperWrapper = swiperContainer.querySelector(".swiper-wrapper");
 
             const cardView = document.createElement("div");
-            cardView.classList.add("card", "text-center", "p-3");
+            cardView.classList.add("swiper-slide", "card", "text-center", "p-3");
             cardView.style.display = "flex";
             cardView.style.flexDirection = "column";
             cardView.style.alignItems = "center";
@@ -268,8 +295,6 @@ function iniciarProduccion(nombre, rutaImagen, idGalleta) {
                             botonEstadoProduccion.textContent = "Listas";
                             botonEstadoProduccion.style.backgroundColor = "#00FF00";
                             botonEstadoProduccion.disabled = true;
-
-                            
                             ocultarTarjetasListas();
                         }
                     });
@@ -280,15 +305,33 @@ function iniciarProduccion(nombre, rutaImagen, idGalleta) {
             cardView.appendChild(imagenEstado);
             cardView.appendChild(botonEstadoProduccion);
 
-            estadoProduccion.appendChild(cardView);
+            swiperWrapper.appendChild(cardView);
 
-            estadoProduccion.scrollIntoView({behavior: "smooth", block: "start"});
+            if (!window.mySwiper) {
+                window.mySwiper = new Swiper('.swiper-container', {
+                    loop: false,
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev'
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true
+                    }
+                });
+            } else {
+                window.mySwiper.update();
+            }
+            actualizarControlesSwiper();
+            estadoProduccion.scrollIntoView({ behavior: "smooth", block: "start" });
 
-            produccionesEnCurso++;
         }
     });
 }
 
+// ---------------------------------------------------- Funciones para ocultar tarjetas de producción ----------------------------------------------------
 function ocultarTarjetasListas() {
     const cardsProduccion = document.querySelectorAll("#estado-produccion .card");
     let tarjetasVisibles = 0;
@@ -311,4 +354,4 @@ function ocultarTarjetasListas() {
     }
 }
 
-// ---- Funciones para modal de despliegue de ordenes ----
+// ---------------------------------------------------- Funciones para modal de despliegue de ordenes ----------------------------------------------------

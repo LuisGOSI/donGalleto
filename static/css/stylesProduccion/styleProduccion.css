@@ -301,6 +301,67 @@ hr {
     background-color: #f2b2b0;
 }
 
+
+
+/* ------------------------------------------------------------------------ Estilo para carrusel de produccion ------------------------------------------------------------------------ */
+#estado-produccion {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    display: block; /* Lo hacemos visible */
+}
+
+.swiper-container {
+    padding: 20px;
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 300px;
+    background-color: #f8f1e7;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+.card-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.button {
+    background-color: #f3a7a2;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #f2b2b0;
+}
+
+/* Ocultar flechas si hay menos de 3 tarjetas */
+.swiper-button-next, .swiper-button-prev {
+    color: #f3a7a2;
+    display: none;
+}
+
+.swiper-container.swiper-show-arrows .swiper-button-next, 
+.swiper-container.swiper-show-arrows .swiper-button-prev {
+    display: block;
+}
+
 /* ------------------------------------------------------------------------ Estilo para offcanva de despliegue lateral de ordenes  ------------------------------------------------------------------------ */
 .custom-offcanvas {
     width: 300px;
