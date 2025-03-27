@@ -231,7 +231,7 @@ hr {
     padding: 20px;
     border-radius: 5px;
     width: 80%;
-    max-width: 400px;
+    max-width: 700px;
     max-height: 80%;
     overflow-y: auto;
     position: relative;
@@ -353,7 +353,7 @@ hr {
 
 /* Ocultar flechas si hay menos de 3 tarjetas */
 .swiper-button-next, .swiper-button-prev {
-    color: #f3a7a2;
+    color: #3e302c;
     display: none;
 }
 
