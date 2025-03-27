@@ -354,4 +354,21 @@ function ocultarTarjetasListas() {
     }
 }
 
+function toggleDropdown(event) {
+    event.preventDefault();
+    const dropdownMenu = document.getElementById('produccionDropdownMenu');
+    dropdownMenu.classList.toggle('show');
+
+    // Close dropdown if clicked outside
+    function closeDropdown(e) {
+        if (!dropdownMenu.contains(e.target) && e.target !== event.target) {
+            dropdownMenu.classList.remove('show');
+            document.removeEventListener('click', closeDropdown);
+        }
+    }
+
+    // Add event listener to close dropdown when clicking outside
+    document.addEventListener('click', closeDropdown);
+}
+
 // ---------------------------------------------------- Funciones para modal de despliegue de ordenes ----------------------------------------------------
