@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD
-from database.admin import proveedorCRUD, clientesCRUD
+from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas
 from database.cliente import clientes
@@ -22,7 +22,10 @@ def admin_dashboard():
     user = session.get("user")
     if user[4] != "administrador":
         return redirect(url_for("login"))
-    return render_template("/admin/admin_dashboard.html")
+    presentaciones=dashboard.getPresentaciones()
+    ganancias=dashboard.getGanancias()
+    galletas=dashboard.getGalletasTop()
+    return render_template("/admin/admin_dashboard.html", presentaciones=presentaciones, ganancias=ganancias, galletas=galletas)
 
 @app.route("/gestionUsuarios")
 def usuarios_dashboard():

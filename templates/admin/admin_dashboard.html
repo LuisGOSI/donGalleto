@@ -1,85 +1,44 @@
 {% extends "/admin/baseAdmin/BaseAdmin.html" %}
-{% block title %}Principal{% endblock %}
+{% block title %}Dashboard{% endblock %}
 {% block content %}
-<body>
-    <h1>Dashboard</h1>
+<h1 style="margin-top: 10px;" class="fw-bold text-dark">Dashboard</h1><br>
 
-    <div class="charts-section">
-        <div class="chart-card" style="background: #4E3629; color: white;">
-            <h2>Presentaciones más vendidas TOP 5</h2>
-            <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 10px; color: black;"></canvas>
+
+    <div class="charts-section" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+        <div class="chart-card" style="background: #4E3629; color: white; padding: 15px; border-radius: 8px; width: 45%;">
+            <h3 class="text-white fw-bold">Tipos de ventas</h3>
+            <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 250px;"></canvas>
         </div>
-
-        <div class="chart-card" style="background: #D7B89D;">
-            <h2>Ganancias por día</h2>
-            <canvas id="gananciasChart" style="background: #E3C7A1;  border-radius: 10px;"></canvas>
+    
+        <div class="chart-card" style="background: #D7B89D; padding: 15px; border-radius: 8px; width: 45%;">
+            <h3 class="fw-bold">Ganancias por día</h3>
+            <canvas id="gananciasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 250px;"></canvas>
         </div>
     </div>
-
-
-    <div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px;">
+    <br>
+    <div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px;"> 
         <div class="row">
-            <h2>Productos más vendidos TOP 5</h2>
-          <div class="col-md-4">
-            <div class="product">
-                <h3 class="product-text">Alfajores</h3>
-                <div class="product-container">
-                    <img class="imagenGalleta" src="static\imgGalletas\GalletaAlfajores.webp" alt="Alfajores">
-                    <div class="product-info">
-                        <div>Cantidad: 600</div>
-                        <div>Ganancias: $2400</div>
-                    </div>
-                </div>
-           </div>
-            <div class="product">
-                <h3 class="product-text">Brownie</h3>
-                <div class="product-container">
-                    <img src="static\imgGalletas\GalletaBrownie.webp" alt="Brownie">
-                    <div class="product-info">
-                        <div>Cantidad: 450</div>
-                        <div>Ganancias: $1800</div>
-                    </div>
-                </div>
-            </div>
-
-            </div>
+            <h3 class="text-white text-center fw-bold" style="margin: 10px;">Productos más vendidos TOP 5</h3>
+            {% for galleta in galletas %}
             <div class="col-md-4">
-            <div class="product">
-                <h3 class="product-text">Mamut</h3>
-                <div class="product-container">
-                    <img src="static\imgGalletas\GalletaMamut.webp" alt="Mamut" >
-                    <div class="product-info">
-                        <div>Cantidad: 550</div>
-                        <div>Ganancias: $2200</div>
-                    </div>
-                </div>
-            </div>
-            <div class="product">
-                <h3 class="product-text">Chispas de chocolate</h3>
-                <div class="product-container">
-                    <img src="static\imgGalletas\GalletaChispasChocolate.webp" alt="Chispas de chocolate">
-                    <div class="product-info">
-                        <div>Cantidad: 400</div>
-                        <div>Ganancias: $1600</div>
-                    </div>
-                </div>
-            </div>
+                <div class="product">
+                    <h4 class="product-text" style="font-weight: bold;">{{ galleta[1] }}</h4>
 
-            </div>
-            <div class="col-md-4">
-            <div class="product">
-                <h3 class="product-text">Sorpresa de nuez</h3>
-                <div class="product-container">
-                    <img src="static\imgGalletas\GalletaNuez.webp" alt="Sorpresa de nuez">
-                    <div class="product-info">
-                        <div>Cantidad: 500</div>
-                        <div>Ganancias: $2000</div>
+
+                    <div class="product-container">
+                        <img class="imagenGalleta" src="{{ galleta[2] }}" alt="{{ galleta[1] }}">
+                        <div class="product-info">
+                            <div style="font-size: 1.2rem;">Cantidad vendida: {{ galleta[3] | int }} galletas
+                            </div>
+                        <div style="font-size: 1.2rem; ">Ganancias: ${{ galleta[4] }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
+    
 
 <div class="row mt-4">
     <h3 class="text-center">Gestión del Sistema</h3>
@@ -139,5 +98,12 @@
     </div>
 </div>
 </div>
-</body>
+<script src="{{ url_for('static', filename='functions/funcionesDashboard.js') }}" defer></script>
+<script id="presentacionesData" type="application/json">
+    {{ presentaciones | tojson }}
+</script>
+
+<script id="gananciasData" type="application/json">
+    {{ ganancias | tojson }}
+</script>
 {% endblock %}
