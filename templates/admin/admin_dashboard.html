@@ -1,131 +1,143 @@
-{% extends "/admin/baseAdmin/BaseAdmin.html" %} {% block title %}Principal{% endblock %} 
+{% extends "/admin/baseAdmin/BaseAdmin.html" %}
+{% block title %}Principal{% endblock %}
 {% block content %}
-    <div class="espacio"></div>
-    <!-- Contenedor principal -->
-    <div class="container mt-4">
-        <h2 class="text-center">Dashboard de Administrador</h2>
-        <div class="row mt-4">
-            <!-- Ventas Diarias -->
-            <div class="col-md-4">
-                <div class="card text-white bg-primary mb-3">
-                    <div class="card-header">Ventas Diarias</div>
-                    <div class="card-body">
-                        <h3 class="card-title">$10,450 MXN</h3>
-                        <p class="card-text">Total de ventas realizadas hoy.</p>
-                    </div>
-                </div>
-            </div>
+<body>
+    <h1>Dashboard</h1>
 
-            <!-- Productos Más Vendidos -->
-            <div class="col-md-4">
-                <div class="card text-white bg-success mb-3">
-                    <div class="card-header">Productos Más Vendidos</div>
-                    <div class="card-body">
-                        <canvas id="productosChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Presentaciones Más Vendidas -->
-            <div class="col-md-4">
-                <div class="card text-white bg-warning mb-3">
-                    <div class="card-header">Presentaciones Más Vendidas</div>
-                    <div class="card-body">
-                        <canvas id="presentacionesChart"></canvas>
-                    </div>
-                </div>
-            </div>
+    <div class="charts-section">
+        <div class="chart-card" style="background: #4E3629; color: white;">
+            <h2>Presentaciones más vendidas TOP 5</h2>
+            <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 10px; color: black;"></canvas>
         </div>
 
-        <!-- Sección de CRUDs -->
-        <div class="row mt-4">
-            <h3 class="text-center">Gestión del Sistema</h3>
-            
-            <div class="col-md-4">
-                <div class="card text-white bg-dark mb-3">
-                    <div class="card-header">Usuarios</div>
-                    <div class="card-body text-center">
-                        <a href="/gestionUsuarios" class="btn btn-light">Gestionar usuarios</a>
+        <div class="chart-card" style="background: #D7B89D;">
+            <h2>Ganancias por día</h2>
+            <canvas id="gananciasChart" style="background: #E3C7A1;  border-radius: 10px;"></canvas>
+        </div>
+    </div>
+
+
+    <div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px;">
+        <div class="row">
+            <h2>Productos más vendidos TOP 5</h2>
+          <div class="col-md-4">
+            <div class="product">
+                <h3 class="product-text">Alfajores</h3>
+                <div class="product-container">
+                    <img class="imagenGalleta" src="static\imgGalletas\GalletaAlfajores.webp" alt="Alfajores">
+                    <div class="product-info">
+                        <div>Cantidad: 600</div>
+                        <div>Ganancias: $2400</div>
+                    </div>
+                </div>
+           </div>
+            <div class="product">
+                <h3 class="product-text">Brownie</h3>
+                <div class="product-container">
+                    <img src="static\imgGalletas\GalletaBrownie.webp" alt="Brownie">
+                    <div class="product-info">
+                        <div>Cantidad: 450</div>
+                        <div>Ganancias: $1800</div>
                     </div>
                 </div>
             </div>
 
+            </div>
             <div class="col-md-4">
-                <div class="card text-white bg-dark mb-3">
-                    <div class="card-header">Proveedores</div>
-                    <div class="card-body text-center">
-                        <a href="/proveedores" class="btn btn-light">Gestionar proveedores</a>
+            <div class="product">
+                <h3 class="product-text">Mamut</h3>
+                <div class="product-container">
+                    <img src="static\imgGalletas\GalletaMamut.webp" alt="Mamut" >
+                    <div class="product-info">
+                        <div>Cantidad: 550</div>
+                        <div>Ganancias: $2200</div>
+                    </div>
+                </div>
+            </div>
+            <div class="product">
+                <h3 class="product-text">Chispas de chocolate</h3>
+                <div class="product-container">
+                    <img src="static\imgGalletas\GalletaChispasChocolate.webp" alt="Chispas de chocolate">
+                    <div class="product-info">
+                        <div>Cantidad: 400</div>
+                        <div>Ganancias: $1600</div>
                     </div>
                 </div>
             </div>
 
+            </div>
             <div class="col-md-4">
-                <div class="card text-white bg-dark mb-3">
-                    <div class="card-header">Clientes</div>
-                    <div class="card-body text-center">
-                        <a href="/clientes" class="btn btn-light">Gestionar clientes</a>
+            <div class="product">
+                <h3 class="product-text">Sorpresa de nuez</h3>
+                <div class="product-container">
+                    <img src="static\imgGalletas\GalletaNuez.webp" alt="Sorpresa de nuez">
+                    <div class="product-info">
+                        <div>Cantidad: 500</div>
+                        <div>Ganancias: $2000</div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card text-white bg-dark mb-3">
-                    <div class="card-header">Recetas</div>
-                    <div class="card-body text-center">
-                        <a href="/recetas" class="btn btn-light">Gestionar recetas</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-white bg-dark mb-3">
-                    <div class="card-header">Inventario de insumos</div>
-                    <div class="card-body text-center">
-                        <a href="/inventario-insumos" class="btn btn-light">Gestionar inventario</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-white bg-dark mb-3">
-                    <div class="card-header">Inventario producto terminado</div>
-                    <div class="card-body text-center">
-                        <a href="/inventario_productos" class="btn btn-light">Gestionar productos</a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts para gráficos -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var ctx1 = document.getElementById('productosChart').getContext('2d');
-            new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: ['Choco Chips', 'Avena', 'Nuez', 'Mantequilla'],
-                    datasets: [{
-                        label: 'Cantidad vendida',
-                        data: [120, 95, 85, 75],
-                        backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545']
-                    }]
-                }
-            });
+<div class="row mt-4">
+    <h3 class="text-center">Gestión del Sistema</h3>
+    
+    <div class="col-md-4">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">Usuarios</div>
+            <div class="card-body text-center">
+                <a href="/gestionUsuarios" class="btn btn-light">Gestionar usuarios</a>
+            </div>
+        </div>
+    </div>
 
-            var ctx2 = document.getElementById('presentacionesChart').getContext('2d');
-            new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: ['1 kg', '700 g', '500 g', '250 g'],
-                    datasets: [{
-                        data: [40, 30, 20, 10],
-                        backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545']
-                    }]
-                }
-            });
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="col-md-4">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">Proveedores</div>
+            <div class="card-body text-center">
+                <a href="/proveedores" class="btn btn-light">Gestionar proveedores</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">Clientes</div>
+            <div class="card-body text-center">
+                <a href="/clientes" class="btn btn-light">Gestionar clientes</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">Recetas</div>
+            <div class="card-body text-center">
+                <a href="/recetas" class="btn btn-light">Gestionar recetas</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">Inventario de insumos</div>
+            <div class="card-body text-center">
+                <a href="/inventario-insumos" class="btn btn-light">Gestionar inventario</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header">Inventario producto terminado</div>
+            <div class="card-body text-center">
+                <a href="/inventario_productos" class="btn btn-light">Gestionar productos</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
 {% endblock %}
