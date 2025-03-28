@@ -3,7 +3,6 @@ from db import app,mysql
 from dotenv import load_dotenv
 
 load_dotenv()
-
 # Registar un insumo
 @app.route("/register_insumos", methods=["POST"])
 def register_insumo():
