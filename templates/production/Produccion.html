@@ -4,21 +4,23 @@
 <link rel="stylesheet" href="/static/css/stylesProduccion/styleProduccion.css">
 <h1 class="title-produccion">Producción</h1>
 <div class="icono-ordenes-container">
-    
+
     <img src="/static/img/iconOrdenesProduccion.webp" alt="icono-ordenes" class="icono-ordenes"
-        data-bs-toggle="offcanvas" data-bs-target="#ordenesProduccion" aria-controls="offcanvasRight" style="cursor: pointer;">
-        <span id="nav-cart-count" aria-hidden="true" class="nav-cart-count nav-cart-0 nav-progressive-attribute nav-progressive-content">0</span>
+        data-bs-toggle="offcanvas" data-bs-target="#ordenesProduccion" aria-controls="offcanvasRight"
+        style="cursor: pointer;">
+    <span id="nav-cart-count" aria-hidden="true"
+        class="nav-cart-count nav-cart-0 nav-progressive-attribute nav-progressive-content">0</span>
 
     <!-- Panel Lateral Bootstrap -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="ordenesProduccion" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
-          <h5 class="title-panel-lateral">Solicitudes de ordenes de galletas</h5>
-          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <h5 class="title-panel-lateral">Solicitudes de ordenes de galletas</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-          Tu canasta de ordenes de galletas esta vacia
+            Tu canasta de ordenes de galletas esta vacia
         </div>
-      </div>
+    </div>
 </div>
 
 <div id="estado-produccion" class="swiper-container">
@@ -26,8 +28,6 @@
         <div id="estado-produccion" style="display: none;"></div>
     </div>
 </div>
-
-
 
 <div class="product-grid">
 
@@ -48,7 +48,7 @@
     </div>
     {% endfor %}
     {% endblock %}
-</div>
+    </div>
 </div>
 
 

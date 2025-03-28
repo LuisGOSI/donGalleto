@@ -42,6 +42,18 @@ def produccion_dashboard():
         return redirect(url_for("login"))
     return render_template("/production/baseProduccion/baseProduccion.html", is_base_template=True)
 
+@app.route("/solicitudProduccion")
+def solicitudProduccion_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] not in ["produccion", "ventas"]:
+        return redirect(url_for("login"))
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM galletas')
+    galletas = cur.fetchall()
+    cur.close()
+    return render_template("/production/SolicitudProduccion.html", is_base_template=False, user=user,galletas=galletas)
 
 @app.route('/gestion-insumos')
 def gestion_insumos():
