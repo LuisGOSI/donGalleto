@@ -122,6 +122,7 @@ body {
 
 /* ------------------------------------------------------------------------ Estilo para el dropdown menú ------------------------------------------------------------------------ */
   .dropdown {
+    display: inline-block;
     position: relative;
 }
 
@@ -174,6 +175,13 @@ body {
     padding: 0.5rem 0;
     z-index: 1000;
     margin-top: 0.5rem;
+}
+
+.dropdown .header-item {
+  display: inline-block;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  transition: all 0.25s ease;
 }
 
 .dropdown:hover .dropdown-menu {
