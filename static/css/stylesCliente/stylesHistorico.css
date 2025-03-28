@@ -25,3 +25,10 @@
 .tabla-compras tbody tr {
     border-bottom: 1px solid #ccc;
 }
+
+.sin-historial{
+    text-align: center;
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
