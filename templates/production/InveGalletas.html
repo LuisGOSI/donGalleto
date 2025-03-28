@@ -20,8 +20,6 @@
                             }
                             flashList.appendChild(li);
                         });
-                        let flashModal = new bootstrap.Modal(document.getElementById("flashModal"));
-                        flashModal.show();
                     });
                 </script>
             {% endif %}
@@ -37,6 +35,7 @@
                 {% for datos in lotesResumen %}
                     {% if datos.dias_restantes is not none and datos.dias_restantes <= 3 and datos.dias_restantes > 0 %}
                         <p>
+                            (No. Lote:<strong>{{ datos.id_lote }}</strong>) 
                             Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> galletas de 
                             "<strong>{{ datos.nombre }}</strong>" que caducarán en 
                             <strong>{{ datos.dias_restantes }}</strong> día(s).
@@ -61,7 +60,7 @@
                 {% for datos in lotesResumen %}
                     {% if datos.dias_restantes is not none and datos.dias_restantes == 0 %}
                         <p>
-                            Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> galletas de 
+                            (No. Lote:<strong>{{ datos.id_lote }}</strong>) Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> galletas de 
                             "<strong>{{ datos.nombre }}</strong>" que caducan hoy.
                         </p>
                     {% endif %}
@@ -123,7 +122,7 @@
                                     {% if datos.cantidad_proxima_caducar > 0 %}
                                         {% set dias_restantes = (datos.fecha_mas_proxima - hoy).days %}
                                         {% if dias_restantes <= 3 and dias_restantes > 0 %}
-                                            <span class="alerta" style="color: orange;">⚠</span>
+                                            <span class="alerta" style="color: orange;">⚠️</span>
                                         {% elif dias_restantes == 0 %}
                                             <span class="alerta"><img src="static/img/advertencia.png" style="height: 1em; vertical-align: middle;"></span> {# Advertencia roja (vence hoy) #}
                                         {% endif %}
