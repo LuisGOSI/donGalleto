@@ -126,20 +126,29 @@ def moduloProduccion():
     cur.close()
     return render_template('/production/Produccion.html', is_base_template = False,user=user,galletas=galletas)
 
+
+@app.route("/cliente")
+def cliente_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM galletas')
+    data = cur.fetchall()
+    cur.close()
+    print(data)
+    return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+
+
 @app.route("/clientes")
 def clientes():
     if "user" not in session:
         return redirect(url_for("login"))
-    
     active_user = session.get("user")
-
     if active_user[4] != "administrador":
         return render_template("pages/error404.html"), 404
-
     status = request.args.get("status", default=1, type=int)  # Por defecto activos
-    
     cur = mysql.connection.cursor()
-    
     cur.execute("""
         SELECT 
             c.idCliente,
@@ -155,10 +164,8 @@ def clientes():
         WHERE 
             u.status = %s;
     """, (status,))
-    
     clientes = cur.fetchall()
     cur.close()
-    
     return render_template('/admin/gestionClientes.html', clientes=clientes, status=status, is_base_template=False)
 
 
