@@ -1,0 +1,75 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: black;
+}
+
+.card, .chart-container {
+    background: #936A4B;
+    padding: 20px;
+    border-radius: 10px;
+    color: black;
+    width: 100%;
+    text-align: center;
+}
+
+.product {
+    background: #EED8C5;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+.product-container {
+    display: flex;
+    flex-direction: row;  /* Los elementos estarán en una fila */
+    align-items: center;  /* Centra los elementos verticalmente */
+    gap: 10px;            /* Añade espacio entre la imagen y la información */
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;  /* Los elementos estarán en una columna */
+    align-items: flex-start; /* Alinea el texto a la izquierda */
+}
+
+.product-container img {
+    width: 100px;           /* Ancho de la imagen */
+    height: 100px;          /* Alto de la imagen */
+    border-radius: 5px;    
+}
+
+
+.product-text {
+    display: flex;
+    justify-content: center;  /* Centra el contenido horizontalmente */
+    align-items: center;      /* Centra el contenido verticalmente */
+    text-align: center;       /* Asegura que el texto dentro de los elementos hijos se centre */
+}
+
+
+
+/* Ajuste para las tarjetas en filas 2x3 */
+.product-container {
+    display: flex;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+/* Nueva clase para la sección de gráficos */
+.charts-section { 
+    display: flex;
+    gap: 20px;
+    justify-content: center; /* Centra los elementos horizontalmente */
+    width: 100%;
+    padding: 20px;
+}
+
+.chart-card {
+    background: #936A4B;
+    padding: 20px;
+    border-radius: 10px;
+    color: black;
+    width: 48%;
+    text-align: center;
+}
