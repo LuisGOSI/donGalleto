@@ -4,6 +4,7 @@ from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas
 from database.cliente import clientes
+from database.cookies import cookies
 from db import app,mysql 
 from sessions import *
 
@@ -132,11 +133,7 @@ def cliente_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM galletas')
-    data = cur.fetchall()
-    cur.close()
-    print(data)
+    data = cookies.getCookies()
     return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
 
 
