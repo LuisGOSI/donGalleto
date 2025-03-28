@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD
-from database.admin import proveedorCRUD, clientesCRUD
+from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas
 from database.cliente import clientes
@@ -22,7 +22,10 @@ def admin_dashboard():
     user = session.get("user")
     if user[4] != "administrador":
         return redirect(url_for("login"))
-    return render_template("/admin/admin_dashboard.html")
+    presentaciones=dashboard.getPresentaciones()
+    ganancias=dashboard.getGanancias()
+    galletas=dashboard.getGalletasTop()
+    return render_template("/admin/admin_dashboard.html", presentaciones=presentaciones, ganancias=ganancias, galletas=galletas)
 
 @app.route("/gestionUsuarios")
 def usuarios_dashboard():
@@ -117,20 +120,11 @@ def moduloProduccion():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    return render_template('/production/Produccion.html', is_base_template = False,user=user)
-
-
-@app.route("/cliente")
-def cliente_dashboard():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
-    user = session.get("user")
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM galletas')
-    data = cur.fetchall()
+    galletas = cur.fetchall()
     cur.close()
-    print(data)
-    return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+    return render_template('/production/Produccion.html', is_base_template = False,user=user,galletas=galletas)
 
 @app.route("/clientes")
 def clientes():
