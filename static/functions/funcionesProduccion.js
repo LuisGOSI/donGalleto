@@ -1,188 +1,374 @@
-function mostrarReceta(nombre) {
-    const recetas = {
-    "Galleta de Brownie": `
-        **Ingredientes:**  
-        - 1 taza de harina  
-        - 1/2 taza de cacao en polvo  
-        - 1 taza de azúcar  
-        - 1/2 taza de mantequilla derretida  
-        - 2 huevos  
-        - 1/2 cucharadita de esencia de vainilla  
-        - 1/4 cucharadita de sal  
+// ---------------------------------------------------- Funcion para modal de recetas ----------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const modalContainer = document.createElement('div');
+    modalContainer.id = 'recipeModal';
+    modalContainer.innerHTML = `
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="recipe-content"></div>
+        </div>
+    `;
+    modalContainer.classList.add('modal');
+    document.body.appendChild(modalContainer);
+    const modal = document.getElementById('recipeModal');
+    const modalContent = document.getElementById('recipe-content');
+    const closeButton = modal.querySelector('.close-button');
 
-        **Instrucciones:**  
-        1. Mezcla la harina, el cacao, el azúcar y la sal en un recipiente.  
-        2. Agrega la mantequilla derretida, los huevos y la esencia de vainilla. Mezcla bien.  
-        3. Coloca cucharadas de la mezcla en una bandeja con papel para hornear.  
-        4. Hornea a 180°C por 12-15 minutos.  
+    function openModal(receta) {
+        modalContent.innerHTML = `
+            <h2>${receta.nombre}</h2>
+            <h3>Ingredientes:</h3>
+            <ul>
+                ${receta.ingredientes.map(ingrediente => `<li>${ingrediente}</li>`).join('')}
+            </ul>
+            <h3>Instrucciones:</h3>
+            <ol>
+                ${receta.instrucciones.map(instruccion => `<li>${instruccion}</li>`).join('')}
+            </ol>
+        `;
+        modal.classList.add('show-modal');
+    }
+    function closeModal() {
+        modal.classList.remove('show-modal');
+    }
 
-        ¡Disfruta tus galletas de brownie!
-    `,
-    "Galleta Mamut": `
-        **Ingredientes:**  
-        - 1 taza de harina  
-        - 1/2 taza de azúcar  
-        - 1/4 taza de mantequilla  
-        - 1/4 taza de leche  
-        - 1/2 taza de malvaviscos  
-        - 1/2 taza de chocolate derretido  
+    // Lista de recetas
+    const recetas = [
+        {
+            nombre: "Galleta Chispas de Chocolate",
+            ingredientes: [
+                "2 1/4 tazas de harina",
+                "1 cucharadita de bicarbonato de sodio",
+                "1 cucharadita de sal",
+                "1 taza de mantequilla",
+                "3/4 taza de azúcar",
+                "3/4 taza de azúcar morena",
+                "2 huevos",
+                "2 cucharaditas de extracto de vainilla",
+                "2 tazas de chispas de chocolate"
+            ],
+            instrucciones: [
+                "Precalentar el horno a 375°F (190°C)",
+                "Mezclar harina, bicarbonato y sal",
+                "En otro bowl, batir mantequilla y azúcares",
+                "Agregar huevos y vainilla a la mezcla de mantequilla",
+                "Incorporar ingredientes secos",
+                "Añadir chispas de chocolate",
+                "Formar bolitas y colocar en bandeja",
+                "Hornear por 9-11 minutos",
+                "Dejar enfriar en rejilla"
+            ]
+        }
+        // Agregar las demás recetas aquí
+    ];
+    function escucharRecetas() {
+        const recetaButtons = document.querySelectorAll('.custom-buttonReceta');
+        
+        recetaButtons.forEach((button, index) => {
+            button.removeEventListener('click', recipeClickHandler);
+            button.addEventListener('click', recipeClickHandler);
+        });
 
-        **Instrucciones:**  
-        1. Mezcla la harina, el azúcar, la mantequilla y la leche hasta formar una masa.  
-        2. Haz galletas planas y hornéalas a 180°C por 10 minutos.  
-        3. Coloca un malvavisco sobre cada galleta caliente.  
-        4. Baña las galletas con el chocolate derretido y deja enfriar.  
+        function recipeClickHandler(event) {
+            const index = Array.from(recetaButtons).indexOf(event.target);
+            
+            if (recetas[index]) {
+                openModal(recetas[index]);
+            } else {
+                console.error('Receta no encontrada');
+            }
+        }
+    }
+    escucharRecetas();
+    closeButton.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+});
 
-        ¡Disfruta tus galletas tipo Mamut!
-    `,
-    "Galleta Oreo": `
-        **Ingredientes:**  
-        - 1 taza de harina  
-        - 1/2 taza de cacao en polvo  
-        - 1/2 taza de azúcar  
-        - 1/2 taza de mantequilla  
-        - 1 huevo  
-        - 1/2 cucharadita de esencia de vainilla  
-        - Una pizca de sal  
+// ---------------------------------------------------- Funciones para estados de producción ----------------------------------------------------
 
-        **Para el relleno:**  
-        - 1/2 taza de azúcar glas  
-        - 1/4 taza de mantequilla  
-        - 1/2 cucharadita de esencia de vainilla  
+let produccionesEnCurso = 0;
+var galletaEncontrada = null;
+var estado = "Listas";
 
-        **Instrucciones:**  
-        1. Mezcla harina, cacao, azúcar y sal. Agrega mantequilla, huevo y vainilla; forma una masa.  
-        2. Extiende y corta círculos pequeños. Hornea a 180°C por 10-12 minutos.  
-        3. Para el relleno, bate la mantequilla, azúcar glas y vainilla hasta que esté suave.  
-        4. Rellena las galletas una vez frías y presiona suavemente para juntar cada par.  
+document.addEventListener("DOMContentLoaded", function () {
+    const botonesProducir = document.querySelectorAll(".custom-buttonProducir");
 
-        ¡Disfruta tus galletas tipo Oreo caseras!
-    `,
-    "Galleta de Mantequilla": `
-        **Ingredientes:**  
-        - 2 tazas de harina  
-        - 1/2 taza de azúcar  
-        - 1 taza de mantequilla  
-        - 1 cucharadita de esencia de vainilla  
-        - Una pizca de sal  
+    botonesProducir.forEach((boton, index) => {
+        boton.addEventListener("click", function () {
+            const productCard = boton.closest(".product-card");
+            const nombreGalleta = productCard.querySelector("h6").textContent;
+            const rutaImagen = productCard.querySelector("img").src;
+            const idGalleta = index;  // Puedes cambiar esto si tienes un ID real.
 
-        **Instrucciones:**  
-        1. Mezcla la mantequilla, el azúcar y la esencia de vainilla hasta que esté cremoso.  
-        2. Añade la harina y la sal poco a poco hasta formar una masa.  
-        3. Extiende y corta las galletas.  
-        4. Hornea a 180°C por 10-12 minutos.  
+            iniciarProduccion(nombreGalleta, rutaImagen, idGalleta);
+        });
+    });
+});
 
-        ¡Disfruta tus galletas de mantequilla!
-    `,
-    "Galleta Alfajores": `
-        **Ingredientes:**  
-        - 1 taza de harina  
-        - 1/2 taza de maicena  
-        - 1/2 taza de mantequilla  
-        - 1/4 taza de azúcar  
-        - 1 cucharadita de esencia de vainilla  
-        - 1 taza de dulce de leche  
+function actualizarControlesSwiper() {
+    const swiperWrapper = document.querySelector(".swiper-wrapper");
+    const slides = swiperWrapper.querySelectorAll(".swiper-slide");
 
-        **Instrucciones:**  
-        1. Mezcla la mantequilla, el azúcar y la esencia de vainilla hasta que esté cremoso.  
-        2. Añade la harina y la maicena poco a poco hasta formar una masa.  
-        3. Extiende y corta las galletas. Hornea a 180°C por 8-10 minutos.  
-        4. Une las galletas con dulce de leche y decora con coco rallado si deseas.  
+    let nextButton = document.querySelector(".swiper-button-next");
+    let prevButton = document.querySelector(".swiper-button-prev");
 
-        ¡Disfruta tus alfajores caseros!
-    `,
-    "Galleta con Chispas de Chocolate": `
-        **Ingredientes:**  
-        - 2 tazas de harina  
-        - 1/2 taza de azúcar  
-        - 1/2 taza de azúcar morena  
-        - 1 taza de mantequilla  
-        - 1 huevo  
-        - 1 cucharadita de esencia de vainilla  
-        - 1 taza de chispas de chocolate  
-
-        **Instrucciones:**  
-        1. Mezcla la mantequilla, los azúcares, el huevo y la esencia de vainilla.  
-        2. Agrega la harina y mezcla bien. Incorpora las chispas de chocolate.  
-        3. Forma bolitas y colócalas en una bandeja con papel para hornear.  
-        4. Hornea a 180°C por 10-12 minutos.  
-
-        ¡Disfruta tus galletas con chispas de chocolate!
-    `,
-    "Galleta de Avena": `
-        **Ingredientes:**  
-        - 1 taza de avena  
-        - 1 taza de harina  
-        - 1/2 taza de azúcar  
-        - 1/2 taza de mantequilla  
-        - 1 huevo  
-        - 1/2 cucharadita de canela en polvo  
-
-        **Instrucciones:**  
-        1. Mezcla la avena, la harina, el azúcar y la canela.  
-        2. Agrega la mantequilla derretida y el huevo. Mezcla bien.  
-        3. Haz bolitas y aplánalas en una bandeja con papel para hornear.  
-        4. Hornea a 180°C por 10-12 minutos.  
-
-        ¡Disfruta tus galletas de avena!
-    `,
-    "Galleta Florentina": `
-        **Ingredientes:**  
-        - 1/2 taza de almendras fileteadas  
-        - 1/4 taza de miel  
-        - 1/4 taza de azúcar  
-        - 1/4 taza de mantequilla  
-        - 1/4 taza de harina  
-
-        **Instrucciones:**  
-        1. Mezcla la miel, el azúcar, la mantequilla y la harina. Cocina a fuego lento hasta que espese.  
-        2. Agrega las almendras fileteadas y mezcla bien.  
-        3. Coloca cucharadas de la mezcla en una bandeja con papel para hornear.  
-        4. Hornea a 180°C por 8-10 minutos.  
-
-        ¡Disfruta tus galletas florentinas!
-    `,
-        "Galleta Don Galleto": `
-**Ingredientes:**
-- 5 kg de harina de trigo  
-- 2.5 kg de mantequilla sin sal (a temperatura ambiente)  
-- 2.5 kg de azúcar (puedes usar azúcar blanca, morena o una combinación)  
-- 5 kg de nueces troceadas  
-- 1 litro de leche  
-- 50 g de sal  
-- 50 g de polvo para hornear  
-- 20 g de esencia de vainilla  
-
-**Procedimiento:**
-1. Precalienta el horno a 180°C (350°F).  
-2. Tamiza la harina, el polvo para hornear y la sal en un tazón grande.  
-3. Bate la mantequilla y el azúcar en otro tazón hasta obtener una mezcla cremosa.  
-4. Añade la esencia de vainilla y continúa batiendo.  
-5. Incorpora la mezcla de harina poco a poco, alternando con la leche, hasta que se forme una masa uniforme.  
-6. Añade las nueces troceadas y mezcla bien.  
-7. Forma bolitas de masa del tamaño deseado (aproximadamente 30-40 gramos cada una).  
-8. Coloca las bolitas en una bandeja para hornear, dejando espacio entre ellas para que se expandan durante el horneado.  
-9. Hornea las galletas durante 12-15 minutos o hasta que estén doradas en los bordes.  
-10. Deja enfriar las galletas en una rejilla antes de servir.  
-
-¡Disfruta las deliciosas Galletas "Sorpresa Nuez Don Galleto"!
-`,
-
-    "Galleta de Almendra": `
-        **Ingredientes:**  
-        - 1 taza de harina de almendra  
-        - 1/4 taza de azúcar glas  
-        - 1/4 taza de mantequilla  
-        - 1 huevo  
-
-        **Instrucciones:**  
-        1. Mezcla todos los ingredientes hasta formar una masa.  
-        2. Haz bolitas y aplánalas ligeramente.  
-        3. Coloca en una bandeja con papel para hornear.  
-        4. Hornea a 180°C por 10-12 minutos.  
-
-        ¡Disfruta tus galletas de almendra!
-    `
-    
-};
+    if (!nextButton) {
+        nextButton = document.createElement("div");
+        nextButton.classList.add("swiper-button-next");
+        document.querySelector(".swiper-container").appendChild(nextButton);
+    }
+    if (!prevButton) {
+        prevButton = document.createElement("div");
+        prevButton.classList.add("swiper-button-prev");
+        document.querySelector(".swiper-container").appendChild(prevButton);
+    }
+    if (slides.length > 2) {
+        nextButton.style.display = "block";
+        prevButton.style.display = "block";
+    } else {
+        nextButton.style.display = "none";
+        prevButton.style.display = "none";
+    }
+    if (window.mySwiper) {
+        window.mySwiper.params.navigation.nextEl = nextButton;
+        window.mySwiper.params.navigation.prevEl = prevButton;
+        window.mySwiper.navigation.init();
+        window.mySwiper.navigation.update();
+    }
 }
+
+// ---------------------------------------------------- Función para desplegar y producir galletas ----------------------------------------------------
+function iniciarProduccion(nombre, rutaImagen, idGalleta) {
+    Swal.fire({
+        title: 'La galleta está lista para producir',
+        text: `¿Confirmas iniciar la producción de ${nombre}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, iniciar producción',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn-confirm',
+            cancelButton: 'btn-cancel'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: '¡La producción de galletas está en marcha!',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: { confirmButton: 'btn-confirm' },
+                buttonsStyling: false
+            });
+
+            const estadoProduccion = document.getElementById("estado-produccion");
+            estadoProduccion.style.display = "block";
+            let swiperContainer = document.querySelector(".swiper-container");
+            if (!swiperContainer) {
+                swiperContainer = document.createElement("div");
+                swiperContainer.classList.add("swiper-container");
+                swiperContainer.innerHTML = `
+                    <div class="swiper-wrapper"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-pagination"></div>
+                `;
+                estadoProduccion.appendChild(swiperContainer);
+            }
+
+            const swiperWrapper = swiperContainer.querySelector(".swiper-wrapper");
+
+            const cardView = document.createElement("div");
+            cardView.classList.add("swiper-slide", "card", "text-center", "p-3");
+            cardView.style.display = "flex";
+            cardView.style.flexDirection = "column";
+            cardView.style.alignItems = "center";
+            cardView.style.padding = "20px";
+            cardView.style.backgroundColor = "#EED8C5";
+            cardView.style.margin = "10px";
+            cardView.style.boxSizing = "border-box";
+            cardView.style.width = "300px";
+            cardView.style.height = "400px";
+            cardView.style.borderRadius = "15px";
+
+            const columna1 = document.createElement("div");
+            columna1.style.display = "flex";
+            columna1.style.flexDirection = "column";
+            columna1.style.alignItems = "center";
+            columna1.style.marginBottom = "10px";
+
+            const imagenGalleta = document.createElement("img");
+            imagenGalleta.src = rutaImagen;
+            imagenGalleta.alt = nombre;
+            imagenGalleta.style.width = "120px";
+            imagenGalleta.style.height = "120px";
+            imagenGalleta.style.borderRadius = "50%";
+            columna1.appendChild(imagenGalleta);
+
+            const nombreGalleta = document.createElement("h3");
+            nombreGalleta.textContent = nombre;
+            nombreGalleta.classList.add("card-title");
+            nombreGalleta.style.fontSize = "16px";
+            columna1.appendChild(nombreGalleta);
+
+            const imagenEstado = document.createElement("img");
+            imagenEstado.src = "/static/img/preparacion.webp";
+            imagenEstado.alt = "Estado de producción";
+            imagenEstado.style.width = "90px";
+            imagenEstado.style.height = "90px";
+
+            const botonEstadoProduccion = document.createElement("button");
+            botonEstadoProduccion.textContent = "Preparación";
+            botonEstadoProduccion.style.backgroundColor = "#FEE498";
+            botonEstadoProduccion.style.borderRadius = "20px";
+            botonEstadoProduccion.style.border = "none";
+            botonEstadoProduccion.style.padding = "10px 20px";
+            botonEstadoProduccion.style.fontSize = "16px";
+            botonEstadoProduccion.style.margin = "15px";
+            botonEstadoProduccion.style.cursor = "pointer";
+
+            let estadoActual = "Preparación";
+
+            botonEstadoProduccion.addEventListener("click", () => {
+                if (estadoActual === "Preparación") {
+                    Swal.fire({
+                        title: '¡Es hora de hornear!',
+                        icon: 'question',
+                        text: '¿Ha culminado la preparación de las galletas?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí',
+                        cancelButtonText: 'No',
+                        customClass: {
+                            confirmButton: 'btn-confirm',
+                            cancelButton: 'btn-cancel'
+                        },
+                        buttonsStyling: false
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            estadoActual = "Horneado";
+                            imagenEstado.src = "/static/img/horneado.webp";
+                            imagenEstado.alt = "Horneado";
+                            botonEstadoProduccion.textContent = "Horneado";
+                            botonEstadoProduccion.style.backgroundColor = "#FF0000";
+                        }
+                    });
+
+                } else if (estadoActual === "Horneado") {
+                    Swal.fire({
+                        title: '¡Vamos a reposar esas galletas!',
+                        icon: 'question',
+                        text: '¿Ha terminado el tiempo de horneado de las galletas?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí',
+                        cancelButtonText: 'No',
+                        customClass: {
+                            confirmButton: 'btn-confirm',
+                            cancelButton: 'btn-cancel'
+                        },
+                        buttonsStyling: false
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            estadoActual = "Enfriado";
+                            imagenEstado.src = "/static/img/enfriado.webp";
+                            imagenEstado.alt = "Enfriado";
+                            botonEstadoProduccion.textContent = "Enfriado";
+                            botonEstadoProduccion.style.backgroundColor = "#6FA8DC";
+                        }
+                    });
+
+                } else if (estadoActual === "Enfriado") {
+                    Swal.fire({
+                        title: '¡La galleta está Lista!',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        customClass: {confirmButton: 'btn-confirm'},
+                        buttonsStyling: false
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            estadoActual = "Listas";
+                            imagenEstado.src = "/static/img/listas.webp";
+                            imagenEstado.alt = "Listas";
+                            botonEstadoProduccion.textContent = "Listas";
+                            botonEstadoProduccion.style.backgroundColor = "#00FF00";
+                            botonEstadoProduccion.disabled = true;
+                            ocultarTarjetasListas();
+                        }
+                    });
+                }
+            });
+
+            cardView.appendChild(columna1);
+            cardView.appendChild(imagenEstado);
+            cardView.appendChild(botonEstadoProduccion);
+
+            swiperWrapper.appendChild(cardView);
+
+            if (!window.mySwiper) {
+                window.mySwiper = new Swiper('.swiper-container', {
+                    loop: false,
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev'
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true
+                    }
+                });
+            } else {
+                window.mySwiper.update();
+            }
+            actualizarControlesSwiper();
+            estadoProduccion.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        }
+    });
+}
+
+// ---------------------------------------------------- Funciones para ocultar tarjetas de producción ----------------------------------------------------
+function ocultarTarjetasListas() {
+    const cardsProduccion = document.querySelectorAll("#estado-produccion .card");
+    let tarjetasVisibles = 0;
+
+    cardsProduccion.forEach(card => {
+        const botonEstadoProduccion = card.querySelector("button");
+        if (botonEstadoProduccion && botonEstadoProduccion.textContent === "Listas") {
+            console.log(`Ocultando tarjeta con estado "Listas".`);
+            card.style.display = "none";
+            produccionesEnCurso--;
+        } else if (card.style.display !== "none") {
+            tarjetasVisibles++;
+        }
+    });
+    
+    const estadoProduccion = document.getElementById("estado-produccion");
+    if (tarjetasVisibles === 0) {
+        console.log("No quedan tarjetas visibles. Contrayendo el contenedor.");
+        estadoProduccion.style.display = "none"; 
+    }
+}
+
+function toggleDropdown(event) {
+    event.preventDefault();
+    const dropdownMenu = document.getElementById('produccionDropdownMenu');
+    dropdownMenu.classList.toggle('show');
+
+    // Close dropdown if clicked outside
+    function closeDropdown(e) {
+        if (!dropdownMenu.contains(e.target) && e.target !== event.target) {
+            dropdownMenu.classList.remove('show');
+            document.removeEventListener('click', closeDropdown);
+        }
+    }
+
+    // Add event listener to close dropdown when clicking outside
+    document.addEventListener('click', closeDropdown);
+}
+
+// ---------------------------------------------------- Funciones para modal de despliegue de ordenes ----------------------------------------------------

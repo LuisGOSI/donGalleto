@@ -120,20 +120,11 @@ def moduloProduccion():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    return render_template('/production/Produccion.html', is_base_template = False,user=user)
-
-
-@app.route("/cliente")
-def cliente_dashboard():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
-    user = session.get("user")
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM galletas')
-    data = cur.fetchall()
+    galletas = cur.fetchall()
     cur.close()
-    print(data)
-    return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+    return render_template('/production/Produccion.html', is_base_template = False,user=user,galletas=galletas)
 
 @app.route("/clientes")
 def clientes():
