@@ -192,7 +192,12 @@ def historico_dashboard():
         return redirect(url_for("login"))
     user = session.get("user")
     idCliente = user[0]
+    # Obtener el nombre del cliente de la tabla de clientes
     cur = mysql.connection.cursor()
+    cur.execute("SELECT nombreCliente FROM clientes WHERE idCliente = %s", (idCliente,))
+    resultado_cliente = cur.fetchone()
+    nombreCliente = resultado_cliente[0] if resultado_cliente else "Cliente"
+    # Consulta para histórico de compras
     cur.execute("SELECT * FROM v_historicoCompras WHERE idCliente = %s", (idCliente,))
     column_names = [column[0] for column in cur.description]
     historico_compras = []
@@ -202,10 +207,12 @@ def historico_dashboard():
             compra_dict[col_name] = row[i]
         historico_compras.append(compra_dict)
     cur.close()
+    # Verificar si hay compras
     historico = len(historico_compras) > 0
-    nombreCliente = historico_compras[0]['nombreCliente']
-    for compra in historico_compras:
-        return render_template('/client/Historico.html', is_base_template=False, user=user, 
+    
+    return render_template('/client/Historico.html', 
+                           is_base_template=False, 
+                           user=user, 
                            historico_compras=historico_compras,
                            historico=historico,
                            nombreCliente=nombreCliente)
