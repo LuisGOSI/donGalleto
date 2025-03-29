@@ -1,44 +1,55 @@
 {% extends '/production/baseProduccion/baseProduccion.html' %}
 {% block title %}Producción{% endblock %}
 {% block content %}
-
+<link rel="stylesheet" href="/static/css/stylesProduccion/styleProduccion.css">
 <h1 class="title-produccion">Producción</h1>
+<div class="icono-ordenes-container">
+
+    <img src="/static/img/iconOrdenesProduccion.webp" alt="icono-ordenes" class="icono-ordenes"
+        data-bs-toggle="offcanvas" data-bs-target="#ordenesProduccion" aria-controls="offcanvasRight"
+        style="cursor: pointer;">
+    <span id="nav-cart-count" aria-hidden="true"
+        class="nav-cart-count nav-cart-0 nav-progressive-attribute nav-progressive-content">0</span>
+
+    <!-- Panel Lateral Bootstrap -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="ordenesProduccion" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header">
+            <h5 class="title-panel-lateral">Solicitudes de ordenes de galletas</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            Tu canasta de ordenes de galletas esta vacia
+        </div>
+    </div>
+</div>
+
+<div id="estado-produccion" class="swiper-container">
+    <div class="swiper-wrapper">
+        <div id="estado-produccion" style="display: none;"></div>
+    </div>
+</div>
+
 <div class="product-grid">
 
-    <div class="product-container">
-        <img src="/static/imgGalletas/GalletaChispasChocolate.webp" alt="Galleta chipas">
-        <div class="product-details">
-            <h6>Galleta Chispas de Chocolate</h6>
-            <div class="product-actions">
-                <button class="btn custom-buttonReceta" onclick="mostrarReceta('Galleta Oreo');">Receta de galleta</button>
-                <button class="btn custom-buttonProducir" onclick="iniciarProduccion('Galleta Oreo', '../imgCookies/Galleta Oreo.png')">Producir</button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="product-container">
-        <img src="/static/imgGalletas/GalletaVainilla.webp" alt="Galleta de vainilla">
-        <div class="product-details">
-            <h6>Galleta de vainilla</h6>
-            <div class="product-actions">
-                <button class="btn custom-buttonReceta" onclick="mostrarReceta('Galleta Mamut');">Receta de galleta</button>
-                <button class="btn custom-buttonProducir" onclick="iniciarProduccion('Galleta Mamut', '../imgCookies/Galleta Mamut.jpeg')">Producir</button>
-            </div>
-        </div>
-    </div>
+    {% block catalogo %}
 
-    <div class="product-container">
-        <img src="/static/imgGalletas/GalletaNuez.webp" alt="Galleta de nuez">
-        <div class="product-details">
-            <h6>Galleta Mamut</h6>
-            <div class="product-actions">
-                <button class="btn custom-buttonReceta" onclick="mostrarReceta('Galleta Mamut');">Receta de galleta</button>
-                <button class="btn custom-buttonProducir" onclick="iniciarProduccion('Galleta Mamut', '../imgCookies/Galleta Mamut.jpeg')">Producir</button>
+    {% for galleta in galletas %}
+    <div class="product-card">
+        <div class="product-container">
+            <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
+            <div class="product-details">
+                <h6>{{ galleta[1] }}</h6>
+                <div class="product-actions">
+                    <button class="btn custom-buttonReceta">Receta de galleta</button>
+                    <button class="btn custom-buttonProducir">Producir</button>
+                </div>
             </div>
         </div>
     </div>
+    {% endfor %}
+    {% endblock %}
+    </div>
+</div>
 
-</div>
-</div>
 
 {% endblock %}

@@ -1,9 +1,10 @@
 from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD
-from database.admin import proveedorCRUD, clientesCRUD
+from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas
 from database.cliente import clientes
+from database.cookies import cookies
 from db import app,mysql 
 from sessions import *
 
@@ -22,7 +23,10 @@ def admin_dashboard():
     user = session.get("user")
     if user[4] != "administrador":
         return redirect(url_for("login"))
-    return render_template("/admin/admin_dashboard.html")
+    presentaciones=dashboard.getPresentaciones()
+    ganancias=dashboard.getGanancias()
+    galletas=dashboard.getGalletasTop()
+    return render_template("/admin/admin_dashboard.html", presentaciones=presentaciones, ganancias=ganancias, galletas=galletas)
 
 @app.route("/gestionUsuarios")
 def usuarios_dashboard():
@@ -39,6 +43,18 @@ def produccion_dashboard():
         return redirect(url_for("login"))
     return render_template("/production/baseProduccion/baseProduccion.html", is_base_template=True)
 
+@app.route("/solicitudProduccion")
+def solicitudProduccion_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] not in ["produccion", "ventas"]:
+        return redirect(url_for("login"))
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM galletas')
+    galletas = cur.fetchall()
+    cur.close()
+    return render_template("/production/SolicitudProduccion.html", is_base_template=False, user=user,galletas=galletas)
 
 @app.route('/gestion-insumos')
 def gestion_insumos():
@@ -135,7 +151,11 @@ def moduloProduccion():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    return render_template('/production/Produccion.html', is_base_template = False,user=user)
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM galletas')
+    galletas = cur.fetchall()
+    cur.close()
+    return render_template('/production/Produccion.html', is_base_template = False,user=user,galletas=galletas)
 
 
 @app.route("/cliente")
@@ -143,27 +163,19 @@ def cliente_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM galletas')
-    data = cur.fetchall()
-    cur.close()
-    print(data)
+    data = cookies.getCookies()
     return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+
 
 @app.route("/clientes")
 def clientes():
     if "user" not in session:
         return redirect(url_for("login"))
-    
     active_user = session.get("user")
-
     if active_user[4] != "administrador":
         return render_template("pages/error404.html"), 404
-
     status = request.args.get("status", default=1, type=int)  # Por defecto activos
-    
     cur = mysql.connection.cursor()
-    
     cur.execute("""
         SELECT 
             c.idCliente,
@@ -179,10 +191,8 @@ def clientes():
         WHERE 
             u.status = %s;
     """, (status,))
-    
     clientes = cur.fetchall()
     cur.close()
-    
     return render_template('/admin/gestionClientes.html', clientes=clientes, status=status, is_base_template=False)
 
 
