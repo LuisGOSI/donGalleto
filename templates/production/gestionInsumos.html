@@ -1,12 +1,32 @@
 {% extends '/production/baseProduccion/baseProduccion.html' %} {% block
-    title %}Inventario de Insumos{% endblock %} {% block content %}
+    title %}Gestion de Insumos{% endblock %} {% block content %}
+
+<!-- Alertas Flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+                {% if category == 'insumo_success' or category == 'insumo_error' 
+                      or category == 'presentacion_success' or category == 'presentacion_error'
+                      or category == 'formato_success' or category == 'formato_error' %}
+                    <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
     <div class="container">
+        <h1 class="titleInsumos">Gestión de Insumos</h1>
         <section class="intro-container">
-            <h1 class="titleInsumos">Gestión de Insumos</h1>
-            <div class="inventario-container" style="display: flex; gap: 20px">
+            <h2 class="titleInsumos2">Listado de Insumos</h2>
+            <!-- Primera sección: Tabla de Insumos -->
+            <section class="inventario-container" style="display: flex; gap: 20px; margin-bottom: 40px;">
                 <div class="tabla-inventario" style="flex: 1; position: relative">
                     <div style="text-align: right; margin-bottom: 10px">
-                        <!-- Botón para modal de registrar -->
                         <button class="registrar-btn" type="button" data-bs-toggle="modal" data-bs-target="#registrarInsumoModal">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
@@ -19,7 +39,7 @@
                             <tr>
                                 <th>Producto</th>
                                 <th>Unidad de Medida</th>
-                                <th>Asiganciones</th>
+                                <th>Asignaciones</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -32,7 +52,7 @@
                                     <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#asignarProveedorModal" data-insumo-id="{{ insumo[0] }}">
                                         Presentacion Compra
                                     </button>
-                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#asignarProveedorModal" data-insumo-id="{{ insumo[0] }}">
+                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#asignarFormatoRecetaModal" data-insumo-id="{{ insumo[0] }}">
                                         Formato de Receta
                                     </button>
                                 </td>
@@ -49,50 +69,86 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
+            
+            <!-- Segunda sección: Tabla de Presentaciones -->
+            <section class="intro-container">
+                <h2 class="titleInsumos2">Presentaciones y Proveedores</h2><br>
+                <div class="inventario-container" style="display: flex; gap: 20px">
+                    <div class="tabla-inventario" style="flex: 1; position: relative">
+                        <table style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Nombre Insumo</th>
+                                    <th>Nombre Presentación</th>
+                                    <th>Cantidad Base</th>
+                                    <th>Proveedor</th>
+                                    <th>Precio Proveedor</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for presentacion in presentaciones %}
+                                <tr>
+                                    <td>{{ presentacion[1] }}</td> 
+                                    <td>{{ presentacion[3] }}</td> 
+                                    <td>{{ presentacion[4] }}</td> 
+                                    <td>{{ presentacion[5] }}</td> 
+                                    <td>{{ presentacion[6] }}</td> 
+                                    <td>
+                                        <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#editarPresentacionModal" data-presentacion-id="{{ presentacion[2] }}">
+                                            Editar
+                                        </button>
+                                        <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#eliminarPresentacionModal" data-presentacion-id="{{ presentacion[2] }}">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <!-- Tercera sección: Tabla de Formatos de Receta -->
+            <section class="intro-container">
+                <h2 class="titleInsumos2">Formatos de Receta</h2><br>
+                <div class="inventario-container" style="display: flex; gap: 20px">
+                    <div class="tabla-inventario" style="flex: 1; position: relative">
+                        <table style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Nombre Insumo</th>
+                                    <th>Formato</th>
+                                    <th>Equivalencia</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for formato in formatos_receta %}
+                                <tr>
+                                    <td>{{ formato[1] }}</td>
+                                    <td>{{ formato[3] }}</td>
+                                    <td>1 {{ formato[3] }} = {{ formato[4] }} {{ formato[2] }}s</td>
+                                    <td>
+                                        <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#editarFormatoRecetaModal" data-formato-id="{{ formato[0] }}">
+                                            Editar
+                                        </button>
+                                        <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#eliminarFormatoRecetaModal" data-formato-id="{{ formato[0] }}">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </section>
     </div>
 
-    <div class="container">
-        <section class="intro-container">
-            <h2 class="titleInsumos">Presentaciones y Proveedores</h2>
-            <div class="inventario-container" style="display: flex; gap: 20px">
-                <div class="tabla-inventario" style="flex: 1; position: relative">
-                    <table style="width: 100%">
-                        <thead>
-                            <tr>
-                                <th>Nombre Insumo</th>
-                                <th>Nombre Presentación</th>
-                                <th>Cantidad Base</th>
-                                <th>Proveedor</th>
-                                <th>Precio Proveedor</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for presentacion in presentaciones %}
-                            <tr>
-                                <td>{{ presentacion[1] }}</td> 
-                                <td>{{ presentacion[3] }}</td> 
-                                <td>{{ presentacion[4] }}</td> 
-                                <td>{{ presentacion[5] }}</td> 
-                                <td>{{ presentacion[6] }}</td> 
-                                <td>
-                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#editarPresentacionModal" data-presentacion-id="{{ presentacion[2] }}">
-                                        Editar
-                                    </button>
-                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#eliminarPresentacionModal" data-presentacion-id="{{ presentacion[2] }}">
-                                        Eliminar
-                                    </button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-    </div>
+    
 
     <!-- Modal para registrar insumos -->
     <div
@@ -402,6 +458,99 @@
             </div>
         </div>
     </div>
+    <!-- Modal Asignar formato para recetas -->
+    <div class="modal fade" id="asignarFormatoRecetaModal" name="asignarFormatoRecetaModal" tabindex="-1" aria-labelledby="asignarFormatoRecetaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="asignarFormatoRecetaModalLabel">
+                        Asignar Formato de Receta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/registrar_formato_receta" method="POST">
+                        <input type="hidden" id="idInsumoFormato" name="idInsumoFormato" />
+                        
+                        <div class="mb-3">
+                            <label for="nombreFormato" class="form-label">Nombre del Formato</label>
+                            <input type="text" class="form-control" id="nombreFormato" name="nombreFormato" required placeholder="Ej: Taza, Cucharada, Vaso">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="cantidadConvertida" class="form-label">Equivalencia en la unidad base</label>
+                            <input type="number" step="0.01" class="form-control" id="cantidadConvertida" name="cantidadConvertida" required placeholder="Ej: 1 taza = 250 gramos (ingresar 250)">
+                            <div class="form-text">Ingrese cuánto representa este formato en la unidad de medida base del insumo (gr,ml,pz)</div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Cerrar
+                            </button>
+                            <button type="submit" class="btn btn-primary">Guardar Formato</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Formato de Receta -->
+<div class="modal fade" id="editarFormatoRecetaModal" tabindex="-1" aria-labelledby="editarFormatoRecetaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarFormatoRecetaModalLabel">Editar Formato de Receta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/editarFormatoReceta" method="POST">
+                    <input type="hidden" id="idFormatoEditar" name="idFormatoEditar" />
+                    <input type="hidden" id="idInsumoFormatoEditar" name="idInsumoFormatoEditar" />
+                    
+                    <div class="mb-3">
+                        <label for="nombreFormatoEditar" class="form-label">Nombre del Formato</label>
+                        <input type="text" class="form-control" id="nombreFormatoEditar" name="nombreFormatoEditar" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="cantidadConvertidaEditar" class="form-label">Equivalencia en la unidad base</label>
+                        <input type="number" step="0.01" class="form-control" id="cantidadConvertidaEditar" name="cantidadConvertidaEditar" required>
+                        <div class="form-text" id="unidadBaseText">Cantidad en [unidad] que equivale a 1 unidad de este formato</div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Eliminar Formato de Receta -->
+<div class="modal fade" id="eliminarFormatoRecetaModal" tabindex="-1" aria-labelledby="eliminarFormatoRecetaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eliminarFormatoRecetaModalLabel">Eliminar Formato de Receta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/eliminarFormatoReceta" method="POST">
+                    <input type="hidden" id="idFormatoEliminar" name="idFormatoEliminar" />
+                    <p>¿Está seguro que deseas eliminar este formato de receta?</p>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script src="{{ url_for('static', filename='functions/funcionesInsumos.js')}}" defer></script>
     {% endblock %}
     

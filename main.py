@@ -71,8 +71,26 @@ def gestion_insumos():
     presentaciones = cur.fetchall()
     cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
     proveedores = cur.fetchall()
+    cur.execute("""
+        SELECT 
+            fr.idFormato,
+            i.nombreInsumo,
+            i.unidadMedida,
+            fr.nombreFormato,
+            ifr.cantidadConvertida
+        FROM 
+            formatosRecetas fr
+        JOIN 
+            insumoFormatos ifr ON fr.idFormato = ifr.idFormatoFK
+        JOIN 
+            insumos i ON ifr.idInsumoFK = i.idInsumo
+        ORDER BY 
+            i.nombreInsumo, fr.nombreFormato
+    """)
+    formatos_receta = cur.fetchall()
     cur.close()
-    return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, is_base_template=False)
+    return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, 
+                           formatos_receta=formatos_receta, is_base_template=False)
 
 
 @app.route("/inventario-insumos")
