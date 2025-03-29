@@ -7,7 +7,7 @@
             <div class="inventario-container" style="display: flex; gap: 20px;">
                 <div class="tabla-inventario" style="flex: 1; position: relative;">
                     <div style="text-align: right; margin-bottom: 10px;">
-                        <button class="registrar-btn" type="input">
+                        <button class="registrar-btn" type="button" data-bs-toggle="modal" data-bs-target="#registroModal">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                             </svg>
@@ -27,13 +27,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for insumo in insumosTabla %}
+                            {% for insumo in insumos %}
                             <tr>
-                                <td>{{insumo.idInsumo}}</td>
-                                <td>{{insumo.nombreInsumo}}</td>
-                                <td>{{insumo.cantidadInsumo}}</td>
-                                <td>{{insumo.fechaCaducidad.strftime('%d/%m/%Y')}}</td>
-                                <td>{{ galletas.mermas | int}}</td>
+                                <td>{{insumo[0]}}</td>
+                                <td>{{insumo[1]}}</td>
+                                <td>{{insumo[3]}} {{insumo[2]}}s</td>
+                                <td>{{insumo[4]}}</td>
+                                <td>{{insumo[7]}}</td>
                                 <td>
                                     <button class="mermas-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
@@ -47,6 +47,41 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!--Modal para registrar compra de insumos -->
+                <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <form action="/registrarInsumo" method="POST" class="container mt-4 p-4 border rounded bg-light">
+                                    <h2 class="text-center mb-4">Registrar insumo</h2>
+                                    <div class="mb-3">
+                                        <label for="idInsumo" class="form-label">Insumo</label>
+                                        <select class="form-control" id="idInsumo" name="idInsumo" required>
+                                            <!-- Las opciones de insumos se cargarán dinámicamente -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="idPresentacionFK" class="form-label">Presentación</label>
+                                        <select class="form-control" id="idPresentacionFK" name="idPresentacionFK" required>
+                                            <!-- Las presentaciones del insumo seleccionado se cargarán dinámicamente -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cantidadCompra" class="form-label">Cantidad de la Compra</label>
+                                        <input type="number" step="0.01" class="form-control" id="cantidadCompra" name="cantidadCompra" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="fechaCaducidad" class="form-label">Fecha de caducidad</label>
+                                        <input type="date" class="form-control" id="fechaCaducidad" name="fechaCaducidad" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Registrar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!--Div para la card de próximos a caducar-->
                 <div class="proximos-caducar" style="width: 300px;">
                     <div class="caducar-header">Proximos a caducar</div>
@@ -78,4 +113,5 @@
             </div>
         </section>
     </div>
+    <script src="{{ url_for('static', filename='functions/funcionesInvInsumos.js')}}"></script>
 {% endblock %}

@@ -2,9 +2,10 @@ from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
-from database.production import inventarioDeGalletas
+from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
+from datetime import datetime
 from db import app,mysql 
 from sessions import *
 
@@ -86,25 +87,9 @@ def insumos_inventory():
     user = session.get("user")
     if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
-    proveedores = cur.fetchall()
-    cur.execute("""
-        SELECT 
-            i.idInsumo, 
-            i.nombreInsumo, 
-            i.unidadMedida, 
-            i.cantidadInsumo, 
-            COALESCE(p.nombrePresentacion, 'No asignado') AS nombrePresentacion, 
-            COALESCE(pr.nombreProveedor, 'No asignado') AS nombreProveedor
-        FROM insumos i
-        LEFT JOIN presentacionesinsumos p ON i.idInsumo = p.idInsumoFK
-        LEFT JOIN proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
-        LEFT JOIN proveedores pr ON pi.idProveedorFK = pr.idProveedor
-    """)
-    insumos = cur.fetchall()
-    cur.close()
-    return render_template('/production/InveInsumos.html', proveedores=proveedores, insumos=insumos, is_base_template=False)
+    hoy = datetime.today().date()
+    insumos = inventarioDeInsumos.getInvInsumosTabla()
+    return render_template("/production/inveInsumos.html", insumos=insumos, is_base_template=False)
 
 
 @app.route("/proveedores")
@@ -199,23 +184,9 @@ def page_not_found(error):
 #! /////////////////////////////////////////////////////////////////////// Rutas de prueba ///////////////////////////////////////////////////////////////////////
 #! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@app.route("/test")
-def test():
-    return render_template("/pages/test.html")
-
-
 @app.route("/ventas")
 def ventas_dashboard():
     return render_template("/sales/sales.html")
-
-# Checar sesion
-@app.route("/checkSession", methods=["POST"])
-def checkSession():
-    user_active = session.get("user")
-    if user_active is not None:
-        return render_template("/pages/test.html", user=user_active)
-    else:
-        return render_template("/pages/test.html", user=user_active)
 
 
 def get_empleados():
