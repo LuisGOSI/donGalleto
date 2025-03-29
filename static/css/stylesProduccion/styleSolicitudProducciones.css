@@ -1,0 +1,252 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+/* ------------------------------------------------------------------------ Títulos y textos ------------------------------------------------------------------------ */
+.title-solicitud-produccion {
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    font-family: 'Open Sans', sans-serif;
+    margin-top: 25px;
+    
+}
+
+.title-modal-soli {
+    font-family: 'Trebuchet MS', sans-serif;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.subtitle-modal-soli {
+    font-family: 'Trebuchet MS', sans-serif;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.text-solicitud-produccion {
+    font-family: 'Trebuchet MS', sans-serif;
+    text-align: center;
+    font-size: 16px;
+    margin: 15px 0;
+}
+
+/* ------------------------------------------------------------------------ Estilo para contenedores ------------------------------------------------------------------------ */
+.grid-solicitud-produccion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1400px;
+    justify-content: center;
+    margin: 40px auto;
+}
+
+.solicitud-produccion-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    min-width: 300px;
+    max-width: 300px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.solicitud-produccion-container:hover {
+    transform: scale(1.05);
+}
+
+.solicitud-produccion-container img{
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.solicitud-produccion-dails h6{
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: bold;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.solicitud-produccion-actions {
+    display: flex;
+    justify-content: column;
+    width: 100%;
+    gap: 10px;
+}
+
+
+hr {
+    border: 1px solid #7f4e1e;
+    margin: 10px 0;
+}
+
+.bg-lightbrown {
+    background-color: #EED8C5;
+    margin: 50px;
+    padding: 25px;
+    border-radius: 15px;
+}
+
+
+.navbar,
+.nav-link {
+    font-family: 'Charm', sans-serif;
+}
+
+/* ------------------------------------------------------------------------ Estilo para botones ------------------------------------------------------------------------ */
+
+/* Clase para el botón de confirmación (verde) */
+.btn-confirm {
+    background-color: #28a745;
+    /* Color verde */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+/* Clase para el botón de cancelar (rojo) */
+.btn-cancel {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Agregar estilos adicionales para hover si se desea */
+.btn-confirm:hover {
+    background-color: #218838;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+.btnAgregarSolicitud {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    display: block;
+    margin: 0 auto;
+}
+
+.btnAgregarSolicitud:hover {
+    background-color: #45a049;
+}
+
+.custom-botonProducir{
+    background-color: #009E0F;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.custom-botonProducir:hover {
+background-color: #007A0C;
+}
+
+.custom-botonProducir {
+margin-bottom: 10px;
+}
+
+/* ------------------------------------------------------------------------ Estilo para modal de solicitudes ------------------------------------------------------------------------ */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 400px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #f5f5f5;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.close-modal:hover {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.modal-body {
+    padding: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn-agregar {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}

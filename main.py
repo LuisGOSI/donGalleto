@@ -44,6 +44,18 @@ def produccion_dashboard():
         return redirect(url_for("login"))
     return render_template("/production/baseProduccion/baseProduccion.html", is_base_template=True)
 
+@app.route("/solicitudProduccion")
+def solicitudProduccion_dashboard():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] not in ["produccion", "ventas"]:
+        return redirect(url_for("login"))
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM galletas')
+    galletas = cur.fetchall()
+    cur.close()
+    return render_template("/production/SolicitudProduccion.html", is_base_template=False, user=user,galletas=galletas)
 
 @app.route('/gestion-insumos')
 def gestion_insumos():
@@ -164,8 +176,31 @@ def historico_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    return render_template('/client/Historico.html', is_base_template = False,user=user)
-
+    idCliente = user[0]
+    # Obtener el nombre del cliente de la tabla de clientes
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT nombreCliente FROM clientes WHERE idCliente = %s", (idCliente,))
+    resultado_cliente = cur.fetchone()
+    nombreCliente = resultado_cliente[0] if resultado_cliente else "Cliente"
+    # Consulta para histórico de compras
+    cur.execute("SELECT * FROM v_historicoCompras WHERE idCliente = %s", (idCliente,))
+    column_names = [column[0] for column in cur.description]
+    historico_compras = []
+    for row in cur.fetchall():
+        compra_dict = {}
+        for i, col_name in enumerate(column_names):
+            compra_dict[col_name] = row[i]
+        historico_compras.append(compra_dict)
+    cur.close()
+    # Verificar si hay compras
+    historico = len(historico_compras) > 0
+    
+    return render_template('/client/Historico.html', 
+                           is_base_template=False, 
+                           user=user, 
+                           historico_compras=historico_compras,
+                           historico=historico,
+                           nombreCliente=nombreCliente)
 
 @app.route("/sobreNosotros")
 def about_us():
