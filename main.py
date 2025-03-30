@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, session
-from database.production import insumosCRUD
+from database.production import insumosCRUD, gestionRecetas
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas
@@ -203,7 +203,30 @@ def receta():
     active_user = session.get("user")
     if active_user[4] not in ["produccion", "administrador"]:
         return render_template("pages/error404.html"), 404
-    return render_template('/production/Recetas.html', is_base_template = False)
+    
+    cur = mysql.connection.cursor()
+    
+    # Obtener galletas para el select
+    cur.execute("SELECT idGalleta, nombreGalleta FROM galletas ORDER BY nombreGalleta")
+    galletas = cur.fetchall()
+    
+    # Obtener insumos para el select
+    cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos ORDER BY nombreInsumo")
+    insumos = cur.fetchall()
+    
+    # Obtener formatos disponibles
+    cur.execute("SELECT idFormato, nombreFormato FROM formatosRecetas ORDER BY nombreFormato")
+    formatos = cur.fetchall()
+    
+    cur.close()
+    
+    return render_template(
+        '/production/Recetas.html', 
+        is_base_template=False,
+        galletas=galletas,
+        insumos=insumos,
+        formatos=formatos
+    )
 
 
 @app.route("/carrito")
