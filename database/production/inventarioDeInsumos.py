@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, flash, jsonify
+from flask import request, redirect, url_for, flash, jsonify, render_template
 from db import app, mysql
 
 def getInvInsumosTabla():
@@ -112,6 +112,43 @@ def registrarInsumo():
         except Exception as e:
             mysql.connection.rollback()
             flash(f"Error al registrar el insumo: {str(e)}", "danger")
+        finally:
+            cur.close()
+        return redirect(url_for("insumos_inventory"))
+
+
+@app.route("/registrarMermaInsumo", methods=["POST"])
+def registrarMerma():
+    if request.method == "POST":
+        idInventarioInsumoFK = request.form["idInventarioInsumoFK"]
+        tipoMerma = request.form["tipoMerma"]
+        cantidad = int(request.form["cantidad"])
+        observaciones = request.form["observaciones"]
+        cantidadActual = int(round(float(request.form["cantidadActual"])))
+        resta = cantidadActual - cantidad
+        if resta < 0:
+            flash("La cantidad de merma excede la cantidad disponible.", "danger")
+            return redirect(url_for("insumos_inventory"))
+        cur = mysql.connection.cursor()
+        try:
+            cur.execute(
+                "INSERT INTO mermas (tipoMerma, idInventarioInsumoFK, cantidad, fechaRegistro, observaciones) VALUES (%s, %s, %s, NOW(), %s)",
+                (tipoMerma, idInventarioInsumoFK, cantidad, observaciones),
+            )
+            cur.execute(
+                "UPDATE inventarioInsumos SET cantidad = %s WHERE idInventarioInsumo = %s;",
+                (resta, idInventarioInsumoFK),
+            )
+            if resta == 0:
+                cur.execute(
+                    "UPDATE inventarioInsumos SET estadoLote = 'Vendido' WHERE idInventarioInsumo = %s",
+                    (idInventarioInsumoFK,),
+                )
+                flash("Lote vacío", "success")
+            mysql.connection.commit()
+        except Exception as e:
+            mysql.connection.rollback()
+            flash("Error al procesar la merma.", "danger")
         finally:
             cur.close()
         return redirect(url_for("insumos_inventory"))

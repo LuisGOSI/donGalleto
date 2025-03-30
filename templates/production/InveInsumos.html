@@ -4,6 +4,74 @@
     <div class="container">
         <section class="intro-container">
             <h1 class="titleInsumos">Inventario Insumos</h1>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            let messages = {{ messages | tojson }};
+                            let flashList = document.getElementById("flashMessagesList");
+                            flashList.innerHTML = "";
+                            messages.forEach(([category, message]) => {
+                                let li = document.createElement("li");
+                                li.textContent = message;
+                                li.classList.add("alert", "rounded", "p-2", "mb-2");
+                                if (category === "success" || category === "danger" || category === "warning" || category === "info") {
+                                    li.classList.add("fw-bold");
+                                }
+                                flashList.appendChild(li);
+                            });
+                        });
+                    </script>
+                {% endif %}
+            {% endwith %}
+            <div class="modal fade" id="alertaInsumosAmarilla" tabindex="-1" aria-labelledby="alertaInsumosLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-warning text-dark">
+                            <h5 class="modal-title text-center w-100" id="alertaInsumosLabel">🚨¡Atención!🚨</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% for datos in lotesResumen %}
+                                {% if datos.dias_restantes is not none and datos.dias_restantes <= 3 and datos.dias_restantes > 0 %}
+                                    <p>
+                                        (No. Lote:<strong>{{ datos.id_lote }}</strong>) 
+                                        Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> {{datos.unidad_medida}}/s  de 
+                                        "<strong>{{ datos.nombre }}</strong>" que caducarán en 
+                                        <strong>{{ datos.dias_restantes }}</strong> día(s).
+                                    </p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="alertaInsumosRoja" tabindex="-1" aria-labelledby="alertaInsumosLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title text-center w-100" id="alertaInsumosLabel">⚠️ ¡Cuidado!⚠️ </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% for datos in lotesResumen %}
+                                {% if datos.dias_restantes is not none and datos.dias_restantes == 0 %}
+                                    <p>
+                                        (No. Lote:<strong>{{ datos.id_lote }}</strong>) Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> insumos de 
+                                        "<strong>{{ datos.nombre }}</strong>" que caducan hoy.
+                                    </p>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="inventario-container" style="display: flex; gap: 20px;">
                 <div class="tabla-inventario" style="flex: 1; position: relative;">
                     <div style="text-align: right; margin-bottom: 10px;">
@@ -21,6 +89,7 @@
                                 <th>Lote</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
+                                <th>Presentación</th>
                                 <th>Fecha De Caducidad</th>
                                 <th>Mermas</th>
                                 <th>Acciones</th>
@@ -28,14 +97,16 @@
                         </thead>
                         <tbody>
                             {% for insumo in insumos %}
+                            {% if insumo[6] != 'Caducado' %}
                             <tr>
                                 <td>{{insumo[0]}}</td>
                                 <td>{{insumo[1]}}</td>
-                                <td>{{insumo[3]}} {{insumo[2]}}s</td>
+                                <td>{{insumo[3]}}</td>
+                                <td>{{insumo[2]}}s</td>
                                 <td>{{insumo[4]}}</td>
                                 <td>{{insumo[7]}}</td>
                                 <td>
-                                    <button class="mermas-btn">
+                                    <button class="mermas-btn" data-bs-target="#registroMermaModal" data-bs-toggle="modal">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
                                             <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"/>
                                         </svg>
@@ -43,11 +114,11 @@
                                     </button>
                                 </td>
                             </tr>
+                            {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-
                 <!--Modal para registrar compra de insumos -->
                 <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -81,37 +152,104 @@
                         </div>
                     </div>
                 </div>
-
-                <!--Div para la card de próximos a caducar-->
-                <div class="proximos-caducar" style="width: 300px;">
-                    <div class="caducar-header">Proximos a caducar</div>
-                    <table style="width: 100%">
-                        
+            <!--Div para la card de próximos a caducar-->
+            <div class="proximos-caducar" style="width: 300px;">
+                <div class="caducar-header">Próximos a caducar</div>
+                {% if proximos_caducar %}
+                    {% for proximo_caducar in proximos_caducar %}
+                    {% if proximo_caducar.dias_restantes <=10 %}
+                    <table style="width: 100%; margin-bottom: 15px;">
+                        <tr>
+                            <td style="text-align: left; background: none; padding: 2px;">Lote</td>
+                            <td style="text-align: center; background: none; padding: 2px;">{{ proximo_caducar.id_lote }}</td>
+                        </tr>
                         <tr>
                             <td style="text-align: left; background: none; padding: 2px;">Producto</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;">Leche</td>
+                            <td style="text-align: center; background: none; padding: 2px;">{{ proximo_caducar.nombre }}</td>
                         </tr>
-
                         <tr>
                             <td style="text-align: left; background: none; padding: 2px;">Cantidad</td>
-                            <!--Cargar datos próximos a caducar-->
-                            <td style="text-align: center; background: none; padding: 2px;">100 lts</td>
+                            <td style="text-align: center; background: none; padding: 2px;">{{ proximo_caducar.cantidad_proxima_caducar }}</td>
                         </tr>
                         <tr>
                             <td style="text-align: left; background: none; padding: 2px;">Fecha a caducar</td>
-                            <!--Cargar datos próximos a caducar-->
                             <td style="text-align: center; background: none; padding: 2px;">
-                                <!--Cargar datos próximos a caducar-->
-                                10/11/2024
-                                <!--Cargar datos próximos a caducar-->
-                                <span class="alerta">⚠</span>
+                                {{ proximo_caducar.fecha_caducidad.strftime('%d/%m/%Y') if proximo_caducar.fecha_caducidad else 'N/A' }}
+                                {% if proximo_caducar.dias_restantes is not none and proximo_caducar.dias_restantes <= 3 %}
+                                    <span class="alerta">⚠</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; background: none; padding: 2px;">Días restantes</td>
+                            <td style="text-align: center; background: none; padding: 2px;">
+                                {% if proximo_caducar.dias_restantes == 0 %}
+                                    <span style="color: red; font-weight: bold;">¡Caduca hoy!</span>
+                                {% elif proximo_caducar.dias_restantes < 0 %}
+                                    <span style="color: red; font-weight: bold;">¡Caducado!</span>
+                                {% else %}
+                                    {{ proximo_caducar.dias_restantes }} días
+                                {% endif %}
                             </td>
                         </tr>
                     </table>
-                </div>
+                    {% endif %}
+                    {% endfor %}
+                {% else %}
+                <p style="text-align: center; padding: 10px;">No hay insumos próximos a caducar</p>
+                {% endif %}
             </div>
         </section>
+    </div>
+    <div class="modal fade" id="alertaInsumosCafe" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg rounded">
+                <div class="modal-header text-white" style="background-color: #6F4E37;">
+                    <h5 class="modal-title text-center w-100" id="flashModalLabel">Notificación</h5>
+                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: #E0C9A6;">
+                    <ul id="flashMessagesList" class="list-unstyled m-0"></ul>
+                </div>
+                <div class="modal-footer" style="background-color: #D2B48C;"> 
+                    <button type="button" class="btn text-white" style="background-color: #8B5A2B;" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="registroMermaModal" tabindex="-1" aria-labelledby="modalMermaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form action="/registrarMermaInsumo" method="POST" class="container mt-4 p-4 border rounded bg-light">
+                        <h2 class="text-center mb-4">Registrar Merma</h2>
+                        <input type="hidden" id="idInventarioInsumoFK" name="idInventarioInsumoFK">
+                        <input type="hidden" id="cantidadActual" name="cantidadActual">
+                        <div class="mb-3">
+                            <label for="tipoMerma" class="form-label">Motivo de Merma</label>
+                            <select class="form-control" id="tipoMerma" name="tipoMerma" required>
+                                <option value="Producto dañado">Producto dañado</option>
+                                <option value="Insumo desperdiciado">Insumo desperdiciado</option>
+                                <option value="Insumo caduco">Insumo caduco</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cantidad" class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" required oninput="this.value = this.value.replace(/\./g, '')">
+                        </div>
+                        <div class="mb-3">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Registrar Merma</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="{{ url_for('static', filename='functions/funcionesInvInsumos.js')}}"></script>
 {% endblock %}

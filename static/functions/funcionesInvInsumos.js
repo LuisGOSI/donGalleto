@@ -51,3 +51,38 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+//! Modal de alerta de insumos ============================================================================
+
+document.addEventListener("DOMContentLoaded", function () { 
+    var modalCafe = document.getElementById('alertaInsumosCafe');
+    var modalAmarillo = document.getElementById('alertaInsumosAmarilla');
+    var modalRojo = document.getElementById('alertaInsumosRoja');
+    if (modalCafe && modalCafe.querySelector('.modal-body').textContent.trim() !== "") {
+        new bootstrap.Modal(modalCafe).show();
+    } else if (modalAmarillo && modalAmarillo.querySelector('.modal-body').textContent.trim() !== "") {
+        new bootstrap.Modal(modalAmarillo).show();
+        modalAmarillo.addEventListener('hidden.bs.modal', function () {
+            if (modalRojo && modalRojo.querySelector('.modal-body').textContent.trim() !== "") {
+                new bootstrap.Modal(modalRojo).show();
+            }
+        });
+    } else if (modalRojo && modalRojo.querySelector('.modal-body').textContent.trim() !== "") {
+        new bootstrap.Modal(modalRojo).show();
+    }
+});
+
+
+document.addEventListener("DOMContentLoaded", function () { 
+    document.querySelectorAll(".mermas-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let row = this.closest("tr");
+            let idInsumo = row.querySelectorAll("td")[0].textContent.trim();
+            let cantidadActual = row.querySelectorAll("td")[2].textContent.trim();
+            document.getElementById("idInventarioInsumoFK").value = idInsumo;
+            document.getElementById("cantidadActual").value = cantidadActual;
+            
+        });
+    });
+});
+
