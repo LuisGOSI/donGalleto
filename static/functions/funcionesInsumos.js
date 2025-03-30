@@ -150,3 +150,55 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("idPresentacionEliminar").value = idPresentacion;
     });
 });
+
+// Tomar idInsumo para formato de receta
+document.getElementById('asignarFormatoRecetaModal').addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget; // Botón que activó el modal
+    var insumoId = button.getAttribute('data-insumo-id'); // Extrae el id del insumo
+    var modal = this;
+    modal.querySelector('#idInsumoFormato').value = insumoId;
+});
+
+// Resetear el formulario cuando el modal se cierra
+document.getElementById('asignarFormatoRecetaModal').addEventListener('hidden.bs.modal', function () {
+    this.querySelector('form').reset();
+});
+
+// Configuración para el modal de editar formato
+document.getElementById('editarFormatoRecetaModal').addEventListener('show.bs.modal', function(event) {
+    var button = event.relatedTarget;
+    var formatoId = button.getAttribute('data-formato-id');
+    var modal = this;
+    
+    // Aquí deberías hacer una petición AJAX para obtener los datos del formato
+    fetch(`/obtener_formato_receta/${formatoId}`)
+        .then(response => response.json())
+        .then(data => {
+            modal.querySelector('#idFormatoEditar').value = data.idFormato;
+            modal.querySelector('#idInsumoFormatoEditar').value = data.idInsumo;
+            modal.querySelector('#nombreFormatoEditar').value = data.nombreFormato;
+            modal.querySelector('#cantidadConvertidaEditar').value = data.cantidadConvertida;
+            modal.querySelector('#unidadBaseText').textContent = 
+                `Cantidad en ${data.unidadBase} que equivale a 1 unidad de este formato`;
+        })
+        .catch(error => {
+            console.error('Error al cargar los datos del formato:', error);
+        });
+});
+
+// Configuración para el modal de eliminar formato
+document.getElementById('eliminarFormatoRecetaModal').addEventListener('show.bs.modal', function(event) {
+    var button = event.relatedTarget;
+    var formatoId = button.getAttribute('data-formato-id');
+    this.querySelector('#idFormatoEliminar').value = formatoId;
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Tiempo de alerta
+    setTimeout(() => {
+        document.querySelectorAll(".alert").forEach(alert => {
+            alert.style.opacity = "0";
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 4000);
+  });

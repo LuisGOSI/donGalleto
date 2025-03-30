@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, session
-from database.production import insumosCRUD
+from database.production import insumosCRUD, gestionRecetas
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas
@@ -87,8 +87,26 @@ def gestion_insumos():
     presentaciones = cur.fetchall()
     cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
     proveedores = cur.fetchall()
+    cur.execute("""
+        SELECT 
+            fr.idFormato,
+            i.nombreInsumo,
+            i.unidadMedida,
+            fr.nombreFormato,
+            ifr.cantidadConvertida
+        FROM 
+            formatosRecetas fr
+        JOIN 
+            insumoFormatos ifr ON fr.idFormato = ifr.idFormatoFK
+        JOIN 
+            insumos i ON ifr.idInsumoFK = i.idInsumo
+        ORDER BY 
+            i.nombreInsumo, fr.nombreFormato
+    """)
+    formatos_receta = cur.fetchall()
     cur.close()
-    return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, is_base_template=False)
+    return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, 
+                           formatos_receta=formatos_receta, is_base_template=False)
 
 
 @app.route("/inventario-insumos")
@@ -178,6 +196,39 @@ def clientes():
     return render_template('/admin/gestionClientes.html', clientes=clientes, status=status, is_base_template=False)
 
 
+@app.route("/receta")
+def receta():
+    if "user" not in session:
+        return redirect(url_for("login"))
+    active_user = session.get("user")
+    if active_user[4] not in ["produccion", "administrador"]:
+        return render_template("pages/error404.html"), 404
+    
+    cur = mysql.connection.cursor()
+    
+    # Obtener galletas para el select
+    cur.execute("SELECT idGalleta, nombreGalleta FROM galletas ORDER BY nombreGalleta")
+    galletas = cur.fetchall()
+    
+    # Obtener insumos para el select
+    cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos ORDER BY nombreInsumo")
+    insumos = cur.fetchall()
+    
+    # Obtener formatos disponibles
+    cur.execute("SELECT idFormato, nombreFormato FROM formatosRecetas ORDER BY nombreFormato")
+    formatos = cur.fetchall()
+    
+    cur.close()
+    
+    return render_template(
+        '/production/Recetas.html', 
+        is_base_template=False,
+        galletas=galletas,
+        insumos=insumos,
+        formatos=formatos
+    )
+
+
 @app.route("/carrito")
 def carrito_dashboard():
     if session.get("user") is None:
@@ -264,4 +315,3 @@ def get_empleados():
     empleados = cur.fetchall()
     cur.close()
     return empleados
-
