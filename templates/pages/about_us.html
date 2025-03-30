@@ -1,41 +1,123 @@
-{% extends "bases/base.html" %}
-{% block title %}Inicio{% endblock %}
+{% extends "bases/baseConocenos.html" %}
+{% block title %}Conóncenos{% endblock %}
 {% block content %}
-<div class="img-index-container">
-    <img src="{{ url_for('static', filename='img/fondoIndex.png') }}" alt="Imagen de fondo para la pagina de inicio">
+
+<div class="profile-wrapper">
+    <!-- Armando Rodríguez -->
+    <div class="profile-container">
+        <div class="bio">
+            <h2 class="title-profesion">Ingeniero en desarrollo y gestión de software</h2>
+            <p>Product Manager con más de <span class="highlight">10 años de experiencia</span> en el desarrollo y lanzamiento de productos digitales innovadores.</p>
+            <p>Especializado en <span class="highlight">estrategia de producto</span>, gestión ágil de equipos y análisis de datos para la toma de decisiones.</p>
+            <p>Ha liderado equipos multidisciplinarios en empresas tecnológicas, logrando un <span class="highlight">aumento del 30% en engagement</span> y un <span class="highlight">25% en ingresos</span> para los productos bajo su dirección.</p>
+            <p>Apasionado por crear soluciones que resuelvan problemas reales y generen impacto positivo en los usuarios.</p>
+        </div>
+        
+        <div class="person">
+            <div class="container">
+                <div class="container-inner">
+                    <img class="circle" src="/static/img/armangod.webp" />
+                    <img class="img img1" src="" />
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="name">Armando Rodríguez</div>
+            <div class="title">Product Manager</div>
+        </div>
+    </div>
+    
+    <!-- Salas Ibarra -->
+    <div class="profile-container">
+        <div class="bio">
+            <h2 class="title-profesion">Experto en arquitectura de sistemas</h2>
+            <p>Senior Developer BackEnd con <span class="highlight">8 años de experiencia</span> en el diseño e implementación de sistemas escalables.</p>
+            <p>Especialista en <span class="highlight">microservicios</span>, bases de datos distribuidas y optimización de consultas complejas.</p>
+            <p>Ha implementado soluciones backend que manejan <span class="highlight">más de 1 millón de solicitudes diarias</span> con un tiempo de respuesta promedio de menos de 200ms.</p>
+            <p>Enfoque en escribir código limpio, mantenible y bien documentado que sirva como base para productos robustos.</p>
+        </div>
+        
+        <div class="person">
+            <div class="container">
+                <div class="container-inner">
+                    <img class="circle" src="" />
+                    <img class="img img2" src="/static/img/salas.webp" />
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="name">Salas Ibarra</div>
+            <div class="title">Senior Developer BackEnd</div>
+        </div>
+    </div>
+    
+    <!-- Luis Ignacio -->
+    <div class="profile-container">
+        <div class="bio">
+            <h2 class="title-profesion">Especialista en sistemas distribuidos</h2>
+            <p>Senior Developer Software Backend con <span class="highlight">7 años de experiencia</span> en el desarrollo de APIs de alto rendimiento.</p>
+            <p>Conocimientos profundos en <span class="highlight">sistemas de colas</span>, procesamiento asíncrono y patrones de diseño para alta disponibilidad.</p>
+            <p>Ha diseñado e implementado sistemas que procesan <span class="highlight">más de 500GB de datos diarios</span> con un 99.99% de uptime.</p>
+            <p>Comprometido con las mejores prácticas de desarrollo y la mejora continua de los procesos técnicos.</p>
+        </div>
+        
+        <div class="person">
+            <div class="container">
+                <div class="container-inner">
+                    <img class="circle" src="/static/img/Luisito.webp" />
+                    <img class="img img3" src="" />
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="name">Luis Ignacio</div>
+            <div class="title">Senior Developer Software Backend</div>
+        </div>
+    </div>
+    
+    <!-- Carlos Ramírez -->
+    <div class="profile-container">
+        <div class="bio">
+            <h2 class="title-profesion">Experto en interfaces de usuario</h2>
+            <p>Senior Developer FrontEnd con <span class="highlight">6 años de experiencia</span> creando experiencias digitales intuitivas y accesibles.</p>
+            <p>Especializado en <span class="highlight">frameworks modernos</span>, diseño responsive y optimización de rendimiento frontend.</p>
+            <p>Ha liderado la implementación de interfaces que han mejorado la <span class="highlight">satisfacción de usuarios en un 40%</span> según métricas NPS.</p>
+            <p>Apasionado por la usabilidad, la accesibilidad y la creación de interfaces que deleiten a los usuarios.</p>
+        </div>
+        
+        <div class="person">
+            <div class="container">
+                <div class="container-inner">
+                    <img class="circle" src="/static/img/charly.webp" />
+                    <img class="img img4" src="" />
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="name">Carlos Ramírez</div>
+            <div class="title">Senior Developer FrontEnd</div>
+        </div>
+    </div>
+    
+    <!-- Johan Antonio -->
+    <div class="profile-container">
+        <div class="bio">
+            <h2 class="title-profesion">Estratega de crecimiento digital</h2>
+            <p>Encargado de marketing con <span class="highlight">5 años de experiencia</span> en desarrollo de estrategias de crecimiento para productos digitales.</p>
+            <p>Especialista en <span class="highlight">marketing de contenidos</span>, SEO y análisis de datos para la toma de decisiones estratégicas.</p>
+            <p>Ha implementado campañas que han generado <span class="highlight">aumentos del 300% en tráfico orgánico</span> y mejorado las tasas de conversión en un 25%.</p>
+            <p>Enfoque en construir marcas sólidas y relaciones auténticas con las audiencias objetivo.</p>
+        </div>
+        
+        <div class="person">
+            <div class="container">
+                <div class="container-inner">
+                    <img class="circle" src="/static/img/Johan.webp" />
+                    <img class="img img3" src="" />
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="name">Johan Antonio</div>
+            <div class="title">Encargado de marketing</div>
+        </div>
+    </div>
+</div>
 </div>
 
-<div class="index-info-container">
-    <div class="div-info1">
-        <div class="mision">
-            <h2>Misión</h2>
-        </div>
-        <p class="mision-info">Brindar a nuestros clientes la mejor experiencia en productos de repostería
-            artesanal, combinando tradición y calidad en cada galleta. Nos esforzamos por utilizar ingredientes
-            frescos y locales, asegurando sabores únicos que hagan sonreír en cada bocado.</p>
-        <div class="line"></div>
-    </div>
-    <div class="div-info2">
-        <div class="vision">
-            <h2>Visión</h2>
-        </div>
-        <p class="vision-info">Ser reconocidos como la marca líder en galletas artesanales, conocida por su
-            compromiso con la calidad y la innovación en sabores. Aspiramos a que nuestras galletas no solo sean
-            un
-            producto, sino una experiencia de sabor que une a las personas y celebra los momentos más dulces de
-            la
-            vida.</p>
-        <div class="line"></div>
-    </div>
-    <div class="div-info3">
-        <div class="valores">
-            <h2>Valores</h2>
-        </div>
-        <p class="valores-info">Calidad artesanal: Cada galleta es elaborada con atención al detalle y respeto
-            a
-            las recetas tradicionales.<br>Compromiso con el cliente: La satisfacción y confianza de nuestros
-            clientes que son la base de nuestro trabajo.</p>
-        <div class="line"></div>
-    </div>
-</div>
 {% endblock %}
