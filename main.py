@@ -119,7 +119,6 @@ def insumos_inventory():
         return redirect(url_for("login"))
     hoy = datetime.now().date()
     insumos = inventarioDeInsumos.getInvInsumosTabla()
-    print(insumos)
     cursor = mysql.connection.cursor()
     cursor.execute("""
         SELECT 
