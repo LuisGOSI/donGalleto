@@ -13,6 +13,7 @@ from sessions import *
 
 @app.route("/")
 def home():
+    inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
 
 @app.route("/admin")
@@ -210,6 +211,9 @@ def test():
 @app.route("/ventas")
 def ventas_dashboard():
     return render_template("/sales/sales.html")
+@app.route("/corteVentas")
+def corteVentas():
+    return render_template("/sales/corteVenta.html")
 
 # Checar sesion
 @app.route("/checkSession", methods=["POST"])

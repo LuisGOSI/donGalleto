@@ -1,24 +1,24 @@
 {% extends "/admin/baseAdmin/BaseAdmin.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h1 style="margin-top: 10px;" class="fw-bold text-dark">Dashboard</h1><br>
+<h1 style="margin-top: 10px; font-weight: bold; font-family: 'Charm', cursive;  font-size: 60px; color: #3E302C; ">Dashboard</h1><br>
 
 
-    <div class="charts-section" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-        <div class="chart-card" style="background: #4E3629; color: white; padding: 15px; border-radius: 8px; width: 45%;">
+    <div class="charts-section" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; font-family: 'Open Sans', sans-serif; font-weight: bold;  ">
+        <div class="chart-card" style="background: #4E3629; color: white; padding: 15px; border-radius: 8px; width: 45%; font-family: 'Open Sans', sans-serif; font-weight: bold;">
             <h3 class="text-white fw-bold">Tipos de ventas</h3>
             <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 250px;"></canvas>
         </div>
     
-        <div class="chart-card" style="background: #D7B89D; padding: 15px; border-radius: 8px; width: 45%;">
-            <h3 class="fw-bold">Ganancias por día</h3>
+        <div class="chart-card" style="background: #D7B89D; padding: 15px; border-radius: 8px; width: 45%; font-family: 'Open Sans', sans-serif; font-weight: bold;">
+            <h3 class="fw-bold">Ganancias por los ultimos 5 dias</h3>
             <canvas id="gananciasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 250px;"></canvas>
         </div>
     </div>
     <br>
-    <div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px;"> 
+    <div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px; font-family: 'Open Sans', sans-serif; font-weight: bold;"> 
         <div class="row">
-            <h3 class="text-white text-center fw-bold" style="margin: 10px;">Productos más vendidos TOP 5</h3>
+            <h3 class="text-white text-center fw-bold" style="margin: 10px;">Productos más vendidos TOP 3</h3>
             {% for galleta in galletas %}
             <div class="col-md-4">
                 <div class="product">
@@ -28,9 +28,9 @@
                     <div class="product-container">
                         <img class="imagenGalleta" src="{{ galleta[2] }}" alt="{{ galleta[1] }}">
                         <div class="product-info">
-                            <div style="font-size: 1.2rem;">Cantidad vendida: {{ galleta[3] | int }} galletas
+                            <div style="font-size: 1.1rem;">Cantidad vendida: {{ galleta[3] | int }} galletas
                             </div>
-                        <div style="font-size: 1.2rem; ">Ganancias: ${{ galleta[4] }}</div>
+                        <div style="font-size: 1.1rem; ">Ganancias: ${{ galleta[4] }}</div>
                         </div>
                     </div>
                 </div>
