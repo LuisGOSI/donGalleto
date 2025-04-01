@@ -1,0 +1,44 @@
+{% extends '/production/baseProduccion/baseProduccion.html' %}
+{% block title %}Solicitudes de producciones{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/stylesProduccion/styleSolicitudProducciones.css">
+
+<h1 class="title-solicitud-produccion">Solicitudes de producción</h1>
+<div class="grid-solicitud-produccion">
+    {% block catalogo %}
+    {% for galleta in galletas %}
+    <div class="product-card">
+        <div class="solicitud-produccion-container">
+            <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
+            <div class="solicitud-produccion-dails">
+                <h6>{{ galleta[1] }}</h6>
+                <button class="btn custom-botonProducir" data-product="{{ galleta[1] }}">Producir</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endblock %}
+</div>
+
+<!-- Modal de Nueva Orden -->
+<div id="nuevaOrdenModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 class="title-modal-soli">Generar nueva orden</h2>
+        <div class="modal-body">
+            <h3 class="subtitle-modal-soli ">Receta</h3>
+            <div class="form-group">
+                <select class="form-control">
+                    <option value="">Seleccionar</option>
+                    <!-- Populate dynamically from backend -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="text-solicitud-produccion">Cantidad:</label>
+                <input type="number" class="form-control" value="750" min="1">
+            </div>
+            <button class="btn btnAgregarSolicitud">+ AGREGAR</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

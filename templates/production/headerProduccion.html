@@ -1,6 +1,7 @@
 <header>
 	<div class="header-container">
 		<a href="produccion" class="logoDG"> <img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" />
+		<a href="{{url_for('receta')}}" class="header-item">Recetas</a>
 			<a href="{{url_for('getInveGalletas')}}" class="header-item">Inventario de Galletas</a>
 			<div class="dropdown">
 				<a href="#" class="header-item" id="produccionDropdown" onclick="toggleDropdown(event)">
@@ -8,11 +9,10 @@
 				</a>
 				<div class="dropdown-menu" id="produccionDropdownMenu">
 					<a href="{{url_for('moduloProduccion')}}" class="dropdown-item">Módulo de Producción</a>
-					<a href="#" class="dropdown-item">Ordenes de producción</a>
+					<a href="{{url_for('solicitudProduccion_dashboard')}}" class="dropdown-item">Solicitudes de producción</a>
 				</div>
 			</div>
 			<a href="{{url_for('registerProveedor')}}" class="header-item">Proveedores</a>
-			<a href="#" class="header-item">Recetas</a>
 			<a href="{{url_for('gestion_insumos')}}" class="header-item">Gestion de insumos</a>
 			<a href="{{url_for('insumos_inventory')}}" class="header-item">Inventario de Insumos</a>
 			<form method="POST" action="/logout">

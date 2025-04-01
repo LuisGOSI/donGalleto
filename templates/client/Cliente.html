@@ -11,31 +11,40 @@
 <h6 class="subtitle-client">Productos</h6>
 
 <div class="product-container">
-
-    {% block catalogo %}
-
-    {% for galleta in data %}
-    <div class="product-card">
-        <div class="product-image">
-            <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
-            <div class="unit-badge">Unidad</div>
-        </div>
-        <div class="product-info">
-            <h3 class="product-title">{{ galleta[1] }}</h3>
-            <p class="product-price">{{ galleta[2] }} $/U</p>
-            <div class="product-actions">
-                <div class="quantity-selector">
-                    <button class="quantity-btn">+</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn">-</button>
+    {% if data %}
+        {% block catalogo %}
+        {% for galleta in data %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
+                <div class="unit-badge">Unidad</div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">{{ galleta[1] }}</h3>
+                <p class="product-price">{{ galleta[2] }} ₡/U</p>
+                <div class="product-actions">
+                    <div class="quantity-selector">
+                        <button class="quantity-btn">+</button>
+                        <input type="text" class="quantity-input" value="1">
+                        <button class="quantity-btn">-</button>
+                    </div>
+                    <button class="add-to-cart">Añadir al carrito</button>
                 </div>
-                <button class="add-to-cart">Añadir al carrito</button>
             </div>
         </div>
-    </div>
-    {% endfor %}
-    {% endblock %}
-
-
+        {% endfor %}
+        {% endblock %}
+    {% else %}
+        <div class="error-alert">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="error-content">
+                <h3>Error en la Carga de Productos</h3>
+                <p>Lo sentimos, no se han podido cargar los productos en este momento. 
+                Por favor, intenta recargar la página o contacta con soporte técnico.</p>
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
