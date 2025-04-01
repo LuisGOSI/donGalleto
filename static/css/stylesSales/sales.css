@@ -1,0 +1,189 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.navbar {
+    display: flex;
+    background-color: #f0e6d2;
+    padding: 10px;
+    justify-content: space-between;
+}
+.navbar a {
+    color: #5c4b3d;
+    text-decoration: none;
+    padding: 8px 15px;
+}
+.navbar a:hover {
+    background-color: #e0d5c1;
+}
+.main-content {
+    display: flex;
+    gap: 20px;
+}
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 10px;
+    width: 50%;
+}
+.product-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 8px;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+.product-card:hover {
+    transform: scale(1.05);
+}
+.product-card img {
+    max-width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+.product-card p {
+    margin: 2px 0;
+    font-size: 0.9em;
+}
+.product-card .add-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: auto;
+    transition: background-color 0.3s;
+    font-size: 0.9em;
+}
+.product-card .add-btn:hover {
+    background-color: #45a049;
+}
+.sales-section {
+    width: 50%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.sales-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.sales-input-group input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.sales-input-group .btn-secondary {
+    width: auto;
+    margin-top: 0;
+}
+.sales-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.sales-table th, .sales-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+.sales-table th {
+    background-color: #f2f2f2;
+}
+.sales-table select, 
+.sales-table input[type="number"] {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+.sales-table .product-column { width: 30%; }
+.sales-table .type-column { width: 20%; }
+.sales-table .quantity-column { 
+    width: 10%; 
+    max-width: 80px;
+}
+.sales-table .price-column { 
+    width: 10%; 
+    max-width: 80px;
+}
+.sales-table .actions-column { 
+    width: 15%; 
+    max-width: 50px;
+}
+.sales-table .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+.sales-table .action-btn:hover {
+    transform: scale(1.2);
+}
+.financial-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+.financial-inputs .input-group {
+    display: flex;
+    flex-direction: column;
+}
+.financial-inputs label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+.financial-inputs input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.btn-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    flex-grow: 1;
+}
+.btn-primary {
+    background-color: #4CAF50;
+    color: white;
+}
+.btn-secondary {
+    background-color: #f0f0f0;
+    color: black;
+}
+.btn-clear {
+    background-color: #FF6347;
+    color: white;
+}
