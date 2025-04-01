@@ -341,25 +341,15 @@ def page_not_found(error):
 
 @app.route("/ventas")
 def ventas_dashboard():
-    return render_template("/sales/sales.html")
-@app.route("/corteVentas")
-def corteVentas():
-    return render_template("/sales/corteVenta.html")
-
-# Checar sesion
-@app.route("/checkSession", methods=["POST"])
-def checkSession():
-    user_active = session.get("user")
-    if user_active is not None:
-        return render_template("/pages/test.html", user=user_active)
-    else:
-        return render_template("/pages/test.html", user=user_active)
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
     data = cookies.getCookies()
     return render_template("/sales/sales.html",data = data)
 
+@app.route("/corteVentas")
+def corteVentas():
+    return render_template("/sales/corteVenta.html")
 
 def get_empleados():
     cur = mysql.connection.cursor()
