@@ -297,3 +297,56 @@ def registrarMerma():
         finally:
             cur.close()
         return redirect(url_for("insumos_inventory"))
+
+
+@app.route("/registrarMermaLote", methods=["POST"])
+def registrar_merma_lote():
+    if request.method == "POST":
+        id_lote = request.form["idLoteMerma"]
+        cur = mysql.connection.cursor()
+        try:
+            # Obtener información del lote
+            cur.execute("""
+                SELECT idInventarioInsumo, idInsumoFK, cantidad 
+                FROM inventarioInsumos 
+                WHERE idInventarioInsumo = %s
+            """, (id_lote,))
+            lote = cur.fetchone()
+            
+            if not lote:
+                flash("Lote no encontrado", "danger")
+                return redirect(url_for("insumos_inventory"))
+            
+            id_inventario, id_insumo, cantidad = lote
+            
+            # Registrar merma del lote completo
+            cur.execute("""
+                INSERT INTO mermas (
+                    tipoMerma, 
+                    idInventarioInsumoFK, 
+                    cantidad, 
+                    fechaRegistro, 
+                    observaciones
+                ) VALUES (%s, %s, %s, NOW(), %s)
+            """, ("Insumo caduco", id_inventario, cantidad, "Merma automática por caducidad del lote completo"))
+            
+            # Actualizar inventario (marcar como caducado y cantidad a 0)
+            cur.execute("""
+                UPDATE inventarioInsumos 
+                SET cantidad = 0, 
+                    estadoLote = 'Caducado' 
+                WHERE idInventarioInsumo = %s
+            """, (id_inventario,))
+            
+            mysql.connection.commit()
+            flash("Merma del lote caducado registrada exitosamente", "success")
+            
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f"Error al registrar merma del lote: {str(e)}", "danger")
+            app.logger.error(f"Error en registrar_merma_lote: {str(e)}")
+            
+        finally:
+            cur.close()
+            
+    return redirect(url_for("insumos_inventory"))

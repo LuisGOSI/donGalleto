@@ -188,3 +188,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    const modalMermaLote = document.getElementById("modalMermaLote");
+    modalMermaLote.addEventListener("show.bs.modal", function (event) {
+        const button = event.relatedTarget;
+        const idLote = button.getAttribute("data-id-lote");
+        const inputIdLoteMerma = modalMermaLote.querySelector("#idLoteMerma");
+        inputIdLoteMerma.value = idLote;
+    });
+});
