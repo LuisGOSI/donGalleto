@@ -171,7 +171,8 @@ def get_proveedor_por_presentacion(id_presentacion):
 def registrarCompraInsumos():
     try:
         cur = mysql.connection.cursor()
-        id_empleado = session.get("user")[0]  # Asegúrate de que "user" está en la sesión
+        id_empleado = session.get("user")[5]  # Asegúrate de que "user" está en la sesión
+        print("ID de empleado:", id_empleado)  # Verifica que el ID de empleado se obtiene correctamente
         id_proveedor = request.form.get("proveedor-select")
         insumos_data = []
         index = 0
@@ -203,11 +204,6 @@ def registrarCompraInsumos():
             id_proveedor = insumo["idProveedorFK"]
             cantidad = insumo["cantidadCompra"]
             fecha_caducidad = insumo["fechaCaducidad"]
-            if not id_proveedor:
-                print(f"Error: idProveedorFK no encontrado para el insumo {id_insumo}")
-                flash(f"Error: El proveedor para el insumo {id_insumo} no está especificado.", "danger")
-                return redirect(url_for("insumos_inventory"))
-
             # Obtener información adicional del insumo
             cur.execute("""
                 SELECT 
@@ -222,7 +218,6 @@ def registrarCompraInsumos():
             if resultado:
                 cantidad_base = resultado[0]
                 precio_unitario = resultado[1]
-
                 # Calcular cantidad total en unidades base y precio total
                 cantidad_total = cantidad * cantidad_base
                 precio_total = precio_unitario * cantidad
@@ -231,11 +226,11 @@ def registrarCompraInsumos():
                 cur.execute("""
                     INSERT INTO detallecompra (
                         idPedidoFK, 
-                        idInsumoFK, 
+                        idPresentacionFK, 
                         cantidad, 
                         precioCompra
                     ) VALUES (%s, %s, %s, %s)
-                """, (id_compra, id_insumo, cantidad_total, precio_total))
+                """, (id_compra, id_presentacion, cantidad, precio_total))
 
                 # Insertar en inventarioInsumos
                 cur.execute("""
