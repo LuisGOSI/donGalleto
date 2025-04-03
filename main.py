@@ -8,6 +8,7 @@ from database.cookies import cookies
 from datetime import datetime
 from db import app,mysql 
 from sessions import *
+import json
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de la app ///////////////////////////////////////////////////////////////////////
@@ -146,7 +147,7 @@ def moduloProduccion():
     cur.close()
     return render_template('/production/Produccion.html', is_base_template = False,user=user,galletas=galletas)
 
-
+#Rutas para el modulo de clientes / Sistema de carrito
 @app.route("/cliente")
 def cliente_dashboard():
     if session.get("user") is None:
@@ -154,6 +155,61 @@ def cliente_dashboard():
     user = session.get("user")
     data = cookies.getCookies()
     return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+
+@app.route('/detalle_producto', methods=['GET', 'POST'])
+def detalle_producto():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    
+    # Usar request.form para los datos enviados por POST
+    galleta_json = request.form.get('galleta')  # Obtener la galleta del formulario POST
+    print("JSON recibido:", galleta_json)
+    
+    galleta = json.loads(galleta_json) if galleta_json else None
+    print(f'Galleta: {galleta}')
+
+    return render_template('/client/DetalleProducto.html', is_base_template=False, galleta=galleta)
+
+@app.route('/agregar_carrito/<int:id>', methods=['POST'])
+def agregar_al_carrito(id):
+    #Se obtiene la cantidad del formulario
+    cantidad = int(request.form.get('cantidad', 1))
+    tipo_venta = request.form.get('saleType', 'unidad')  # Obtener el tipo de venta del formulario
+    #Se obtienen las galletas del catalago
+    data = cookies.getCookies()
+    
+    producto = next((item for item in data if item[0] == id), None)
+    if not producto:
+        return redirect(url_for('cliente_dashboard'))
+
+    if 'carrito' not in session:
+        session['carrito'] = {}
+
+    carrito = session['carrito']
+
+    # Generamos una clave única usando ID y tipo de venta
+    clave_carrito = f"{id}_{tipo_venta}"
+
+    if clave_carrito in carrito:
+        # Si ya existe con el mismo tipo de venta, sumamos la cantidad
+        carrito[clave_carrito]['cantidad'] += cantidad
+    else:
+        # Si es un nuevo tipo de venta, lo agregamos como un nuevo producto en el carrito
+        carrito[clave_carrito] = {
+            'id': producto[0],
+            'nombre': producto[1],
+            'precio': producto[2],
+            'cantidad': cantidad,
+            'tipo_venta': tipo_venta
+        }
+
+    print("Carrito actualizado:", carrito)
+
+    session.modified = True
+
+
+    return redirect(url_for('cliente_dashboard'))
+#Fin de rutas para el modulo de clientes / Sistema de carrito
 
 
 @app.route("/clientes")
@@ -223,7 +279,17 @@ def carrito_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    return render_template('/client/Carrito.html', is_base_template = False,user=user)
+
+    if "carrito" not in session or not session["carrito"]:
+        carrito = {}
+    else:
+        carrito = session["carrito"]
+    
+    total_items = sum(item["cantidad"] for item in carrito.values())  # Total de productos
+    total_precio = sum(item["precio"] * item["cantidad"] for item in carrito.values())  # Total a pagar
+
+    return render_template('/client/Carrito.html', is_base_template=False, user=user, total_items=total_items, total_precio=total_precio, carrito=carrito)
+
 
 
 @app.route("/historico")
