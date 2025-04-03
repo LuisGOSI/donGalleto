@@ -5,6 +5,7 @@ from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
+from database.sales import corteVenta
 from datetime import datetime
 from db import app, mysql
 from sessions import *
@@ -510,9 +511,7 @@ def page_not_found(error):
 #! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-@app.route("/corteVentas")
-def corteVentas():
-    return render_template("/sales/corteVenta.html")
+
 
 
 def get_empleados():
