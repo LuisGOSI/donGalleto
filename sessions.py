@@ -17,7 +17,7 @@ def login():
             return redirect(url_for("admin_dashboard"))
         elif user[4] == "produccion":
             return redirect(url_for("produccion_dashboard"))
-        elif user[4] == "vendedor":
+        elif user[4] == "ventas":
             return redirect(url_for("ventas_dashboard"))
     else:
         if request.method == "POST":
