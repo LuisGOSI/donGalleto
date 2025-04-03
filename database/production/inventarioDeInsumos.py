@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, flash, jsonify, render_template
+from flask import request, redirect, url_for, flash, jsonify, session   
 from db import app, mysql
 
 def getInvInsumosTabla():
@@ -39,22 +39,50 @@ def obtener_presentaciones_por_insumo(id_insumo):
     cursor.close()
     return presentaciones
 
+def actualizar_estados_caducidad():
+    cursor = mysql.connection.cursor()
+    cursor.execute("""
+        UPDATE inventarioinsumos
+        SET estadoLote = 'Caducado'
+        WHERE fechaCaducidad < CURDATE() AND estadoLote != 'Caducado'
+    """)
+    mysql.connection.commit()
+    cursor.close()
+
 
 def getInsumosResumen():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT producto, cantidad_disponible, fecha_caducidad FROM dongalletodev.vistainventarioinsumos;")
-    resumen = {}
-    for nombre, cantidad, fecha_cad in cur.fetchall():
-        if nombre not in resumen:
-            resumen[nombre] = {"cantidad_total": 0, "fecha_mas_proxima": None, "cantidad_proxima_caducar": 0}
-        resumen[nombre]["cantidad_total"] += cantidad
-        if resumen[nombre]["fecha_mas_proxima"] is None or fecha_cad < resumen[nombre]["fecha_mas_proxima"]:
-            resumen[nombre]["fecha_mas_proxima"] = fecha_cad
-            resumen[nombre]["cantidad_proxima_caducar"] = cantidad
-        elif fecha_cad == resumen[nombre]["fecha_mas_proxima"]:
-            resumen[nombre]["cantidad_proxima_caducar"] += cantidad
+    cur.execute("""
+        SELECT 
+            inv.idInventarioInsumo as id_lote,
+            ins.nombreInsumo as nombre,
+            inv.cantidad as cantidad_proxima_caducar,
+            inv.fechaCaducidad as fecha_caducidad,
+            ins.unidadMedida as unidad_medida,
+            DATEDIFF(inv.fechaCaducidad, CURDATE()) as dias_restantes,
+            inv.estadoLote as estado
+        FROM inventarioInsumos as inv
+        JOIN insumos ins ON inv.idInsumoFK = ins.idInsumo
+        WHERE inv.cantidad > 0
+        ORDER BY dias_restantes ASC
+    """)
+    lotesResumen = []
+    proximos_caducar = []
+    for row in cur.fetchall():
+        lote = {
+            'id_lote': row[0],
+            'nombre': row[1],
+            'cantidad_proxima_caducar': row[2],
+            'fecha_caducidad': row[3],
+            'unidad_medida': row[4],
+            'dias_restantes': row[5],
+            'estado': row[6]
+        }
+        lotesResumen.append(lote)
+        if lote['dias_restantes'] is not None and lote['dias_restantes'] >= 0:
+            proximos_caducar.append(lote)
     cur.close()
-    return resumen
+    return lotesResumen, proximos_caducar
 
 
 @app.route('/getInsumos')
@@ -65,6 +93,44 @@ def get_insumos():
         'nombreInsumo': insumo[1],
         'unidadMedida': insumo[2] 
     } for insumo in insumos])
+
+
+@app.route('/getProveedores')
+def get_proveedores():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
+    proveedores = cur.fetchall()
+    print(proveedores)  # Verifica que los proveedores se obtienen correctamente
+    cur.close()
+    return jsonify([{
+        'idProveedor': proveedor[0],
+        'nombreProveedor': proveedor[1]
+    } for proveedor in proveedores])    
+
+@app.route('/getPresentacionesPorInsumoYProveedor/<int:idInsumo>/<int:idProveedor>')
+def get_presentaciones_por_insumo_y_proveedor(idInsumo, idProveedor):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 
+            p.idPresentacion, 
+            p.nombrePresentacion, 
+            ps.precioProveedor, 
+            p.cantidadBase, 
+            i.unidadMedida
+        FROM presentacionesinsumos p
+        JOIN proveedoresinsumos ps ON p.idPresentacion = ps.idPresentacionFK
+        JOIN insumos i ON p.idInsumoFK = i.idInsumo
+        WHERE p.idInsumoFK = %s AND ps.idProveedorFK = %s
+    """, (idInsumo, idProveedor))
+    presentaciones = cur.fetchall()
+    cur.close()
+    return jsonify([{
+        'idPresentacion': presentacion[0],
+        'nombrePresentacion': presentacion[1],
+        'precioProveedor': presentacion[2],
+        'cantidadBase': presentacion[3],
+        'unidadMedida': presentacion[4]
+    } for presentacion in presentaciones])
 
 
 @app.route('/getPresentacionesPorInsumo/<int:id_insumo>')
@@ -78,43 +144,117 @@ def get_presentaciones_por_insumo(id_insumo):
     } for presentacion in presentaciones])
 
 
-@app.route("/registrarInsumo", methods=["POST"])
-def registrarInsumo():
-    if request.method == "POST":
-        idPresentacionFK = request.form["idPresentacionFK"]
-        cantidadCompra = float(request.form["cantidadCompra"])
-        fechaCaducidad = request.form["fechaCaducidad"]
+@app.route("/getProveedorPorPresentacion/<int:id_presentacion>")
+def get_proveedor_por_presentacion(id_presentacion):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 
+            p.idProveedor, 
+            p.nombreProveedor, 
+            ps.precioProveedor, 
+            ps.idPresentacionFK
+        FROM proveedoresinsumos ps
+        JOIN proveedores p ON ps.idProveedorFK = p.idProveedor
+        WHERE ps.idPresentacionFK = %s
+    """, (id_presentacion,))
+    proveedores = cur.fetchall()
+    cur.close()
+    return jsonify([{
+        'idProveedor': proveedor[0],
+        'nombreProveedor': proveedor[1],
+        'precioProveedor': proveedor[2],
+        'idPresentacionFK': proveedor[3]
+    } for proveedor in proveedores])    
+
+
+@app.route("/registrarCompraInsumos", methods=["POST"])
+def registrarCompraInsumos():
+    try:
         cur = mysql.connection.cursor()
-        try:
-            # Obtén detalles de la presentación
+        id_empleado = session.get("user")[5]  # Asegúrate de que "user" está en la sesión
+        print("ID de empleado:", id_empleado)  # Verifica que el ID de empleado se obtiene correctamente
+        id_proveedor = request.form.get("proveedor-select")
+        insumos_data = []
+        index = 0
+        while f"insumos[{index}][idInsumo]" in request.form:
+            print(f"Procesando el insumo en el índice {index}")  # Verifica que el índice cambia
+            insumo = {
+                "idInsumo": request.form.get(f"insumos[{index}][idInsumo]"),
+                "idPresentacionFK": request.form.get(f"insumos[{index}][idPresentacionFK]"),
+                "idProveedorFK": id_proveedor,
+                "cantidadCompra": float(request.form.get(f"insumos[{index}][cantidadCompra]")),
+                "fechaCaducidad": request.form.get(f"insumos[{index}][fechaCaducidad]"),
+            }
+            insumos_data.append(insumo)
+            index += 1  # Asegúrate de que el índice se incremente
+            print(insumos_data)  # Verifica que los datos se están acumulando correctamente
+        if not insumos_data:
+            flash("Error: Debe agregar al menos un insumo.", "danger")
+            return redirect(url_for("insumos_inventory"))
+        #El codigo se detiene aqui
+        cur.execute("INSERT INTO compra (idProveedorFK, idEmpleadoFK, fechaCompra ) VALUES (%s, %s, NOW())", (id_proveedor, id_empleado))
+        id_compra = cur.lastrowid
+        if not id_compra:
+            flash("Error al registrar la compra.", "danger")
+            return redirect(url_for("insumos_inventory"))
+        for insumo in insumos_data:
+            print("Datos de insumo recibidos:", insumo)
+            id_insumo = insumo["idInsumo"]
+            id_presentacion = insumo["idPresentacionFK"]
+            id_proveedor = insumo["idProveedorFK"]
+            cantidad = insumo["cantidadCompra"]
+            fecha_caducidad = insumo["fechaCaducidad"]
+            # Obtener información adicional del insumo
             cur.execute("""
-                SELECT i.idInsumo, p.cantidadBase, i.nombreInsumo 
+                SELECT 
+                    p.cantidadBase, 
+                    ps.precioProveedor
                 FROM presentacionesinsumos p
-                JOIN insumos i ON p.idInsumoFK = i.idInsumo
-                WHERE p.idPresentacion = %s
-            """, (idPresentacionFK,))
+                JOIN proveedoresinsumos ps ON p.idPresentacion = ps.idPresentacionFK
+                WHERE p.idPresentacion = %s AND ps.idProveedorFK = %s
+            """, (id_presentacion, id_proveedor))
             resultado = cur.fetchone()
+
             if resultado:
-                idInsumoFK = resultado[0]
-                cantidadBase = resultado[1]
-                nombreInsumo = resultado[2]
-                # Calcula la cantidad total en la unidad base
-                cantidadTotalBase = cantidadCompra * cantidadBase
-                # Inserta en inventario de insumos
-                cur.execute(
-                    "INSERT INTO inventarioInsumos (idInsumoFK, cantidad, fechaCaducidad) VALUES (%s, %s, %s)",
-                    (idInsumoFK, cantidadTotalBase, fechaCaducidad),
-                )
-                mysql.connection.commit()
-                flash(f"Insumo registrado exitosamente. {cantidadCompra} {nombreInsumo} agregados (Total: {cantidadTotalBase} unidades base).", "success")
-            else:
-                flash("No se encontró la presentación del insumo.", "danger")
-        except Exception as e:
-            mysql.connection.rollback()
-            flash(f"Error al registrar el insumo: {str(e)}", "danger")
-        finally:
-            cur.close()
-        return redirect(url_for("insumos_inventory"))
+                cantidad_base = resultado[0]
+                precio_unitario = resultado[1]
+                # Calcular cantidad total en unidades base y precio total
+                cantidad_total = cantidad * cantidad_base
+                precio_total = precio_unitario * cantidad
+
+                # Insertar en detallecompra
+                cur.execute("""
+                    INSERT INTO detallecompra (
+                        idPedidoFK, 
+                        idPresentacionFK, 
+                        cantidad, 
+                        precioCompra
+                    ) VALUES (%s, %s, %s, %s)
+                """, (id_compra, id_presentacion, cantidad, precio_total))
+
+                # Insertar en inventarioInsumos
+                cur.execute("""
+                    INSERT INTO inventarioInsumos (
+                        idInsumoFK, 
+                        cantidad, 
+                        fechaCaducidad
+                    ) VALUES (%s, %s, %s)
+                """, (id_insumo, cantidad_total, fecha_caducidad))
+
+        # Confirmar la transacción
+        mysql.connection.commit()
+        flash("Compra registrada exitosamente con todos los insumos.", "success")
+
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f"Error al registrar la compra: {str(e)}", "danger")
+        app.logger.error(f"Error en registrarCompraInsumos: {str(e)}")
+
+    finally:
+        cur.close()
+
+    return redirect(url_for("insumos_inventory"))
+
 
 
 @app.route("/registrarMermaInsumo", methods=["POST"])
@@ -152,3 +292,56 @@ def registrarMerma():
         finally:
             cur.close()
         return redirect(url_for("insumos_inventory"))
+
+
+@app.route("/registrarMermaLote", methods=["POST"])
+def registrar_merma_lote():
+    if request.method == "POST":
+        id_lote = request.form["idLoteMerma"]
+        cur = mysql.connection.cursor()
+        try:
+            # Obtener información del lote
+            cur.execute("""
+                SELECT idInventarioInsumo, idInsumoFK, cantidad 
+                FROM inventarioInsumos 
+                WHERE idInventarioInsumo = %s
+            """, (id_lote,))
+            lote = cur.fetchone()
+            
+            if not lote:
+                flash("Lote no encontrado", "danger")
+                return redirect(url_for("insumos_inventory"))
+            
+            id_inventario, id_insumo, cantidad = lote
+            
+            # Registrar merma del lote completo
+            cur.execute("""
+                INSERT INTO mermas (
+                    tipoMerma, 
+                    idInventarioInsumoFK, 
+                    cantidad, 
+                    fechaRegistro, 
+                    observaciones
+                ) VALUES (%s, %s, %s, NOW(), %s)
+            """, ("Insumo caduco", id_inventario, cantidad, "Merma automática por caducidad del lote completo"))
+            
+            # Actualizar inventario (marcar como caducado y cantidad a 0)
+            cur.execute("""
+                UPDATE inventarioInsumos 
+                SET cantidad = 0, 
+                    estadoLote = 'Caducado' 
+                WHERE idInventarioInsumo = %s
+            """, (id_inventario,))
+            
+            mysql.connection.commit()
+            flash("Merma del lote caducado registrada exitosamente", "success")
+            
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f"Error al registrar merma del lote: {str(e)}", "danger")
+            app.logger.error(f"Error en registrar_merma_lote: {str(e)}")
+            
+        finally:
+            cur.close()
+            
+    return redirect(url_for("insumos_inventory"))
