@@ -201,12 +201,9 @@ def detalle_producto():
     if session.get("user") is None:
         return redirect(url_for("login"))
 
-    # Usar request.form para los datos enviados por POST
-    galleta_json = request.form.get("galleta")  # Obtener la galleta del formulario POST
-    print("JSON recibido:", galleta_json)
 
+    galleta_json = request.form.get("galleta") or request.args.get("galleta")  
     galleta = json.loads(galleta_json) if galleta_json else None
-    print(f"Galleta: {galleta}")
 
     return render_template(
         "/client/DetalleProducto.html", is_base_template=False, galleta=galleta
@@ -225,6 +222,7 @@ def agregar_al_carrito(id):
 
     producto = next((item for item in data if item[0] == id), None)
     if not producto:
+        flash("Error: Producto no encontrado", "error")
         return redirect(url_for("cliente_dashboard"))
 
     if "carrito" not in session:
@@ -251,9 +249,10 @@ def agregar_al_carrito(id):
     print("Carrito actualizado:", carrito)
 
     session.modified = True
-
-    return redirect(url_for("cliente_dashboard"))
-
+    flash("✅ Producto agregado al carrito", "success")
+    return redirect(
+    url_for("detalle_producto", galleta=json.dumps(producto))
+    )
 
 
 @app.route('/eliminar_carrito/<int:id>/<tipo_venta>', methods=['POST'])
@@ -272,15 +271,6 @@ def eliminar_del_carrito(id, tipo_venta):
 
     return redirect(url_for('carrito_dashboard'))  # Volver a la vista del carrito
 
-
-from flask import session, redirect, url_for, flash
-from datetime import datetime
-
-from flask import flash, redirect, url_for, session
-from datetime import datetime
-from flask_mysqldb import MySQL
-
-from datetime import datetime
 
 @app.route("/finalizar_compra", methods=["POST"])
 def finalizar_compra():
@@ -331,7 +321,7 @@ def finalizar_compra():
         # Vaciar el carrito después de la compra
         session.pop("carrito")
         flash("Compra finalizada con éxito.", "success")
-        return redirect(url_for("cliente_dashboard"))
+        return redirect(url_for("carrito_dashboard"))
 
     except Exception as e:
         mysql.connection.rollback()

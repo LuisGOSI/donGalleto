@@ -62,4 +62,25 @@
     </div>
 </div>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let messages = {{ messages | tojson }};
+                messages.forEach(([category, message]) => {
+                    Swal.fire({
+                        icon: category === "success" ? "success" : "error",
+                        title: message,
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+                });
+            });
+        </script>
+    {% endif %}
+{% endwith %}
+
+
 {% endblock %}
+
+
