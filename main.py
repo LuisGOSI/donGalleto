@@ -5,8 +5,7 @@ from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
-from database.sales import ventas
-from database.sales import corteVenta
+from database.sales import ventas, corteVenta 
 from datetime import datetime
 from db import app, mysql
 from sessions import *
