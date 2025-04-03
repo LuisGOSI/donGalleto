@@ -1,0 +1,56 @@
+body {
+    margin: 0;
+    padding: 70px 0 0 0;;
+    overflow-x: hidden;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; 
+    background-color: #3E302C; 
+}
+
+.header-conocenos-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.header-conocenos-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 14%;
+    font-size: 20px;
+    color: white;
+    background-color: #3E302C;
+    text-decoration: none;
+}
+
+.header-conocenos-item button {
+    background-color: #3E302C;
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.header-conocenos-item button:hover {
+    background-color: #5E4D48;
+}
+
+.header-conocenos-logo {
+    height: 180px;
+}
+
+.espacio{
+    margin-top: 70px;
+}
+

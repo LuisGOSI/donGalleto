@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from db import mysql,app
-from flask import render_template
+from flask import render_template, session
 
 load_dotenv()
 
@@ -8,8 +8,9 @@ load_dotenv()
 @app.route("/corteVentas")
 def corteVentas():
     datos = getTotalGeneral()
-    ventas = getDesgloseVenta() 
-    return render_template("/sales/corteVenta.html", datos=datos, ventas=ventas)
+    ventas = getDesgloseVenta()
+    user = session.get("user")
+    return render_template("/sales/corteVenta.html", datos=datos, user=user, ventas=ventas)
 
 def getDesgloseVenta():
     cur = mysql.connection.cursor()
