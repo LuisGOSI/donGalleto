@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestión de ventas{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/Don_galleto_icon.png')}}" type="image/x-icon" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesHeader/styleHeader.css') }}">
+    <link rel="stylesheet" href="/static/css/stylesSales/stylesModuloVentas.css">
+
+</head>
+
+<body>
+    <div>
+        {% include "/bases/header.html" %}
+        {% if is_base_template %}
+        <div class="container-fluid-ventas">
+            <div class="imagen-ventas"></div>
+            <h1 class="page-title-ventas">Bienvenido a la Gestión de Ventas</h1>
+            <h3 class="text-title-ventas">Ingresa a los diferentes módulos para conocer y realizar las diferentes acciones</h3>
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+
+</html>

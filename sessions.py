@@ -35,7 +35,7 @@ def login():
                     return redirect(url_for("admin_dashboard"))
                 elif role == "produccion":
                     return redirect(url_for("produccion_dashboard"))
-                elif role == "vendedor":
+                elif role == "ventas":
                     return redirect(url_for("ventas_dashboard"))
                 else:
                     return redirect(url_for("cliente_dashboard"))
