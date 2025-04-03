@@ -3,7 +3,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
         }
@@ -164,6 +163,13 @@
             font-family: 'Charm', cursive;  
             font-size: 70px; 
             color: #3E302C; 
-            padding-top: 150px;
+            padding-top: 50px;
             font-weight: bold;
+        }
+        .textoVacio { 
+            font-size: 30px; 
+            color: #3E302C; 
+            padding-top: 50px;
+            font-weight: bold;
+            text-align: center;
         }
