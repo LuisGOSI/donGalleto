@@ -19,11 +19,13 @@
     {% endif %}
 {% endwith %}
 
-    <div class="container">
-        <h1 class="titleInsumos">Gestión de Insumos</h1>
-        <section class="intro-container">
-            <h2 class="titleInsumos2">Listado de Insumos</h2>
-            <!-- Primera sección: Tabla de Insumos -->
+<div class="container">
+    <h1 class="titleInsumos">Gestión de Insumos</h1>
+    <section class="intro-container">
+
+        <!-- Primera sección: Tabla de Insumos -->
+        <details>
+            <summary class="summary-tabla-insumos">Listado de Insumos</summary>
             <section class="inventario-container" style="display: flex; gap: 20px; margin-bottom: 40px;">
                 <div class="tabla-inventario" style="flex: 1; position: relative">
                     <div style="text-align: right; margin-bottom: 10px">
@@ -49,19 +51,19 @@
                                 <td>{{ insumo[1] }}</td>
                                 <td>{{ insumo[2] | title }}</td>
                                 <td>
-                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#asignarProveedorModal" data-insumo-id="{{ insumo[0] }}">
-                                        Presentacion Compra
+                                    <button class="mermas-btn btn-purchase" data-bs-toggle="modal" data-bs-target="#asignarProveedorModal" data-insumo-id="{{ insumo[0] }}">
+                                        <i class="icon fas fa-box"></i> Presentación Compra
                                     </button>
-                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#asignarFormatoRecetaModal" data-insumo-id="{{ insumo[0] }}">
-                                        Formato de Receta
+                                    <button class="mermas-btn btn-recipe" data-bs-toggle="modal" data-bs-target="#asignarFormatoRecetaModal" data-insumo-id="{{ insumo[0] }}">
+                                        <i class="icon fas fa-scroll"></i> Formato de Receta
                                     </button>
                                 </td>
                                 <td>
-                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#editarInsumoModal" data-insumo-id="{{ insumo[0] }}">
-                                        Editar
+                                    <button class="mermas-btn btn-edit" data-bs-toggle="modal" data-bs-target="#editarInsumoModal" data-insumo-id="{{ insumo[0] }}">
+                                        <i class="icon fas fa-edit"></i> Editar
                                     </button>
-                                    <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#eliminarInsumoModal" data-insumo-id="{{ insumo[0] }}">
-                                        Eliminar
+                                    <button class="mermas-btn btn-delete" data-bs-toggle="modal" data-bs-target="#eliminarInsumoModal" data-insumo-id="{{ insumo[0] }}">
+                                        <i class="icon fas fa-trash"></i> Eliminar
                                     </button>
                                 </td>
                             </tr>
@@ -70,10 +72,12 @@
                     </table>
                 </div>
             </section>
-            
-            <!-- Segunda sección: Tabla de Presentaciones -->
+        </details>
+
+        <!-- Segunda sección: Tabla de Presentaciones -->
+        <details>
+            <summary class="summary-tabla-presentaciones">Presentaciones y Proveedores</summary>
             <section class="intro-container">
-                <h2 class="titleInsumos2">Presentaciones y Proveedores</h2><br>
                 <div class="inventario-container" style="display: flex; gap: 20px">
                     <div class="tabla-inventario" style="flex: 1; position: relative">
                         <table style="width: 100%">
@@ -96,11 +100,11 @@
                                     <td>{{ presentacion[5] }}</td> 
                                     <td>{{ presentacion[6] }}</td> 
                                     <td>
-                                        <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#editarPresentacionModal" data-presentacion-id="{{ presentacion[2] }}">
-                                            Editar
+                                        <button class="mermas-btn btn-edit" data-bs-toggle="modal" data-bs-target="#editarPresentacionModal" data-presentacion-id="{{ presentacion[2] }}">
+                                            <i class="icon fas fa-edit"></i> Editar
                                         </button>
-                                        <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#eliminarPresentacionModal" data-presentacion-id="{{ presentacion[2] }}">
-                                            Eliminar
+                                        <button class="mermas-btn btn-delete" data-bs-toggle="modal" data-bs-target="#eliminarPresentacionModal" data-presentacion-id="{{ presentacion[2] }}">
+                                            <i class="icon fas fa-trash"></i> Eliminar
                                         </button>
                                     </td>
                                 </tr>
@@ -110,9 +114,12 @@
                     </div>
                 </div>
             </section>
-            <!-- Tercera sección: Tabla de Formatos de Receta -->
+        </details>
+
+        <!-- Tercera sección: Tabla de Formatos de Receta -->
+        <details>
+            <summary class="summary-formatos-receta">Formatos de Receta</summary>
             <section class="intro-container">
-                <h2 class="titleInsumos2">Formatos de Receta</h2><br>
                 <div class="inventario-container" style="display: flex; gap: 20px">
                     <div class="tabla-inventario" style="flex: 1; position: relative">
                         <table style="width: 100%">
@@ -131,11 +138,11 @@
                                     <td>{{ formato[3] }}</td>
                                     <td>1 {{ formato[3] }} = {{ formato[4] }} {{ formato[2] }}s</td>
                                     <td>
-                                        <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#editarFormatoRecetaModal" data-formato-id="{{ formato[0] }}">
-                                            Editar
+                                        <button class="mermas-btn btn-edit" data-bs-toggle="modal" data-bs-target="#editarFormatoRecetaModal" data-formato-id="{{ formato[0] }}">
+                                            <i class="icon fas fa-edit"></i> Editar
                                         </button>
-                                        <button class="mermas-btn" data-bs-toggle="modal" data-bs-target="#eliminarFormatoRecetaModal" data-formato-id="{{ formato[0] }}">
-                                            Eliminar
+                                        <button class="mermas-btn btn-delete" data-bs-toggle="modal" data-bs-target="#eliminarFormatoRecetaModal" data-formato-id="{{ formato[0] }}">
+                                            <i class="icon fas fa-trash"></i> Eliminar
                                         </button>
                                     </td>
                                 </tr>
@@ -145,10 +152,10 @@
                     </div>
                 </div>
             </section>
-        </section>
-    </div>
+        </details>
 
-    
+    </section>
+</div>
 
     <!-- Modal para registrar insumos -->
     <div
