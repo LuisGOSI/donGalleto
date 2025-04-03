@@ -1,0 +1,169 @@
+        /* Estilos generales del cuerpo */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Estilos para la barra de búsqueda */
+        .contenedor-busqueda {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+        }
+        .entrada-busqueda {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 2px solid #000;
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+        }
+        .entrada-busqueda:focus {
+            border-color: #000;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        .boton-busqueda {
+            background: none;
+            border: 2px solid #000;
+            border-radius: 25px;
+            width: 90px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .boton-busqueda:hover {
+            background-color: #f0f0f0;
+        }
+        .icono-busqueda {
+            width: 35px;
+            height: 35px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat center;
+        }
+        
+        /* Estilos para tablas */
+        /* Encabezado de tabla color café */
+        .encabezado-personalizado-cafe {
+            background-color: #3E302C;
+            color: white;
+            font-size: 18px;
+            font-weight: 100;
+            font-family: 'Open Sans', sans-serif;
+            padding: 10px;
+            text-align: center;
+            border: 4px;
+        }
+        
+        /* Encabezado de tabla color negro */
+        .encabezado-personalizado-negro {
+            background-color: #000000; 
+            color:white; 
+            border: 4px solid black; 
+            font-size: 20px; 
+            font-family: 'Open Sans', sans-serif;
+            text-align: center;
+            font-weight: 100;
+        }
+        
+        /* Celda de tabla color café claro */
+        .celda-cafe-claro {
+            background-color: #BCA999; 
+            color:black; 
+            border: 4px solid black; 
+            font-size: 20px; 
+            font-family: 'Open Sans', sans-serif; 
+            font-weight: bold;
+        }
+        
+        /* Tabla principal */
+        .tabla-principal {
+            background-color: #D7B89D; 
+            border: 4px solid black; 
+            text-align: center; 
+            font-family: 'Open Sans', sans-serif; 
+            margin: 0 auto;
+        }
+        
+        /* Celda de tabla principal */
+        .celda-tabla-principal {
+            padding: 30px; 
+            background-color: #D7B89D; 
+            border: 4px solid black; 
+            font-size: 18px;
+        }
+        
+        /* Encabezado de tabla */
+        .encabezado-tabla {
+            background-color: #3E302C; 
+            color: white; 
+            border: 4px solid black; 
+            font-size: 18px;  
+            display: flex; 
+            justify-content: space-between; 
+            padding: 10px; 
+            font-family: 'Open Sans', sans-serif; 
+            font-weight: bold;
+        }
+        
+        /* Tabla de ventas */
+        .tabla-ventas {
+            padding: 30px; 
+            background-color: #D7B89D; 
+            border: 4px solid black; 
+            font-size: 18px; 
+            font-family: 'Open Sans', sans-serif; 
+            font-weight: bold;  
+            text-align: center;
+        }
+        
+        /* Encabezado de tabla de ventas */
+        .encabezado-tabla-ventas {
+            background-color: #3E302C !important;
+            color: white !important;
+            border: 4px solid black !important;
+            font-size: 18px !important;
+            font-family: 'Open Sans', sans-serif !important;
+            font-weight: bold !important;
+        }
+        
+        /* Fila clara de tabla de ventas */
+        .fila-clara-tabla-ventas {
+            background-color: #D7B89D !important;
+            color: black !important;
+            border: 4px solid black !important;
+            font-size: 18px !important;
+            font-family: 'Open Sans', sans-serif !important;
+            font-weight: bold !important;
+        }
+        
+        /* Fila oscura de tabla de ventas */
+        .fila-oscura-tabla-ventas {
+            background-color: #BCA999 !important;
+            color: black !important;
+            border: 4px solid black !important;
+            font-size: 18px !important;
+            font-family: 'Open Sans', sans-serif !important;
+            font-weight: bold !important;
+        }
+        
+        /* Alineación de texto a la izquierda */
+        .texto-izquierda {
+            text-align: left;
+        }
+        
+        /* Estilo del título principal */
+        .titulo-principal {
+            font-family: 'Charm', cursive;  
+            font-size: 70px; 
+            color: #3E302C; 
+            padding-top: 150px;
+            font-weight: bold;
+        }

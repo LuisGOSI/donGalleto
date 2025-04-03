@@ -16,6 +16,7 @@ import json
 
 @app.route("/")
 def home():
+    inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
 
 @app.route("/admin")
@@ -348,6 +349,9 @@ def ventas_dashboard():
     data = cookies.getCookies()
     return render_template("/sales/sales.html",data = data)
 
+@app.route("/corteVentas")
+def corteVentas():
+    return render_template("/sales/corteVenta.html")
 
 def get_empleados():
     cur = mysql.connection.cursor()

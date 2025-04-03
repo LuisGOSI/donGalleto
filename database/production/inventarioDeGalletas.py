@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash,jsonify
 from dotenv import load_dotenv
 from datetime import datetime
 from db import app,mysql  
@@ -10,7 +10,7 @@ def getInveGalletas():
     hoy = datetime.today().date()
     lotesResumen = []
     cur = mysql.connection.cursor()
-    cur.execute("SELECT idInvGalleta, nombreGalleta, fechaCaducidad, cantidad, estadoLote FROM dongalletodev.invgalletastabla")
+    cur.execute("SELECT idInvGalleta, nombreGalleta, fechaCaducidad, cantidad, estadoLote FROM dongalletodev.invgalletastabla where estadoLote = 'Disponible';")
     galletas_raw = cur.fetchall()
     for id_lote, nombre, fecha_caducidad, cantidad, estado in galletas_raw:
         if isinstance(fecha_caducidad, str):
@@ -50,6 +50,9 @@ def registrarMermaGalleta():
         if resta < 0:
             flash("La cantidad de merma excede la cantidad disponible.", "danger")
             return redirect(url_for("getInveGalletas"))
+        if cantidad == 0:
+            flash("la cantidad no puede ser 0", "danger")
+            return redirect(url_for("getInveGalletas"))
         cur = mysql.connection.cursor()
         try:
             cur.execute(
@@ -67,6 +70,7 @@ def registrarMermaGalleta():
                 )
                 flash("Lote vacío", "success")
             mysql.connection.commit()
+            flash("Merma Registrada", "success")
         except Exception as e:
             mysql.connection.rollback()
             flash("Error al procesar la merma.", "danger")
@@ -76,18 +80,23 @@ def registrarMermaGalleta():
     return render_template("getInveGalletas")
 
         
-def getGalletasTabla():
+def getGalletasTabla(estadoLote="Disponible"):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM dongalletodev.invgalletastabla;")
+    cur.execute("SELECT * FROM dongalletodev.invgalletastabla where estadoLote = %s and cantidad>1;", (estadoLote,))
     columnas = [col[0] for col in cur.description]
     galletas = [dict(zip(columnas, fila)) for fila in cur.fetchall()]
     cur.close()
     return galletas
 
+@app.route("/actualizar_tabla")
+def actualizar_tabla():
+    estado = request.args.get("estado", "Disponible")
+    galletas = getGalletasTabla(estado)
+    return jsonify(galletas)
 
 def getGalletasResumen():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT nombreGalleta, cantidad, fechaCaducidad FROM dongalletodev.invgalletastabla;")
+    cur.execute("SELECT nombreGalleta, cantidad, fechaCaducidad FROM dongalletodev.invgalletastabla where estadoLote = 'Disponible';")
     resumen = {}
     for nombre, cantidad, fecha_cad in cur.fetchall():
         if nombre not in resumen:
@@ -100,3 +109,33 @@ def getGalletasResumen():
             resumen[nombre]["cantidad_proxima_caducar"] += cantidad
     cur.close()
     return resumen
+
+
+@app.route("/enviarMerma", methods=["POST"])
+def enviarMerma():
+    if request.method == "POST":
+        idInventarioGalletaFK = request.form["idInventarioGalletaFK"]
+        print(idInventarioGalletaFK)
+        tipoMerma = "Galletas caducas"
+        observaciones = "No se vendieron antes de su fecha"
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT cantidadGalletas FROM inventarioGalletas WHERE idInvGalleta = %s", (idInventarioGalletaFK,))
+        cantidad = cur.fetchone()[0]
+        try:
+            cur.execute(
+                "INSERT INTO mermas (tipoMerma, idInventarioGalletaFK, cantidad, fechaRegistro, observaciones) VALUES (%s, %s, %s, NOW(), %s)",
+                (tipoMerma, idInventarioGalletaFK, cantidad, observaciones),
+            )
+            cur.execute(
+                "UPDATE inventarioGalletas SET cantidadGalletas = 0 WHERE idInvGalleta = %s;",
+                (idInventarioGalletaFK,),
+            )
+            flash("Merma Registrada", "success")
+            mysql.connection.commit()
+        except Exception as e:
+            mysql.connection.rollback()
+            flash("Error al procesar la merma.", "danger")
+        finally:
+            cur.close()
+        return redirect(url_for("getInveGalletas"))
+    return render_template("getInveGalletas")
