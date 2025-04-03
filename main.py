@@ -5,7 +5,7 @@ from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
-from database.sales import corteVenta
+from database.sales import ventas, corteVenta 
 from datetime import datetime
 from db import app, mysql
 from sessions import *
@@ -479,6 +479,7 @@ def ventas_dashboard():
     if not user or user[4] not in ["ventas", "administrador"]:
         return redirect(url_for("login"))
     data = cookies.getCookies()
+    print("Data de ventas:", data)
     return render_template("sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True)
 
 @app.route("/moduloVentas")	
