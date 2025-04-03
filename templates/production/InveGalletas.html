@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container">
         <section class="intro-container">
-            <h1 class="titleInsumos">Inventario Galletas</h1>
+            <h1 class="titleInsumos" style="margin-top: 10px; font-weight: bold; font-family: 'Charm', cursive;  font-size: 60px; color: #3E302C;">Inventario Galletas</h1>
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <script>
@@ -35,9 +35,8 @@
                 {% for datos in lotesResumen %}
                     {% if datos.dias_restantes is not none and datos.dias_restantes <= 3 and datos.dias_restantes > 0 %}
                         <p>
-                            (No. Lote:<strong>{{ datos.id_lote }}</strong>) 
                             Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> galletas de 
-                            "<strong>{{ datos.nombre }}</strong>" que caducarán en 
+                            "<strong>{{ datos.nombre }}</strong>" en el lote No. <strong>{{ datos.id_lote }}</strong> que caducarán en 
                             <strong>{{ datos.dias_restantes }}</strong> día(s).
                         </p>
                     {% endif %}
@@ -60,8 +59,8 @@
                 {% for datos in lotesResumen %}
                     {% if datos.dias_restantes is not none and datos.dias_restantes == 0 %}
                         <p>
-                            (No. Lote:<strong>{{ datos.id_lote }}</strong>) Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> galletas de 
-                            "<strong>{{ datos.nombre }}</strong>" que caducan hoy.
+                            Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> galletas de 
+                            "<strong>{{ datos.nombre }}</strong>" en el lote No. <strong>{{ datos.id_lote }}</strong> que caducan hoy.
                         </p>
                     {% endif %}
                 {% endfor %}
@@ -71,6 +70,13 @@
             </div>
         </div>
     </div>
+</div>
+<div class="switch-container">
+    <label class="switch">
+        <input type="checkbox" id="statusSwitch">
+        <span class="slider round"></span>
+    </label>
+    <span class="switch-label" id="statusLabel">Activos</span>
 </div>
             <div class="inventario-container" style="display: flex; gap: 20px;">
                 <div class="tabla-inventario" style="flex: 1; position: relative;">
@@ -148,9 +154,7 @@
                         <label for="tipoMerma" class="form-label">Motivo de Merma</label>
                         <select class="form-control" id="tipoMerma" name="tipoMerma" required>
                             <option value="Producto dañado">Producto dañado</option>
-                            <option value="Insumo desperdiciado">Insumo desperdiciado</option>
-                            <option value="Insumo caduco">Insumo caduco</option>
-                            <option value="Otros">Otros</option>
+                            <option value="Galletas caducas">Galletas caducas</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -164,6 +168,31 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Registrar Merma</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="enviarMerma" tabindex="-1" aria-labelledby="modalMermaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="modalMermaLabel">Confirmación de Merma</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="lead">¿Está seguro de que desea enviar a merma este lote?</p>
+                <div class="alert alert-warning" role="alert">
+                    <strong>Atención:</strong> Esta acción no se puede deshacer.
+                </div>
+                <form action="/registrarMermaGalleta" method="POST">
+                    <input type="hidden" id="idInventarioGalletaFK" name="idInventarioGalletaFK">                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Confirmar Merma</button>
                     </div>
                 </form>
             </div>
