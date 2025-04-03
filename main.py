@@ -6,16 +6,20 @@ from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
 from datetime import datetime
-from db import app,mysql 
+from db import app, mysql
 from sessions import *
+import json
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de la app ///////////////////////////////////////////////////////////////////////
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 @app.route("/")
 def home():
+    inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
+
 
 @app.route("/admin")
 def admin_dashboard():
@@ -24,15 +28,21 @@ def admin_dashboard():
     user = session.get("user")
     if user[4] != "administrador":
         return redirect(url_for("login"))
-    presentaciones=dashboard.getPresentaciones()
-    ganancias=dashboard.getGanancias()
-    galletas=dashboard.getGalletasTop()
-    return render_template("/admin/admin_dashboard.html", presentaciones=presentaciones, ganancias=ganancias, galletas=galletas)
+    presentaciones = dashboard.getPresentaciones()
+    ganancias = dashboard.getGanancias()
+    galletas = dashboard.getGalletasTop()
+    return render_template(
+        "/admin/admin_dashboard.html",
+        presentaciones=presentaciones,
+        ganancias=ganancias,
+        galletas=galletas,
+    )
+
 
 @app.route("/gestionUsuarios")
 def usuarios_dashboard():
     user = session.get("user")
-    return render_template('/usuario/Usuario.html', is_base_template = False, user=user)
+    return render_template("/usuario/Usuario.html", is_base_template=False, user=user)
 
 
 @app.route("/produccion")
@@ -42,7 +52,10 @@ def produccion_dashboard():
     user = session.get("user")
     if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
-    return render_template("/production/baseProduccion/baseProduccion.html", is_base_template=True)
+    return render_template(
+        "/production/baseProduccion/baseProduccion.html", is_base_template=True
+    )
+
 
 @app.route("/solicitudProduccion")
 def solicitudProduccion_dashboard():
@@ -52,12 +65,18 @@ def solicitudProduccion_dashboard():
     if user[4] not in ["produccion", "ventas"]:
         return redirect(url_for("login"))
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM galletas')
+    cur.execute("SELECT * FROM galletas")
     galletas = cur.fetchall()
     cur.close()
-    return render_template("/production/SolicitudProduccion.html", is_base_template=False, user=user,galletas=galletas)
+    return render_template(
+        "/production/SolicitudProduccion.html",
+        is_base_template=False,
+        user=user,
+        galletas=galletas,
+    )
 
-@app.route('/gestion-insumos')
+
+@app.route("/gestion-insumos")
 def gestion_insumos():
     if session.get("user") is None:
         return redirect(url_for("login"))
@@ -67,7 +86,8 @@ def gestion_insumos():
     cur = mysql.connection.cursor()
     cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos")
     insumos = cur.fetchall()
-    cur.execute("""
+    cur.execute(
+        """
         SELECT 
             i.idInsumo, 
             i.nombreInsumo, 
@@ -84,11 +104,13 @@ def gestion_insumos():
             proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
         LEFT JOIN 
             proveedores pr ON pi.idProveedorFK = pr.idProveedor
-    """)
+    """
+    )
     presentaciones = cur.fetchall()
     cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
     proveedores = cur.fetchall()
-    cur.execute("""
+    cur.execute(
+        """
         SELECT 
             fr.idFormato,
             i.nombreInsumo,
@@ -103,92 +125,36 @@ def gestion_insumos():
             insumos i ON ifr.idInsumoFK = i.idInsumo
         ORDER BY 
             i.nombreInsumo, fr.nombreFormato
-    """)
+    """
+    )
     formatos_receta = cur.fetchall()
     cur.close()
-    return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, 
-                           formatos_receta=formatos_receta, is_base_template=False)
+    return render_template(
+        "/production/gestionInsumos.html",
+        insumos=insumos,
+        presentaciones=presentaciones,
+        proveedores=proveedores,
+        formatos_receta=formatos_receta,
+        is_base_template=False,
+    )
 
 
 @app.route("/inventario-insumos")
 def insumos_inventory():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
     user = session.get("user")
-    if user[4] not in ["produccion", "administrador"]:
+    if not user or user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
-    hoy = datetime.now().date()
+    inventarioDeInsumos.actualizar_estados_caducidad()
     insumos = inventarioDeInsumos.getInvInsumosTabla()
-    cursor = mysql.connection.cursor()
-    cursor.execute("""
-        SELECT 
-            inv.idInventarioInsumo as id_lote,
-            ins.nombreInsumo as nombre,
-            inv.cantidad as cantidad_proxima_caducar,
-            inv.fechaCaducidad as fecha_caducidad,
-            ins.unidadMedida as unidad_medida,
-            DATEDIFF(inv.fechaCaducidad, CURDATE()) as dias_restantes,
-            inv.estadoLote as estado
-        FROM inventarioInsumos as inv
-        JOIN insumos ins ON inv.idInsumoFK = ins.idInsumo
-        WHERE inv.cantidad > 0
-        ORDER BY dias_restantes ASC
-    """)
-    insumos_raw = cursor.fetchall()
-    for insumo in insumos_raw:
-        fecha_caducidad_raw = insumo[3]  # índice 3 corresponde a fecha_caducidad
-        id_lote = insumo[0]             # índice 0 corresponde a id_lote
-        estado = insumo[6]              # índice 6 corresponde a estado
-        if fecha_caducidad_raw:
-            if isinstance(fecha_caducidad_raw, str):
-                fecha_caducidad = datetime.strptime(fecha_caducidad_raw, "%Y-%m-%d").date()
-            else:
-                fecha_caducidad = fecha_caducidad_raw
-            dias_restantes = (fecha_caducidad - hoy).days
-            if dias_restantes < 0 and estado != "Caducado":
-                cursor.execute("""
-                    UPDATE inventarioInsumos
-                    SET estadoLote = 'Caducado' 
-                    WHERE idInventarioInsumo = %s
-                """, (id_lote,))
-                mysql.connection.commit()
-    cursor.execute("""
-        SELECT 
-            inv.idInventarioInsumo as id_lote,
-            ins.nombreInsumo as nombre,
-            inv.cantidad as cantidad_proxima_caducar,
-            inv.fechaCaducidad as fecha_caducidad,
-            ins.unidadMedida as unidad_medida,
-            DATEDIFF(inv.fechaCaducidad, CURDATE()) as dias_restantes,
-            inv.estadoLote as estado
-        FROM inventarioInsumos as inv
-        JOIN insumos ins ON inv.idInsumoFK = ins.idInsumo
-        WHERE inv.cantidad > 0
-        ORDER BY dias_restantes ASC
-    """)
-    lotesResumen = []
-    proximos_caducar = []
-    for row in cursor.fetchall():
-        lote = {
-            'id_lote': row[0],
-            'nombre': row[1],
-            'cantidad_proxima_caducar': row[2],
-            'fecha_caducidad': row[3],
-            'unidad_medida': row[4],
-            'dias_restantes': row[5],
-            'estado': row[6]
-        }
-        lotesResumen.append(lote)
-        if lote['dias_restantes'] is not None and lote['dias_restantes'] >= 0:
-            proximos_caducar.append(lote)
-    cursor.close()
+    lotesResumen, proximos_caducar = inventarioDeInsumos.getInsumosResumen()
     return render_template(
-        "/production/inveInsumos.html", 
-        insumos=insumos, 
-        lotesResumen=lotesResumen, 
-        proximos_caducar=proximos_caducar,  
-        is_base_template=False
+        "/production/inveInsumos.html",
+        insumos=insumos,
+        lotesResumen=lotesResumen,
+        proximos_caducar=proximos_caducar,
+        is_base_template=False,
     )
+
 
 @app.route("/proveedores")
 def proveedores():
@@ -197,7 +163,8 @@ def proveedores():
     user = session.get("user")
     if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
-    return render_template('/production/Proveedores.html', is_base_template = False)
+    return render_template("/production/Proveedores.html", is_base_template=False)
+
 
 @app.route("/moduloProduccion")
 def moduloProduccion():
@@ -205,19 +172,89 @@ def moduloProduccion():
         return redirect(url_for("login"))
     user = session.get("user")
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM galletas')
+    cur.execute("SELECT * FROM galletas")
     galletas = cur.fetchall()
     cur.close()
-    return render_template('/production/Produccion.html', is_base_template = False,user=user,galletas=galletas)
+    return render_template(
+        "/production/Produccion.html",
+        is_base_template=False,
+        user=user,
+        galletas=galletas,
+    )
 
 
+# Rutas para el modulo de clientes / Sistema de carrito
 @app.route("/cliente")
 def cliente_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
     data = cookies.getCookies()
-    return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+    return render_template(
+        "/client/Cliente.html", is_base_template=False, user=user, data=data
+    )
+
+
+@app.route("/detalle_producto", methods=["GET", "POST"])
+def detalle_producto():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+
+    # Usar request.form para los datos enviados por POST
+    galleta_json = request.form.get("galleta")  # Obtener la galleta del formulario POST
+    print("JSON recibido:", galleta_json)
+
+    galleta = json.loads(galleta_json) if galleta_json else None
+    print(f"Galleta: {galleta}")
+
+    return render_template(
+        "/client/DetalleProducto.html", is_base_template=False, galleta=galleta
+    )
+
+
+@app.route("/agregar_carrito/<int:id>", methods=["POST"])
+def agregar_al_carrito(id):
+    # Se obtiene la cantidad del formulario
+    cantidad = int(request.form.get("cantidad", 1))
+    tipo_venta = request.form.get(
+        "saleType", "unidad"
+    )  # Obtener el tipo de venta del formulario
+    # Se obtienen las galletas del catalago
+    data = cookies.getCookies()
+
+    producto = next((item for item in data if item[0] == id), None)
+    if not producto:
+        return redirect(url_for("cliente_dashboard"))
+
+    if "carrito" not in session:
+        session["carrito"] = {}
+
+    carrito = session["carrito"]
+
+    # Generamos una clave única usando ID y tipo de venta
+    clave_carrito = f"{id}_{tipo_venta}"
+
+    if clave_carrito in carrito:
+        # Si ya existe con el mismo tipo de venta, sumamos la cantidad
+        carrito[clave_carrito]["cantidad"] += cantidad
+    else:
+        # Si es un nuevo tipo de venta, lo agregamos como un nuevo producto en el carrito
+        carrito[clave_carrito] = {
+            "id": producto[0],
+            "nombre": producto[1],
+            "precio": producto[2],
+            "cantidad": cantidad,
+            "tipo_venta": tipo_venta,
+        }
+
+    print("Carrito actualizado:", carrito)
+
+    session.modified = True
+
+    return redirect(url_for("cliente_dashboard"))
+
+
+# Fin de rutas para el modulo de clientes / Sistema de carrito
 
 
 @app.route("/clientes")
@@ -229,7 +266,8 @@ def clientes():
         return render_template("pages/error404.html"), 404
     status = request.args.get("status", default=1, type=int)  # Por defecto activos
     cur = mysql.connection.cursor()
-    cur.execute("""
+    cur.execute(
+        """
         SELECT 
             c.idCliente,
             c.nombreCliente,
@@ -243,10 +281,17 @@ def clientes():
             usuarios u ON c.idCliente = u.idClienteFK
         WHERE 
             u.status = %s;
-    """, (status,))
+    """,
+        (status,),
+    )
     clientes = cur.fetchall()
     cur.close()
-    return render_template('/admin/gestionClientes.html', clientes=clientes, status=status, is_base_template=False)
+    return render_template(
+        "/admin/gestionClientes.html",
+        clientes=clientes,
+        status=status,
+        is_base_template=False,
+    )
 
 
 @app.route("/receta")
@@ -256,29 +301,33 @@ def receta():
     active_user = session.get("user")
     if active_user[4] not in ["produccion", "administrador"]:
         return render_template("pages/error404.html"), 404
-    
+
     cur = mysql.connection.cursor()
-    
+
     # Obtener galletas para el select
     cur.execute("SELECT idGalleta, nombreGalleta FROM galletas ORDER BY nombreGalleta")
     galletas = cur.fetchall()
-    
+
     # Obtener insumos para el select
-    cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos ORDER BY nombreInsumo")
+    cur.execute(
+        "SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos ORDER BY nombreInsumo"
+    )
     insumos = cur.fetchall()
-    
+
     # Obtener formatos disponibles
-    cur.execute("SELECT idFormato, nombreFormato FROM formatosRecetas ORDER BY nombreFormato")
+    cur.execute(
+        "SELECT idFormato, nombreFormato FROM formatosRecetas ORDER BY nombreFormato"
+    )
     formatos = cur.fetchall()
-    
+
     cur.close()
-    
+
     return render_template(
-        '/production/Recetas.html', 
+        "/production/Recetas.html",
         is_base_template=False,
         galletas=galletas,
         insumos=insumos,
-        formatos=formatos
+        formatos=formatos,
     )
 
 
@@ -287,7 +336,27 @@ def carrito_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    return render_template('/client/Carrito.html', is_base_template = False,user=user)
+
+    if "carrito" not in session or not session["carrito"]:
+        carrito = {}
+    else:
+        carrito = session["carrito"]
+
+    total_items = sum(
+        item["cantidad"] for item in carrito.values()
+    )  # Total de productos
+    total_precio = sum(
+        item["precio"] * item["cantidad"] for item in carrito.values()
+    )  # Total a pagar
+
+    return render_template(
+        "/client/Carrito.html",
+        is_base_template=False,
+        user=user,
+        total_items=total_items,
+        total_precio=total_precio,
+        carrito=carrito,
+    )
 
 
 @app.route("/historico")
@@ -313,13 +382,26 @@ def historico_dashboard():
     cur.close()
     # Verificar si hay compras
     historico = len(historico_compras) > 0
-    
-    return render_template('/client/Historico.html', 
-                           is_base_template=False, 
-                           user=user, 
-                           historico_compras=historico_compras,
-                           historico=historico,
-                           nombreCliente=nombreCliente)
+
+    return render_template(
+        "/client/Historico.html",
+        is_base_template=False,
+        user=user,
+        historico_compras=historico_compras,
+        historico=historico,
+        nombreCliente=nombreCliente,
+    )
+
+
+@app.route("/ventas")
+def ventas_dashboard():
+    user = session.get("user")
+    if not user or user[4] not in ["ventas", "administrador"]:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    data = cookies.getCookies()
+    return render_template("/sales/sales.html", data=data)
+
 
 @app.route("/sobreNosotros")
 def about_us():
@@ -334,27 +416,27 @@ def about_us():
 def page_not_found(error):
     return render_template("pages/error404.html"), 404
 
+
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de prueba ///////////////////////////////////////////////////////////////////////
 #! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@app.route("/ventas")
-def ventas_dashboard():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
-    user = session.get("user")
-    data = cookies.getCookies()
-    return render_template("/sales/sales.html",data = data)
+
+@app.route("/corteVentas")
+def corteVentas():
+    return render_template("/sales/corteVenta.html")
 
 
 def get_empleados():
     cur = mysql.connection.cursor()
-    cur.execute("""
+    cur.execute(
+        """
         SELECT e.idEmpleado, e.nombreEmpleado, e.apellidoP, e.apellidoM, e.puesto, 
         u.usuario, u.rol 
         FROM empleado e
         JOIN usuarios u ON e.idEmpleado = u.idEmpleadoFK
-    """)
+    """
+    )
     empleados = cur.fetchall()
     cur.close()
     return empleados

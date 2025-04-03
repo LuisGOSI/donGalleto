@@ -111,6 +111,20 @@ td {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
+.enviMerma-btn {
+    background-color: red !important;
+    border-color: red !important;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 20px;
+    transition: all 0.2s ease;
+    position: relative;
+    top: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    color: white !important;
+}
+
 .mermas-btn:active {
     top: 2px;
     box-shadow: 0 0 2px rgba(0,0,0,0.2);

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corte de Ventas</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesSales/stylesCorteVenta.css') }}" />    
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4 titulo-principal">Corte de Ventas</h1>
+        <br>
+        <div class="container">
+            <div class="row justify-content-center">
+                <table class="col-md-12 col-lg-12 tabla-principal">
+                    <thead>
+                        <tr>
+                            <th class="encabezado-personalizado-cafe">Ganancias Totales</th>
+                            <th class="encabezado-personalizado-negro">Ganancias Netas</th>
+                            <th class="encabezado-personalizado-cafe">Ventas Realizadas</th>
+                            <th class="encabezado-personalizado-negro">Descuento aplicado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="celda-tabla-principal">$2,000</td>
+                            <td class="celda-tabla-principal">$1,500</td>
+                            <td class="celda-tabla-principal">23</td>
+                            <td class="celda-tabla-principal">$100</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br><br>
+        <div class="container"> 
+            <div class="row justify-content-center"> 
+                <div class="col-md-6"> 
+                    <div class="contenedor-busqueda text-center">
+                        <input type="text" class="entrada-busqueda" placeholder="Buscar...">
+                        <button class="boton-busqueda">
+                            <div class="icono-busqueda"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- Tabla de Ventas No. 1 -->
+        <div class="row mb-4 justify-content-center">
+            <div class="col-md-9">
+                    <div class="card-header encabezado-tabla"> 
+                        <div>No. 1</div> 
+                        <div>Fecha y hora de venta: 12/11/2025 12:15</div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <table class="table tabla-ventas">
+                            <thead>
+                                <tr>
+                                    <th class="encabezado-tabla-ventas">Producto</th>
+                                    <th class="encabezado-tabla-ventas">Forma de venta</th>
+                                    <th class="encabezado-tabla-ventas">Cantidad</th>
+                                    <th class="encabezado-tabla-ventas">Precio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fila-clara-tabla-ventas">Galleta Oreo</td>
+                                    <td class="fila-clara-tabla-ventas">Gramaje</td>
+                                    <td class="fila-clara-tabla-ventas">500</td>
+                                    <td class="fila-clara-tabla-ventas">$300</td>
+                                </tr>
+                                <tr>
+                                    <td class="fila-oscura-tabla-ventas">Galleta de Mantequilla</td>
+                                    <td class="fila-oscura-tabla-ventas">Unidad</td>
+                                    <td class="fila-oscura-tabla-ventas">10</td>
+                                    <td class="fila-oscura-tabla-ventas">$100</td>
+                                </tr>
+                                <tr>
+                                    <td class="fila-clara-tabla-ventas">Galleta de Chocolate</td>
+                                    <td class="fila-clara-tabla-ventas">Dinero</td>
+                                    <td class="fila-clara-tabla-ventas">200</td>
+                                    <td class="fila-clara-tabla-ventas">$200</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fila-oscura-tabla-ventas">Subtotal:</td>
+                                    <td class="fila-oscura-tabla-ventas texto-izquierda">$500</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end fila-clara-tabla-ventas">Descuento:</td>
+                                    <td class="fila-clara-tabla-ventas texto-izquierda">$100</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end fila-oscura-tabla-ventas"><strong>Total:</strong></td>
+                                    <td class="fila-oscura-tabla-ventas texto-izquierda"><strong>$400</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+            </div>
+        </div>
+        <!-- Tabla de Ventas No. 2 -->
+        
+    </div>
+    <!-- Bootstrap JS (opcional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
