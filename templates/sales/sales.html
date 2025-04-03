@@ -1,85 +1,78 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Don Galleto - Punto de Venta</title>
-    <link rel="stylesheet" href="/static/css/stylesSales/sales.css">
-    <script src="/static/functions/functionsSales.js"></script>
-</head>
-<body>
+{% extends '/sales/baseVentas/baseVenta.html' %}
+{% block title %}Módulo de Ventas{% endblock %}
+{% block content %}
 
-    <div class="container">
-        <div class="main-content">
-            <div class="product-grid">
+<div class="container">
+    <h1 class="title-module-ventas">Módulo de ventas</h1>
 
-                {% if data %}
-                {% block catalogo %}
-                {% for galleta in data %}
-                <div class="product-card">
-                    <img src="{{ galleta[4] }}" alt="Galleta Oro">
-                    <p>{{ galleta[1] }}</p>
-                    <p>Precio: {{ galleta[2] }} C/U</p>
-                    <p>Gramaje: {{ galleta[3] }} C/U</p>
-                    <button class="add-btn">Añadir</button>
-                </div>
-                {% endfor %}
-                {% endblock %}
-            {% else %}
-                <div class="error-alert">
-                    <div class="error-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="error-content">
-                        <h3>Error en la Carga de Productos</h3>
-                        <p>Lo sentimos, no se han podido cargar los productos en este momento. 
-                        Por favor, intenta recargar la página o contacta con soporte técnico.</p>
-                    </div>
-                </div>
-            {% endif %}
+    <div class="main-content">
+        <div class="product-grid">
+
+            {% if data %}
+            {% block catalogo %}
+            {% for galleta in data %}
+            <div class="product-card">
+                <img src="{{ galleta[4] }}" alt="Galleta Oro">
+                <p>{{ galleta[1] }}</p>
+                <p>Precio: {{ galleta[2] }} C/U</p>
+                <p>Gramaje: {{ galleta[3] }} C/U</p>
+                <button class="add-btn">Añadir</button>
             </div>
-
-            <div class="sales-section">
-                <h2>Ventas</h2>
-                <div class="sales-input-group">
-                    <input type="text" placeholder="Código">
-                    <button class="btn btn-secondary">Cargar</button>
+            {% endfor %}
+            {% endblock %}
+            {% else %}
+            <div class="error-alert">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
-                <table class="sales-table">
-                    <thead>
-                        <tr>
-                            <th class="product-column">Productos</th>
-                            <th class="type-column">Tipo</th>
-                            <th class="quantity-column">Cantidad</th>
-                            <th class="price-column">Precio</th>
-                            <th class="actions-column">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                    </tbody>
-                </table>
-                <div class="financial-inputs">
-                    <div class="input-group">
-                        <label for="subtotal">Subtotal</label>
-                        <input type="number" id="subtotal" step="0.01" min="0" placeholder="Subtotal" value="0">
-                    </div>
-                    <div class="input-group">
-                        <label for="descuento">Descuento</label>
-                        <input type="number" id="descuento" step="0.01" min="0" placeholder="Descuento" value="0">
-                    </div>
-                    <div class="input-group">
-                        <label for="total">Total</label>
-                        <input type="number" id="total" step="0.01" min="0" placeholder="Total" value="0">
-                    </div>
-                    <div class="btn-container">
-                        <button class="btn btn-primary">Vender</button>
-                        <button id="clear-btn" class="btn btn-clear">Limpiar</button>
-                    </div>
+                <div class="error-content">
+                    <h3>Error en la Carga de Productos</h3>
+                    <p>Lo sentimos, no se han podido cargar los productos en este momento.
+                        Por favor, intenta recargar la página o contacta con soporte técnico.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="sales-section">
+            <div class="sales-input-group">
+                <input type="text" placeholder="Código">
+                <button class="btn btn-secondary">Cargar</button>
+            </div>
+            <table class="sales-table">
+                <thead>
+                    <tr>
+                        <th class="product-column">Productos</th>
+                        <th class="type-column">Tipo</th>
+                        <th class="quantity-column">Cantidad</th>
+                        <th class="price-column">Precio</th>
+                        <th class="actions-column">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+            <div class="financial-inputs">
+                <div class="input-group">
+                    <label for="subtotal">Subtotal</label>
+                    <input type="number" id="subtotal" step="0.01" min="0" placeholder="Subtotal" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="descuento">Descuento</label>
+                    <input type="number" id="descuento" step="0.01" min="0" placeholder="Descuento" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="total">Total</label>
+                    <input type="number" id="total" step="0.01" min="0" placeholder="Total" value="0">
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-primary">Vender</button>
+                    <button id="clear-btn" class="btn btn-clear">Limpiar</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-</body>
-</html>
+{% endblock %}
