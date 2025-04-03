@@ -487,7 +487,6 @@ def ventas_dashboard():
     user = session.get("user")
     if not user or user[4] not in ["ventas", "administrador"]:
         return redirect(url_for("login"))
-    user = session.get("user")
     data = cookies.getCookies()
     return render_template("/sales/sales.html", data=data)
 
