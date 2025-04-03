@@ -254,7 +254,96 @@ def agregar_al_carrito(id):
     return redirect(url_for("cliente_dashboard"))
 
 
-# Fin de rutas para el modulo de clientes / Sistema de carrito
+
+@app.route('/eliminar_carrito/<int:id>/<tipo_venta>', methods=['POST'])
+def eliminar_del_carrito(id, tipo_venta):
+    if "carrito" in session:
+        carrito = session["carrito"]
+        
+        clave = f"{id}_{tipo_venta}"  # Genera la clave en el formato correcto
+
+        if clave in carrito:
+            del carrito[clave]  # Elimina el producto del carrito
+            session.modified = True  # Guarda los cambios en la sesión
+            print(f"Producto eliminado: {clave}")  # Depuración en consola
+        else:
+            print(f"No se encontró la clave: {clave}")  # Depuración si no lo encuentra
+
+    return redirect(url_for('carrito_dashboard'))  # Volver a la vista del carrito
+
+
+from flask import session, redirect, url_for, flash
+from datetime import datetime
+
+from flask import flash, redirect, url_for, session
+from datetime import datetime
+from flask_mysqldb import MySQL
+
+from datetime import datetime
+
+@app.route("/finalizar_compra", methods=["POST"])
+def finalizar_compra():
+
+    user_id = session["user"][0]  # ID del cliente en sesión
+    carrito = session["carrito"]
+    total_compra = sum(item["precio"] * item["cantidad"] for item in carrito.values())
+    fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    id_empleado = 1  # ID de un empleado específico para ventas en línea
+    descuento = 0  # Puedes modificar esto si hay descuentos
+
+    cur = mysql.connection.cursor()
+
+    try:
+        # Insertar la venta en la tabla `ventas`
+        cur.execute(
+            """
+            INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento)
+            VALUES (%s, %s, %s, %s)
+            """,
+            (id_empleado, user_id, fecha_actual, descuento)
+        )
+        mysql.connection.commit()
+
+        # Obtener el ID de la venta generada
+        id_venta = cur.lastrowid
+        print(f"✅ ID de la venta generada: {id_venta}")
+
+        # Insertar detalles de la venta en la tabla `detalleventas`
+        for key, item in carrito.items():
+            id_galleta = key.split("_")[0]  # ID del producto (galleta)
+            tipo_venta = item.get("tipo_venta", "unidades")  # Debe ser 'gramaje', 'paquetes' o 'unidades'
+
+            # Validar que el tipo de venta sea correcto según el ENUM
+            if tipo_venta not in ["gramaje", "paquetes", "unidades"]:
+                raise ValueError(f"Tipo de venta inválido: {tipo_venta}")
+
+            cur.execute(
+                """
+                INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido)
+                VALUES (%s, %s, %s, %s, %s)
+                """,
+                (id_venta, id_galleta, item["cantidad"], tipo_venta, item["precio"])
+            )
+
+        mysql.connection.commit()
+
+        # Vaciar el carrito después de la compra
+        session.pop("carrito")
+        flash("Compra finalizada con éxito.", "success")
+        return redirect(url_for("cliente_dashboard"))
+
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f"Ocurrió un error al procesar la compra: {e}", "danger")
+        print(f"❌ Error en la compra: {e}")
+        return redirect(url_for("carrito_dashboard"))
+
+    finally:
+        cur.close()
+
+
+
+#Fin de rutas para el modulo de clientes / Sistema de carrito
 
 
 @app.route("/clientes")
