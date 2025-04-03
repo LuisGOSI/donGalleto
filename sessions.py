@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from db import app, mysql
@@ -11,14 +11,15 @@ from db import app, mysql
 def login():
     user = session.get("user")
     if user is not None:
-        if user[4] == "cliente":
-            return redirect(url_for("cliente_dashboard"))
-        elif user[4] == "administrador":
-            return redirect(url_for("admin_dashboard"))
-        elif user[4] == "produccion":
-            return redirect(url_for("produccion_dashboard"))
-        elif user[4] == "ventas":
-            return redirect(url_for("ventas_dashboard"))
+        match user[4]:
+            case "administrador":
+                return redirect(url_for("admin_dashboard"))
+            case "produccion":
+                return redirect(url_for("produccion_dashboard"))
+            case "ventas":
+                return redirect(url_for("ventas_dashboard"))
+            case "cliente":
+                return redirect(url_for("cliente_dashboard"))
     else:
         if request.method == "POST":
             email = request.form["email"]
@@ -26,19 +27,19 @@ def login():
             cur = mysql.connection.cursor()
             cur.execute("SELECT * FROM usuarios where email = %s", (email,))
             userDb = cur.fetchone()
-            print(userDb)
             cur.close()
             if userDb and check_password_hash(userDb[3], password):
                 session["user"] = userDb
                 role = userDb[4]
-                if role == "administrador":
-                    return redirect(url_for("admin_dashboard"))
-                elif role == "produccion":
-                    return redirect(url_for("produccion_dashboard"))
-                elif role == "ventas":
-                    return redirect(url_for("ventas_dashboard"))
-                else:
-                    return redirect(url_for("cliente_dashboard"))
+                match role:
+                    case "administrador":
+                        return redirect(url_for("admin_dashboard"))
+                    case "produccion":
+                        return redirect(url_for("produccion_dashboard"))
+                    case "ventas":
+                        return redirect(url_for("ventas_dashboard"))
+                    case "cliente":
+                        return redirect(url_for("cliente_dashboard"))
             else:
                 flash("Usuario o contraseña incorrectos")
                 return render_template("/pages/login.html")
@@ -129,4 +130,11 @@ def logout():
         return redirect(url_for("login"))
     else:
         return redirect(url_for("login"))
-    
+
+@app.route("/checkSession")
+def checkSession():
+    user = session.get("user")
+    if user is not None:
+        return jsonify({"status": "success", "user": user})
+    else:
+        return redirect(url_for("login"))
