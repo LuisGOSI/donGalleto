@@ -1,0 +1,66 @@
+{% extends '/sales/baseVentas/baseVenta.html' %}
+{% block title %}Listado de ventas{% endblock %}
+{% block content %}
+
+<h1 class="title-listVentas">Listado de ventas</h1>
+
+<details class="elegant-summary">
+    <summary>Haga clic para expandir el resumen</summary>
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-9">
+                <div class="card-header encabezado-tabla"> 
+                    <div>No. 1</div> 
+                    <div>Fecha y hora de venta: 12/11/2025 12:15</div>
+                </div>
+                
+                <div class="card-body">
+                    <table class="table tabla-ventas">
+                        <thead>
+                            <tr>
+                                <th class="encabezado-tabla-ventas">Producto</th>
+                                <th class="encabezado-tabla-ventas">Forma de venta</th>
+                                <th class="encabezado-tabla-ventas">Cantidad</th>
+                                <th class="encabezado-tabla-ventas">Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fila-clara-tabla-ventas">Galleta Oreo</td>
+                                <td class="fila-clara-tabla-ventas">Gramaje</td>
+                                <td class="fila-clara-tabla-ventas">500</td>
+                                <td class="fila-clara-tabla-ventas">$300</td>
+                            </tr>
+                            <tr>
+                                <td class="fila-oscura-tabla-ventas">Galleta de Mantequilla</td>
+                                <td class="fila-oscura-tabla-ventas">Unidad</td>
+                                <td class="fila-oscura-tabla-ventas">10</td>
+                                <td class="fila-oscura-tabla-ventas">$100</td>
+                            </tr>
+                            <tr>
+                                <td class="fila-clara-tabla-ventas">Galleta de Chocolate</td>
+                                <td class="fila-clara-tabla-ventas">Dinero</td>
+                                <td class="fila-clara-tabla-ventas">200</td>
+                                <td class="fila-clara-tabla-ventas">$200</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end fila-oscura-tabla-ventas">Subtotal:</td>
+                                <td class="fila-oscura-tabla-ventas texto-izquierda">$500</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end fila-clara-tabla-ventas">Descuento:</td>
+                                <td class="fila-clara-tabla-ventas texto-izquierda">$100</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end fila-oscura-tabla-ventas"><strong>Total:</strong></td>
+                                <td class="fila-oscura-tabla-ventas texto-izquierda"><strong>$400</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+        </div>
+    </div>
+</details>
+
+{% endblock %}

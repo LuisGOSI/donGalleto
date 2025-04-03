@@ -1,0 +1,39 @@
+/* -------------------------------------- Títulos y textos de Listado de ventas -------------------------------------- */
+.title-listVentas{
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+    font-family: 'Open Sans', sans-serif;
+    margin-top: 25px;
+}
+
+/* --------------------------------------------------------------- Estilo para el la etiqueta summary de ventas --------------------------------------------------- */
+.elegant-summary {
+    font-family: 'Georgia', serif;
+    background-color: #f9f7f4;
+    border-left: 4px solid #8a7d6c;
+    color: #4a4a4a;
+    padding: 15px 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.elegant-summary::before {
+    content: "Resumen de ventas";
+    display: block;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8a7d6c;
+    margin-bottom: 10px;
+}
+
+.elegant-summary p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* --------------------------------------------------------------- Estilo para el contenedor de la tabla de ventas --------------------------------------------------- */
+

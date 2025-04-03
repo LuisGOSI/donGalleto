@@ -493,14 +493,18 @@ def ventas_dashboard():
 @app.route("/corteVentas")
 def corteVentas():
     user = session.get("user")
-    return render_template("/sales/corteVenta.html", user=user)
+    return render_template("/sales/corteVenta.html", user=user, is_base_template=False)
 
 @app.route("/moduloVentas")	
 def moduloVentas():
     user = session.get("user")
     data = cookies.getCookies()
-    return render_template("/sales/sales.html", data=data, user=user,)
+    return render_template("/sales/sales.html", data=data, user=user, is_base_template=False)
 
+@app.route("/listadoVentas")
+def listadoVentas():
+    user = session.get("user")
+    return render_template("/sales/listadoVentas.html", user=user, is_base_template=False)
 
 @app.route("/sobreNosotros")
 def about_us():
