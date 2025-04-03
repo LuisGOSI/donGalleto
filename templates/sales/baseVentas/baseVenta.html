@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestión de ventas{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/Don_galleto_icon.png')}}" type="image/x-icon" />
+    <!-- Bootstrap referencias y links de fuentes-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesHeader/styleHeader.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesSales/stylesCorteVenta.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesSales/stylesListadoVentas.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesSales/stylesModuloVentas.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesSales/sales.css') }}">
+    <!--Scripts de funcionalidades -->
+    <script src="/static/functions/functionsSales.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>  
+
+</head>
+
+<body>
+    <div>
+        {% include "/bases/header.html" %}
+        {% if is_base_template %}
+        <div class="container-fluid-ventas">
+            <div class="imagen-ventas"></div>
+            <h1 class="page-title-ventas">Bienvenido a la Gestión de Ventas</h1>
+            <h3 class="text-title-ventas">Ingresa a los diferentes módulos para conocer y realizar las diferentes acciones</h3>
+        </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+
+</html>

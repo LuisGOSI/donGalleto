@@ -1,0 +1,253 @@
+/* --------------------------------------  
+   1. ESTILOS GENERALES Y CONTENEDOR  
+-------------------------------------- */  
+.sales-container {  
+    max-width: 1000px;  
+    margin: 0 auto;  
+    padding: 20px;  
+    font-family: 'Open Sans', sans-serif;  
+}  
+
+/* --------------------------------------  
+   2. TÍTULO PRINCIPAL  
+-------------------------------------- */  
+.title-listVentas {  
+    font-family: 'Charm', cursive;  
+    text-align: center;  
+    font-size: 70px;  
+    color: #3E302C;  
+    padding-top: 50px;  
+    margin-bottom: 40px;  
+    font-weight: bold;  
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);  
+}  
+
+/* --------------------------------------  
+   3. LISTA DE VENTAS  
+-------------------------------------- */  
+.sales-list {  
+    display: flex;  
+    flex-direction: column;  
+    gap: 25px;  
+    margin-top: 30px;  
+}  
+
+/* --------------------------------------  
+   4. ELEMENTO DE VENTA (DETAILS)  
+-------------------------------------- */  
+.sale-item {  
+    border-radius: 8px;  
+    overflow: hidden;  
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);  
+    transition: all 0.3s ease, box-shadow 0.4s ease-in-out;  
+    background-color: white;  
+    border: 1px solid #e0e0e0;  
+}  
+
+.sale-item:hover {  
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);  
+    transform: translateY(-2px);  
+}  
+
+.sale-item[open] {  
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);  
+}  
+
+/* --------------------------------------  
+   5. SUMMARY (CABECERA DE VENTA)  
+-------------------------------------- */  
+.sale-summary {  
+    list-style: none;  
+    cursor: pointer;  
+    position: relative;  
+    transition: transform 0.3s ease, opacity 0.3s ease;  
+}  
+
+.sale-summary::-webkit-details-marker {  
+    display: none;  
+}  
+
+.sale-header {  
+    display: flex;  
+    align-items: center;  
+    justify-content: space-between;  
+    padding: 15px 40px 15px 20px;  
+    background: linear-gradient(to right, #D7B89D, #e6d4c2);
+    position: relative;  
+}  
+
+/* Indicador de expansión con animación */  
+.sale-summary::after {  
+    content: "+";  
+    position: absolute;  
+    right: 20px;  
+    top: 50%;  
+    transform: translateY(-50%);  
+    font-size: 24px;  
+    color: #3E302C;  
+    font-weight: bold;  
+    transition: transform 0.3s ease, opacity 0.3s ease;  
+    z-index: 1;  
+}  
+
+.sale-item[open] .sale-summary::after {  
+    content: "−";  
+    transform: rotate(180deg);  
+}  
+
+/* Badge de venta */  
+.sale-badge {  
+    background-color: #3E302C;  
+    color: white;  
+    padding: 4px 10px;  
+    border-radius: 20px;  
+    font-size: 0.8em;  
+    text-transform: uppercase;  
+    letter-spacing: 1px;  
+    font-weight: 600;  
+    flex: 0 0 auto;  
+    margin-right: 10px;  
+}  
+
+/* Información central (No. y fecha) */  
+.sale-info {  
+    display: flex;  
+    flex-direction: column;  
+    align-items: center;  
+    flex: 1;  
+}  
+
+/* Monto total */  
+.sale-amount {  
+    font-weight: bold;  
+    font-size: 1.3em;  
+    color: #3E302C;  
+    flex: 0 0 auto;  
+    margin-left: 10px;  
+}  
+
+/* --------------------------------------  
+   6. CONTENIDO DESPLEGABLE  
+-------------------------------------- */  
+.sale-content {  
+    padding: 0 20px;  
+    background-color: #f9f9f9;  
+    border-top: 1px solid #e0e0e0;  
+    overflow: hidden;  
+    transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, transform 0.4s ease-in-out;  
+}  
+
+.sale-item[open] .sale-content {  
+    animation: fadeSlideDown 0.4s ease forwards;  
+}  
+
+.sale-item:not([open]) .sale-content {  
+    animation: fadeSlideUp 0.3s ease forwards;  
+}  
+
+/* --------------------------------------  
+   7. TABLA DE PRODUCTOS  
+-------------------------------------- */  
+.sale-table {  
+    width: 100%;  
+    border-collapse: collapse;  
+    border-radius: 5px;  
+    overflow: hidden;  
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);  
+}  
+
+/* Encabezados */  
+.sale-table th {  
+    background-color: #3E302C;  
+    color: white;  
+    padding: 12px 15px;  
+    text-align: left;  
+    font-weight: 600;  
+}  
+
+/* Celdas */  
+.sale-table td {  
+    padding: 12px 15px;  
+    border-bottom: 1px solid #e0e0e0;  
+}  
+
+/* Filas alternadas */  
+.sale-table tbody tr:nth-child(odd) {  
+    background-color: #f2ebe6;  
+}  
+
+.sale-table tbody tr:nth-child(even) {  
+    background-color: #ffffff;  
+}  
+
+.sale-table tbody tr:hover {  
+    background-color: #e9e1d9;  
+}  
+
+/* --------------------------------------  
+   8. PIE DE TABLA (TOTALES)  
+-------------------------------------- */  
+.sale-table tfoot {  
+    font-weight: bold;  
+}  
+
+.sale-table tfoot td {  
+    border-top: 2px solid #3E302C;  
+}  
+
+.subtotal-row td {  
+    background-color: #f2ebe6;  
+}  
+
+.discount-row td {  
+    background-color: #e6d4c2;  
+    color: #8B4513;  
+}  
+
+.total-row td {  
+    background-color: #3E302C;  
+    color: white;  
+    font-size: 1.1em;  
+}  
+
+/* --------------------------------------  
+   9. RESPONSIVE  
+-------------------------------------- */  
+@media (max-width: 768px) {  
+    .title-listVentas {  
+        font-size: 50px;  
+        padding-top: 30px;  
+        margin-bottom: 30px;  
+    }  
+
+    .sale-header {  
+        flex-direction: column;  
+        gap: 10px;  
+        padding: 15px;  
+    }  
+
+    .sale-summary::after {  
+        top: 15px;  
+        right: 15px;  
+        transform: none;  
+    }  
+
+    .sale-table th,  
+    .sale-table td {  
+        padding: 10px;  
+        font-size: 0.9em;  
+    }  
+}  
+
+/* --------------------------------------  
+   10. ANIMACIONES  
+-------------------------------------- */  
+@keyframes fadeSlideDown {  
+    from { opacity: 0; transform: translateY(-10px); max-height: 0; }  
+    to { opacity: 1; transform: translateY(0); max-height: 500px; }  
+}  
+
+@keyframes fadeSlideUp {  
+    from { opacity: 1; transform: translateY(0); max-height: 500px; }  
+    to { opacity: 0; transform: translateY(-10px); max-height: 0; }  
+}  

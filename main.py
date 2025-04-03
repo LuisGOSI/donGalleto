@@ -480,8 +480,18 @@ def ventas_dashboard():
         return redirect(url_for("login"))
     data = cookies.getCookies()
     print("Data de ventas:", data)
-    return render_template("/sales/sales.html", data=data)
+    return render_template("sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True)
 
+@app.route("/moduloVentas")	
+def moduloVentas():
+    user = session.get("user")
+    data = cookies.getCookies()
+    return render_template("/sales/sales.html", data=data, user=user, is_base_template=False)
+
+@app.route("/listadoVentas")
+def listadoVentas():
+    user = session.get("user")
+    return render_template("/sales/listadoVentas.html", user=user, is_base_template=False)
 
 @app.route("/sobreNosotros")
 def about_us():

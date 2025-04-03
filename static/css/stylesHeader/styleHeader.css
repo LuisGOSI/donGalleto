@@ -177,3 +177,131 @@ body {
     height: 300px;
   }
 }
+
+/*******************Estilo header de ventas***********************/
+
+.header-ventas {
+  background-color: #3E302C;
+  width: 100vw;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sales-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0.1rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sales-header-nav-item {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: opacity 0.3s ease;
+}
+
+/************************Botones de la barra de navegación de ventas************************/
+.sales-header-nav-item {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1.5rem;
+  font-weight: 500;
+  font-size: 1rem;
+  font-family: Verdana, sans-serif;
+  padding: 0.6rem 1rem;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+
+.sales-header-nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #ffd7cb;
+  transition: width 0.3s ease;
+}
+
+.sales-header-nav-item:hover {
+  color: #ffd7cb;
+  opacity: 0.8; /* Alternativa sin afectar el layout */
+}
+
+.sales-header-nav-item:hover::after {
+  width: 100%;
+}
+
+.sales-header-logo img {
+  max-height: 120px;
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
+/************************Boton de logout de barra de navegacion de ventas************************/
+.sales-header-logout-btn {
+  margin-left: auto;
+  background-color: #ffffff;
+  color: #3E302C;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sales-header-logout-btn:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+/* Estilos responsive para header de ventas */
+@media screen and (max-width: 768px) {
+  .sales-header-container {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem;
+  }
+  
+  .sales-header-nav-item {
+      margin: 0.5rem 0;
+      width: 100%;
+      padding: 0.5rem 0;
+  }
+  
+  .sales-header-nav-item:first-child {
+      margin-bottom: 1rem;
+  }
+  
+  .sales-header-logout-btn {
+      margin: 1rem 0 0 0;
+      width: 100%;
+      text-align: center;
+      padding: 0.7rem;
+  }
+}
+
+/* Para pantallas muy pequeñas en header de ventas */
+@media screen and (max-width: 150px) {
+  .sales-header-container {
+      padding: 0.8rem;
+  }
+  
+  .sales-header-nav-item img {
+      max-height: 20px;
+  }
+}
