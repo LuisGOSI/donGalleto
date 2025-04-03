@@ -108,86 +108,22 @@ def gestion_insumos():
     formatos_receta = cur.fetchall()
     cur.close()
     return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, 
-                           formatos_receta=formatos_receta, is_base_template=False)
+                            formatos_receta=formatos_receta, is_base_template=False)
 
 
 @app.route("/inventario-insumos")
 def insumos_inventory():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
     user = session.get("user")
-    if user[4] not in ["produccion", "administrador"]:
+    if not user or user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
-    hoy = datetime.now().date()
+    inventarioDeInsumos.actualizar_estados_caducidad()
     insumos = inventarioDeInsumos.getInvInsumosTabla()
-    cursor = mysql.connection.cursor()
-    cursor.execute("""
-        SELECT 
-            inv.idInventarioInsumo as id_lote,
-            ins.nombreInsumo as nombre,
-            inv.cantidad as cantidad_proxima_caducar,
-            inv.fechaCaducidad as fecha_caducidad,
-            ins.unidadMedida as unidad_medida,
-            DATEDIFF(inv.fechaCaducidad, CURDATE()) as dias_restantes,
-            inv.estadoLote as estado
-        FROM inventarioInsumos as inv
-        JOIN insumos ins ON inv.idInsumoFK = ins.idInsumo
-        WHERE inv.cantidad > 0
-        ORDER BY dias_restantes ASC
-    """)
-    insumos_raw = cursor.fetchall()
-    for insumo in insumos_raw:
-        fecha_caducidad_raw = insumo[3]  # índice 3 corresponde a fecha_caducidad
-        id_lote = insumo[0]             # índice 0 corresponde a id_lote
-        estado = insumo[6]              # índice 6 corresponde a estado
-        if fecha_caducidad_raw:
-            if isinstance(fecha_caducidad_raw, str):
-                fecha_caducidad = datetime.strptime(fecha_caducidad_raw, "%Y-%m-%d").date()
-            else:
-                fecha_caducidad = fecha_caducidad_raw
-            dias_restantes = (fecha_caducidad - hoy).days
-            if dias_restantes < 0 and estado != "Caducado":
-                cursor.execute("""
-                    UPDATE inventarioInsumos
-                    SET estadoLote = 'Caducado' 
-                    WHERE idInventarioInsumo = %s
-                """, (id_lote,))
-                mysql.connection.commit()
-    cursor.execute("""
-        SELECT 
-            inv.idInventarioInsumo as id_lote,
-            ins.nombreInsumo as nombre,
-            inv.cantidad as cantidad_proxima_caducar,
-            inv.fechaCaducidad as fecha_caducidad,
-            ins.unidadMedida as unidad_medida,
-            DATEDIFF(inv.fechaCaducidad, CURDATE()) as dias_restantes,
-            inv.estadoLote as estado
-        FROM inventarioInsumos as inv
-        JOIN insumos ins ON inv.idInsumoFK = ins.idInsumo
-        WHERE inv.cantidad > 0
-        ORDER BY dias_restantes ASC
-    """)
-    lotesResumen = []
-    proximos_caducar = []
-    for row in cursor.fetchall():
-        lote = {
-            'id_lote': row[0],
-            'nombre': row[1],
-            'cantidad_proxima_caducar': row[2],
-            'fecha_caducidad': row[3],
-            'unidad_medida': row[4],
-            'dias_restantes': row[5],
-            'estado': row[6]
-        }
-        lotesResumen.append(lote)
-        if lote['dias_restantes'] is not None and lote['dias_restantes'] >= 0:
-            proximos_caducar.append(lote)
-    cursor.close()
+    lotesResumen, proximos_caducar = inventarioDeInsumos.getInsumosResumen()
     return render_template(
-        "/production/inveInsumos.html", 
-        insumos=insumos, 
-        lotesResumen=lotesResumen, 
-        proximos_caducar=proximos_caducar,  
+        "/production/inveInsumos.html",
+        insumos=insumos,
+        lotesResumen=lotesResumen,
+        proximos_caducar=proximos_caducar,
         is_base_template=False
     )
 
