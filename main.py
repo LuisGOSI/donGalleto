@@ -491,8 +491,8 @@ def ventas_dashboard():
     data = cookies.getCookies()
     return render_template("sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True)
 
-@app.route("/corteVentas")
-def corteVentas():
+@app.route("/moduloCorteVentas")
+def moduloCorteVentas():
     user = session.get("user")
     return render_template("/sales/corteVenta.html", user=user, is_base_template=False)
 
