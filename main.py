@@ -33,12 +33,14 @@ def admin_dashboard():
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
+    ventas=dashboard.getVentasPorDia()
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
         ganancias=ganancias,
         galletas=galletas,
         user=user,
+        ventas=ventas
     )
 
 
@@ -424,7 +426,7 @@ def receta():
         insumos=insumos,
         formatos=formatos,
         recetas=recetas,
-        user=user,
+        user=user
     )
 
 
