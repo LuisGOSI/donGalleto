@@ -28,18 +28,7 @@
         <br><br>
         
         {% if ventas %}
-        <div class="row justify-content-center"> 
-            <div class="col-md-6"> 
-                <div class="contenedor-busqueda text-center">
-                    <input type="text" class="entrada-busqueda" placeholder="Buscar...">
-                    <button class="boton-busqueda">
-                        <div class="icono-busqueda"></div>
-                    </button>
-                </div>
-            </div>
-        </div>
         <br>
-        
         <!-- Tabla de Ventas -->
         {% set ventas_agrupadas = {} %}
         {% for producto in ventas %}

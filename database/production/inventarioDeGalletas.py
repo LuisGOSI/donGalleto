@@ -1,12 +1,18 @@
 from flask import render_template, request, redirect, url_for, flash,jsonify
 from dotenv import load_dotenv
 from datetime import datetime
-from db import app,mysql  
+from db import app,mysql
+from sessions import *  
 
 load_dotenv()
 
 @app.route("/getInveGalletas")   
 def getInveGalletas():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] != "produccion":
+        return render_template("pages/error404.html"), 404
     hoy = datetime.today().date()
     lotesResumen = []
     cur = mysql.connection.cursor()
@@ -90,6 +96,11 @@ def getGalletasTabla(estadoLote="Disponible"):
 
 @app.route("/actualizar_tabla")
 def actualizar_tabla():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] != "produccion":
+        return render_template("pages/error404.html"), 404
     estado = request.args.get("estado", "Disponible")
     galletas = getGalletasTabla(estado)
     return jsonify(galletas)
