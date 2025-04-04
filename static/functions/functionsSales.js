@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = productCard.querySelector("p:nth-of-type(1)").textContent;
             const price = parseFloat(productCard.querySelector("p:nth-of-type(2)").textContent.replace("Precio: ", "").replace(" C/U", ""));
             const type = "Unidad";
-            
+
             addToCart({ name, price, type, quantity: 1 });
         });
     });
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>
                     <select class="type-select" data-index="${index}">
                         <option value="Unidad" ${item.type === "Unidad" ? "selected" : ""}>Unidad</option>
-                        <option value="Paquete" ${item.type === "Paquete" ? "selected" : ""}>Paquete</option>
+                        <option value="Paquete 1kg" ${item.type === "Paquete 1kg" ? "selected" : ""}>Paquete</option>
                     </select>
                 </td>
                 <td>
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cart[index].quantity = parseInt(event.target.value) || 1;
         } else if (event.target.classList.contains("type-select")) {
             cart[index].type = event.target.value;
-            cart[index].price = event.target.value === "Paquete" ? cart[index].price * PAQUETE_CANTIDAD : cart[index].price / PAQUETE_CANTIDAD;
+            cart[index].price = event.target.value === "Paquete 1kg" ? cart[index].price * PAQUETE_CANTIDAD : cart[index].price / PAQUETE_CANTIDAD;
         }
         renderCart();
     });
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     descuentoInput.addEventListener("input", updateTotals);
-    
+
     clearButton.addEventListener("click", () => {
         cart = [];
         renderCart();
@@ -96,13 +96,19 @@ document.addEventListener("DOMContentLoaded", () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(ventaData)
         })
-        .then(response => response.json())
-        .then(data => {
-            alert("Venta registrada exitosamente");
-            cart = [];
-            descuentoInput.value = 0;
-            renderCart();
-        })
-        .catch(error => console.error("Error al registrar la venta:", error));
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert("Venta registrada exitosamente: " + data.mensaje);
+                cart = [];
+                renderCart();
+            })
+            .catch(error => {
+                alert("Error al registrar la venta: " + (error.error || error.message || "Error desconocido"));
+            });
     });
 });

@@ -1,14 +1,8 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from db import app, mysql
+from pdf_ticket import generar_pdf_ticket
 from flask import jsonify, request, session, jsonify
 from datetime import datetime
-from dotenv import load_dotenv
 import os
-
-load_dotenv()
-
 
 @app.route("/registrarVenta", methods=["POST"])
 def registrar_venta():
@@ -50,6 +44,9 @@ def registrar_venta():
             if not galleta:
                 return jsonify({"error": f"Galleta '{nombre}' no encontrada"}), 400
             idGalleta = galleta[0]
+            
+            if tipo == "paquete 1kg":
+                cantidad = cantidad * 6
 
             # Insertar en detalleventas
             cursor.execute(
@@ -75,54 +72,27 @@ def registrar_venta():
             )
 
         mysql.connection.commit()
-        return jsonify({"mensaje": "Venta registrada con éxito"}), 200
+        
+        
+        # Generar PDF en lugar de enviar correo
+        pdf_path = generar_pdf_ticket(idVenta, productos, subtotal, descuento, total)
+        
+        if pdf_path:
+            # Obtener solo el nombre del archivo para la respuesta
+            pdf_filename = os.path.basename(pdf_path)
+            return jsonify({
+                "mensaje": "Venta registrada con éxito",
+                "pdf_ticket": pdf_filename,
+                "pdf_url": f"/static/tickets/{pdf_filename}"
+            }), 200
+        else:
+            return jsonify({
+                "mensaje": "Venta registrada pero falló la generación del PDF",
+                "pdf_ticket": None
+            }), 200
+            
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
-        try:
-            enviar_ticket(idVenta, productos, subtotal, descuento, total)
-        except Exception as email_error:
-            print(f"Error al enviar el correo: {email_error}")
         cursor.close()
-
-
-def enviar_ticket(idVenta, productos, subtotal, descuento, total):
-    try:
-        # Crear el mensaje del correo
-        mensaje = MIMEMultipart()
-        mensaje["From"] = "ventasdongalleto@gmail.com"
-        mensaje["To"] = "ventasdongalleto@gmail.com"
-        mensaje["Subject"] = f"Ticket de Venta - ID: {idVenta}"
-
-        # Formato del cuerpo del correo
-        cuerpo = f"""
-        
-        Detalles de la venta:
-        ID Venta: {idVenta}
-        Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-        
-        Productos comprados:
-        """
-
-        for producto in productos:
-            cuerpo += f"{producto['name']} - {producto['quantity']} {producto['type']} - Precio: {producto['price']} C/U\n"
-
-        cuerpo += f"""
-        Subtotal: {subtotal} 
-        Descuento: {descuento}
-        Total: {total}
-
-        """
-
-        mensaje.attach(MIMEText(cuerpo, "plain"))
-
-        # Enviar el correo
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls()
-            server.login("ventasdongalleto@gmail.com", os.getenv("MAIL_PASSWORD"))
-            server.sendmail(mensaje["From"], mensaje["To"], mensaje.as_string())
-
-        print("Correo enviado con el ticket de la compra.")
-    except Exception as e:
-        print(f"Error al enviar el correo: {e}")
