@@ -217,6 +217,17 @@ def receta():
     # Obtener formatos disponibles
     cur.execute("SELECT idFormato, nombreFormato FROM formatosRecetas ORDER BY nombreFormato")
     formatos = cur.fetchall()
+
+    # Obtener todas las recetas básicas para la tabla principal
+    cur.execute("""
+        SELECT r.idReceta, r.nombreReceta, r.cantidadHorneadas, r.duracionAnaquel, 
+               g.nombreGalleta
+        FROM recetas r
+        JOIN galletas g ON r.idGalletaFK = g.idGalleta
+        WHERE r.estatus = 1
+        ORDER BY g.nombreGalleta, r.nombreReceta
+    """)
+    recetas = cur.fetchall()
     
     cur.close()
     
@@ -225,7 +236,8 @@ def receta():
         is_base_template=False,
         galletas=galletas,
         insumos=insumos,
-        formatos=formatos
+        formatos=formatos,
+        recetas=recetas
     )
 
 
