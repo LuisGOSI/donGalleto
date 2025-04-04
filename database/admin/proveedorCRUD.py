@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, session
 from dotenv import load_dotenv
 from db import app,mysql  
 
@@ -65,6 +65,9 @@ def deleteProveedor():
 
 @app.route("/registerProveedor", methods=["POST", "GET"])
 def registerProveedor():
+    user = session.get("user")
+    if not user or user[4] not in ["produccion", "administrador"]:
+        return redirect(url_for("login"))
     if request.method == "POST":
         nombreProveedor = request.form["nombreProveedor"]
         contacto = request.form["contacto"]
@@ -81,7 +84,7 @@ def registerProveedor():
         return redirect(url_for("registerProveedor"))
     proveedores=get_proveedores()
     print(proveedores)
-    return render_template("/production/Proveedores.html",proveedores=proveedores)
+    return render_template("/production/Proveedores.html",proveedores=proveedores, user=user)
 
 
 @app.route("/modifyProveedor", methods=["POST", "GET"])

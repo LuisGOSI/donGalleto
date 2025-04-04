@@ -22,11 +22,11 @@ def home():
 
 @app.route("/dashboard")
 def admin_dashboard():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
-    if user[4] != "administrador":
-        return redirect(url_for("login"))
+    if user[4] not in ["administrador"]:
+        return render_template("pages/error404.html"), 404
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
@@ -41,17 +41,21 @@ def admin_dashboard():
 
 @app.route("/gestionUsuarios")
 def usuarios_dashboard():
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
+    if user[4] not in ["administrador"]:
+        return render_template("pages/error404.html"), 404
     return render_template("/usuario/Usuario.html", is_base_template=False, user=user)
 
 
 @app.route("/produccion")
 def produccion_dashboard():
     if session.get("user") is None:
-        return redirect(url_for("login"))
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
-    if user[4] not in ["produccion", "administrador"]:
-        return redirect(url_for("login"))
+    if user[4] not in ["produccion"]:
+        return render_template("pages/error404.html"), 404
     return render_template(
         "/production/baseProduccion/baseProduccion.html", is_base_template=True, user=user)
 
@@ -59,10 +63,10 @@ def produccion_dashboard():
 @app.route("/solicitudProduccion")
 def solicitudProduccion_dashboard():
     if session.get("user") is None:
-        return redirect(url_for("login"))
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
     if user[4] not in ["produccion", "ventas"]:
-        return redirect(url_for("login"))
+        return render_template("pages/error404.html"), 404
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM galletas")
     galletas = cur.fetchall()
@@ -78,10 +82,10 @@ def solicitudProduccion_dashboard():
 @app.route("/gestion-insumos")
 def gestion_insumos():
     if session.get("user") is None:
-        return redirect(url_for("login"))
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
-    if user[4] not in ["produccion", "administrador"]:
-        return redirect(url_for("login"))
+    if user[4] not in ["produccion"]:
+        return render_template("pages/error404.html"), 404
     cur = mysql.connection.cursor()
     cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos")
     insumos = cur.fetchall()
@@ -135,14 +139,17 @@ def gestion_insumos():
         proveedores=proveedores,
         formatos_receta=formatos_receta,
         is_base_template=False,
+        user=user
     )
 
 
 @app.route("/inventario-insumos")
 def insumos_inventory():
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
-    if not user or user[4] not in ["produccion", "administrador"]:
-        return redirect(url_for("login"))
+    if user[4] not in ["produccion"]:
+        return render_template("pages/error404.html"), 404
     inventarioDeInsumos.actualizar_estados_caducidad()
     insumos = inventarioDeInsumos.getInvInsumosTabla()
     lotesResumen, proximos_caducar = inventarioDeInsumos.getInsumosResumen()
@@ -152,24 +159,17 @@ def insumos_inventory():
         lotesResumen=lotesResumen,
         proximos_caducar=proximos_caducar,
         is_base_template=False,
+        user=user,
     )
-
-
-@app.route("/proveedores")
-def proveedores():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
-    user = session.get("user")
-    if user[4] not in ["produccion", "administrador"]:
-        return redirect(url_for("login"))
-    return render_template("/production/Proveedores.html", is_base_template=False)
 
 
 @app.route("/moduloProduccion")
 def moduloProduccion():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
+    if user[4] not in ["produccion"]:
+        return render_template("pages/error404.html"), 404
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM galletas")
     galletas = cur.fetchall()
@@ -186,7 +186,7 @@ def moduloProduccion():
 @app.route("/gestionClientes")
 def cliente_dashboard():
     if session.get("user") is None:
-        return redirect(url_for("login"))
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
     data = cookies.getCookies()
     return render_template(
@@ -197,9 +197,7 @@ def cliente_dashboard():
 @app.route("/detalle_producto", methods=["GET", "POST"])
 def detalle_producto():
     if session.get("user") is None:
-        return redirect(url_for("login"))
-
-
+        return render_template("pages/error404.html"), 404
     galleta_json = request.form.get("galleta") or request.args.get("galleta")  
     galleta = json.loads(galleta_json) if galleta_json else None
 
@@ -334,11 +332,10 @@ def finalizar_compra():
 
 #Fin de rutas para el modulo de clientes / Sistema de carrito
 
-
 @app.route("/clientes")
 def clientes():
     if "user" not in session:
-        return redirect(url_for("login"))
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
     if user[4] != "administrador":
         return render_template("pages/error404.html"), 404
@@ -376,9 +373,9 @@ def clientes():
 @app.route("/receta")
 def receta():
     if "user" not in session:
-        return redirect(url_for("login"))
-    active_user = session.get("user")
-    if active_user[4] not in ["produccion", "administrador"]:
+        return render_template("pages/error404.html"), 404
+    user = session.get("user")
+    if user[4] not in ["produccion"]:
         return render_template("pages/error404.html"), 404
 
     cur = mysql.connection.cursor()
@@ -407,14 +404,18 @@ def receta():
         galletas=galletas,
         insumos=insumos,
         formatos=formatos,
+        user=user,
     )
 
 
 @app.route("/carrito")
 def carrito_dashboard():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
+    if user[4] not in ["cliente"]:
+        return render_template("pages/error404.html"), 404
+    
 
     if "carrito" not in session or not session["carrito"]:
         carrito = {}
@@ -440,9 +441,11 @@ def carrito_dashboard():
 
 @app.route("/historico")
 def historico_dashboard():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
+    if user[4] not in ["cliente"]:
+        return render_template("pages/error404.html"), 404
     idCliente = user[0]
     # Obtener el nombre del cliente de la tabla de clientes
     cur = mysql.connection.cursor()
@@ -480,22 +483,32 @@ def historico_dashboard():
 
 @app.route("/ventas")
 def ventas_dashboard():
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
-    if not user or user[4] not in ["ventas", "administrador"]:
-        return redirect(url_for("login"))
+    if user[4] not in ["ventas"]:
+        return render_template("pages/error404.html"), 404
     data = cookies.getCookies()
     print("Data de ventas:", data)
     return render_template("sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True)
 
 @app.route("/moduloVentas")	
 def moduloVentas():
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
+    if user[4] not in ["ventas"]:
+        return render_template("pages/error404.html"), 404
     data = cookies.getCookies()
     return render_template("/sales/sales.html", data=data, user=user, is_base_template=False)
 
 @app.route("/listadoVentas")
 def listadoVentas():
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
     user = session.get("user")
+    if user[4] not in ["ventas"]:
+        return render_template("pages/error404.html"), 404
     return render_template("/sales/listadoVentas.html", user=user, is_base_template=False)
 
 @app.route("/sobreNosotros")
