@@ -418,7 +418,7 @@ def receta():
         insumos=insumos,
         formatos=formatos,
         recetas=recetas,
-        user=user,
+        user=user
     )
 
 
