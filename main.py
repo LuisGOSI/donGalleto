@@ -415,8 +415,8 @@ def receta():
         galletas=galletas,
         insumos=insumos,
         formatos=formatos,
-        recetas=recetas
-        user=user,
+        recetas=recetas,
+        user=user
     )
 
 
