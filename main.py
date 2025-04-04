@@ -2,19 +2,25 @@ from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD, gestionRecetas
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
-from database.production import inventarioDeGalletas
+from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
-from db import app,mysql 
+from database.sales import ventas, corteVenta 
+from datetime import datetime
+from db import app, mysql
 from sessions import *
+import json
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de la app ///////////////////////////////////////////////////////////////////////
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 @app.route("/")
 def home():
+    inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
+
 
 @app.route("/admin")
 def admin_dashboard():
@@ -23,15 +29,21 @@ def admin_dashboard():
     user = session.get("user")
     if user[4] != "administrador":
         return redirect(url_for("login"))
-    presentaciones=dashboard.getPresentaciones()
-    ganancias=dashboard.getGanancias()
-    galletas=dashboard.getGalletasTop()
-    return render_template("/admin/admin_dashboard.html", presentaciones=presentaciones, ganancias=ganancias, galletas=galletas)
+    presentaciones = dashboard.getPresentaciones()
+    ganancias = dashboard.getGanancias()
+    galletas = dashboard.getGalletasTop()
+    return render_template(
+        "/admin/admin_dashboard.html",
+        presentaciones=presentaciones,
+        ganancias=ganancias,
+        galletas=galletas,
+    )
+
 
 @app.route("/gestionUsuarios")
 def usuarios_dashboard():
     user = session.get("user")
-    return render_template('/usuario/Usuario.html', is_base_template = False, user=user)
+    return render_template("/usuario/Usuario.html", is_base_template=False, user=user)
 
 
 @app.route("/produccion")
@@ -41,7 +53,10 @@ def produccion_dashboard():
     user = session.get("user")
     if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
-    return render_template("/production/baseProduccion/baseProduccion.html", is_base_template=True)
+    return render_template(
+        "/production/baseProduccion/baseProduccion.html", is_base_template=True
+    )
+
 
 @app.route("/solicitudProduccion")
 def solicitudProduccion_dashboard():
@@ -51,12 +66,18 @@ def solicitudProduccion_dashboard():
     if user[4] not in ["produccion", "ventas"]:
         return redirect(url_for("login"))
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM galletas')
+    cur.execute("SELECT * FROM galletas")
     galletas = cur.fetchall()
     cur.close()
-    return render_template("/production/SolicitudProduccion.html", is_base_template=False, user=user,galletas=galletas)
+    return render_template(
+        "/production/SolicitudProduccion.html",
+        is_base_template=False,
+        user=user,
+        galletas=galletas,
+    )
 
-@app.route('/gestion-insumos')
+
+@app.route("/gestion-insumos")
 def gestion_insumos():
     if session.get("user") is None:
         return redirect(url_for("login"))
@@ -66,7 +87,8 @@ def gestion_insumos():
     cur = mysql.connection.cursor()
     cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos")
     insumos = cur.fetchall()
-    cur.execute("""
+    cur.execute(
+        """
         SELECT 
             i.idInsumo, 
             i.nombreInsumo, 
@@ -83,11 +105,13 @@ def gestion_insumos():
             proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
         LEFT JOIN 
             proveedores pr ON pi.idProveedorFK = pr.idProveedor
-    """)
+    """
+    )
     presentaciones = cur.fetchall()
     cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
     proveedores = cur.fetchall()
-    cur.execute("""
+    cur.execute(
+        """
         SELECT 
             fr.idFormato,
             i.nombreInsumo,
@@ -102,39 +126,35 @@ def gestion_insumos():
             insumos i ON ifr.idInsumoFK = i.idInsumo
         ORDER BY 
             i.nombreInsumo, fr.nombreFormato
-    """)
+    """
+    )
     formatos_receta = cur.fetchall()
     cur.close()
-    return render_template('/production/gestionInsumos.html', insumos=insumos, presentaciones=presentaciones, proveedores=proveedores, 
-                           formatos_receta=formatos_receta, is_base_template=False)
+    return render_template(
+        "/production/gestionInsumos.html",
+        insumos=insumos,
+        presentaciones=presentaciones,
+        proveedores=proveedores,
+        formatos_receta=formatos_receta,
+        is_base_template=False,
+    )
 
 
 @app.route("/inventario-insumos")
 def insumos_inventory():
-    if session.get("user") is None:
-        return redirect(url_for("login"))
     user = session.get("user")
-    if user[4] not in ["produccion", "administrador"]:
+    if not user or user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
-    proveedores = cur.fetchall()
-    cur.execute("""
-        SELECT 
-            i.idInsumo, 
-            i.nombreInsumo, 
-            i.unidadMedida, 
-            i.cantidadInsumo, 
-            COALESCE(p.nombrePresentacion, 'No asignado') AS nombrePresentacion, 
-            COALESCE(pr.nombreProveedor, 'No asignado') AS nombreProveedor
-        FROM insumos i
-        LEFT JOIN presentacionesinsumos p ON i.idInsumo = p.idInsumoFK
-        LEFT JOIN proveedoresinsumos pi ON p.idPresentacion = pi.idPresentacionFK
-        LEFT JOIN proveedores pr ON pi.idProveedorFK = pr.idProveedor
-    """)
-    insumos = cur.fetchall()
-    cur.close()
-    return render_template('/production/InveInsumos.html', proveedores=proveedores, insumos=insumos, is_base_template=False)
+    inventarioDeInsumos.actualizar_estados_caducidad()
+    insumos = inventarioDeInsumos.getInvInsumosTabla()
+    lotesResumen, proximos_caducar = inventarioDeInsumos.getInsumosResumen()
+    return render_template(
+        "/production/inveInsumos.html",
+        insumos=insumos,
+        lotesResumen=lotesResumen,
+        proximos_caducar=proximos_caducar,
+        is_base_template=False,
+    )
 
 
 @app.route("/proveedores")
@@ -144,7 +164,8 @@ def proveedores():
     user = session.get("user")
     if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
-    return render_template('/production/Proveedores.html', is_base_template = False)
+    return render_template("/production/Proveedores.html", is_base_template=False)
+
 
 @app.route("/moduloProduccion")
 def moduloProduccion():
@@ -152,19 +173,168 @@ def moduloProduccion():
         return redirect(url_for("login"))
     user = session.get("user")
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM galletas')
+    cur.execute("SELECT * FROM galletas")
     galletas = cur.fetchall()
     cur.close()
-    return render_template('/production/Produccion.html', is_base_template = False,user=user,galletas=galletas)
+    return render_template(
+        "/production/Produccion.html",
+        is_base_template=False,
+        user=user,
+        galletas=galletas,
+    )
 
 
+# Rutas para el modulo de clientes / Sistema de carrito
 @app.route("/cliente")
 def cliente_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
     data = cookies.getCookies()
-    return render_template('/client/Cliente.html', is_base_template = False,user=user,data=data)
+    return render_template(
+        "/client/Cliente.html", is_base_template=False, user=user, data=data
+    )
+
+
+@app.route("/detalle_producto", methods=["GET", "POST"])
+def detalle_producto():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+
+
+    galleta_json = request.form.get("galleta") or request.args.get("galleta")  
+    galleta = json.loads(galleta_json) if galleta_json else None
+
+    return render_template(
+        "/client/DetalleProducto.html", is_base_template=False, galleta=galleta
+    )
+
+
+@app.route("/agregar_carrito/<int:id>", methods=["POST"])
+def agregar_al_carrito(id):
+    # Se obtiene la cantidad del formulario
+    cantidad = int(request.form.get("cantidad", 1))
+    tipo_venta = request.form.get(
+        "saleType", "unidad"
+    )  # Obtener el tipo de venta del formulario
+    # Se obtienen las galletas del catalago
+    data = cookies.getCookies()
+
+    producto = next((item for item in data if item[0] == id), None)
+    if not producto:
+        flash("Error: Producto no encontrado", "error")
+        return redirect(url_for("cliente_dashboard"))
+
+    if "carrito" not in session:
+        session["carrito"] = {}
+
+    carrito = session["carrito"]
+
+    # Generamos una clave única usando ID y tipo de venta
+    clave_carrito = f"{id}_{tipo_venta}"
+
+    if clave_carrito in carrito:
+        # Si ya existe con el mismo tipo de venta, sumamos la cantidad
+        carrito[clave_carrito]["cantidad"] += cantidad
+    else:
+        # Si es un nuevo tipo de venta, lo agregamos como un nuevo producto en el carrito
+        carrito[clave_carrito] = {
+            "id": producto[0],
+            "nombre": producto[1],
+            "precio": producto[2],
+            "cantidad": cantidad,
+            "tipo_venta": tipo_venta,
+        }
+
+    print("Carrito actualizado:", carrito)
+
+    session.modified = True
+    flash("✅ Producto agregado al carrito", "success")
+    return redirect(
+    url_for("detalle_producto", galleta=json.dumps(producto))
+    )
+
+
+@app.route('/eliminar_carrito/<int:id>/<tipo_venta>', methods=['POST'])
+def eliminar_del_carrito(id, tipo_venta):
+    if "carrito" in session:
+        carrito = session["carrito"]
+        
+        clave = f"{id}_{tipo_venta}"  # Genera la clave en el formato correcto
+
+        if clave in carrito:
+            del carrito[clave]  # Elimina el producto del carrito
+            session.modified = True  # Guarda los cambios en la sesión
+            print(f"Producto eliminado: {clave}")  # Depuración en consola
+        else:
+            print(f"No se encontró la clave: {clave}")  # Depuración si no lo encuentra
+
+    return redirect(url_for('carrito_dashboard'))  # Volver a la vista del carrito
+
+
+@app.route("/finalizar_compra", methods=["POST"])
+def finalizar_compra():
+
+    user_id = session["user"][0]  # ID del cliente en sesión
+    carrito = session["carrito"]
+    total_compra = sum(item["precio"] * item["cantidad"] for item in carrito.values())
+    fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    id_empleado = 1  # ID de un empleado específico para ventas en línea
+    descuento = 0  # Puedes modificar esto si hay descuentos
+
+    cur = mysql.connection.cursor()
+
+    try:
+        # Insertar la venta en la tabla `ventas`
+        cur.execute(
+            """
+            INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento)
+            VALUES (%s, %s, %s, %s)
+            """,
+            (id_empleado, user_id, fecha_actual, descuento)
+        )
+        mysql.connection.commit()
+
+        # Obtener el ID de la venta generada
+        id_venta = cur.lastrowid
+        print(f"✅ ID de la venta generada: {id_venta}")
+
+        # Insertar detalles de la venta en la tabla `detalleventas`
+        for key, item in carrito.items():
+            id_galleta = key.split("_")[0]  # ID del producto (galleta)
+            tipo_venta = item.get("tipo_venta", "unidades")  # Debe ser 'gramaje', 'paquetes' o 'unidades'
+
+            # Validar que el tipo de venta sea correcto según el ENUM
+            if tipo_venta not in ["gramaje", "paquetes", "unidades"]:
+                raise ValueError(f"Tipo de venta inválido: {tipo_venta}")
+
+            cur.execute(
+                """
+                INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido)
+                VALUES (%s, %s, %s, %s, %s)
+                """,
+                (id_venta, id_galleta, item["cantidad"], tipo_venta, item["precio"])
+            )
+
+        mysql.connection.commit()
+
+        # Vaciar el carrito después de la compra
+        session.pop("carrito")
+        flash("Compra finalizada con éxito.", "success")
+        return redirect(url_for("carrito_dashboard"))
+
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f"Ocurrió un error al procesar la compra: {e}", "danger")
+        print(f"❌ Error en la compra: {e}")
+        return redirect(url_for("carrito_dashboard"))
+
+    finally:
+        cur.close()
+
+
+
+#Fin de rutas para el modulo de clientes / Sistema de carrito
 
 
 @app.route("/clientes")
@@ -176,7 +346,8 @@ def clientes():
         return render_template("pages/error404.html"), 404
     status = request.args.get("status", default=1, type=int)  # Por defecto activos
     cur = mysql.connection.cursor()
-    cur.execute("""
+    cur.execute(
+        """
         SELECT 
             c.idCliente,
             c.nombreCliente,
@@ -190,10 +361,17 @@ def clientes():
             usuarios u ON c.idCliente = u.idClienteFK
         WHERE 
             u.status = %s;
-    """, (status,))
+    """,
+        (status,),
+    )
     clientes = cur.fetchall()
     cur.close()
-    return render_template('/admin/gestionClientes.html', clientes=clientes, status=status, is_base_template=False)
+    return render_template(
+        "/admin/gestionClientes.html",
+        clientes=clientes,
+        status=status,
+        is_base_template=False,
+    )
 
 
 @app.route("/receta")
@@ -203,19 +381,23 @@ def receta():
     active_user = session.get("user")
     if active_user[4] not in ["produccion", "administrador"]:
         return render_template("pages/error404.html"), 404
-    
+
     cur = mysql.connection.cursor()
-    
+
     # Obtener galletas para el select
     cur.execute("SELECT idGalleta, nombreGalleta FROM galletas ORDER BY nombreGalleta")
     galletas = cur.fetchall()
-    
+
     # Obtener insumos para el select
-    cur.execute("SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos ORDER BY nombreInsumo")
+    cur.execute(
+        "SELECT idInsumo, nombreInsumo, unidadMedida FROM insumos ORDER BY nombreInsumo"
+    )
     insumos = cur.fetchall()
-    
+
     # Obtener formatos disponibles
-    cur.execute("SELECT idFormato, nombreFormato FROM formatosRecetas ORDER BY nombreFormato")
+    cur.execute(
+        "SELECT idFormato, nombreFormato FROM formatosRecetas ORDER BY nombreFormato"
+    )
     formatos = cur.fetchall()
 
     # Obtener todas las recetas básicas para la tabla principal
@@ -230,9 +412,9 @@ def receta():
     recetas = cur.fetchall()
     
     cur.close()
-    
+
     return render_template(
-        '/production/Recetas.html', 
+        "/production/Recetas.html",
         is_base_template=False,
         galletas=galletas,
         insumos=insumos,
@@ -246,7 +428,27 @@ def carrito_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
     user = session.get("user")
-    return render_template('/client/Carrito.html', is_base_template = False,user=user)
+
+    if "carrito" not in session or not session["carrito"]:
+        carrito = {}
+    else:
+        carrito = session["carrito"]
+
+    total_items = sum(
+        item["cantidad"] for item in carrito.values()
+    )  # Total de productos
+    total_precio = sum(
+        item["precio"] * item["cantidad"] for item in carrito.values()
+    )  # Total a pagar
+
+    return render_template(
+        "/client/Carrito.html",
+        is_base_template=False,
+        user=user,
+        total_items=total_items,
+        total_precio=total_precio,
+        carrito=carrito,
+    )
 
 
 @app.route("/historico")
@@ -272,13 +474,36 @@ def historico_dashboard():
     cur.close()
     # Verificar si hay compras
     historico = len(historico_compras) > 0
-    
-    return render_template('/client/Historico.html', 
-                           is_base_template=False, 
-                           user=user, 
-                           historico_compras=historico_compras,
-                           historico=historico,
-                           nombreCliente=nombreCliente)
+
+    return render_template(
+        "/client/Historico.html",
+        is_base_template=False,
+        user=user,
+        historico_compras=historico_compras,
+        historico=historico,
+        nombreCliente=nombreCliente,
+    )
+
+
+@app.route("/ventas")
+def ventas_dashboard():
+    user = session.get("user")
+    if not user or user[4] not in ["ventas", "administrador"]:
+        return redirect(url_for("login"))
+    data = cookies.getCookies()
+    print("Data de ventas:", data)
+    return render_template("sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True)
+
+@app.route("/moduloVentas")	
+def moduloVentas():
+    user = session.get("user")
+    data = cookies.getCookies()
+    return render_template("/sales/sales.html", data=data, user=user, is_base_template=False)
+
+@app.route("/listadoVentas")
+def listadoVentas():
+    user = session.get("user")
+    return render_template("/sales/listadoVentas.html", user=user, is_base_template=False)
 
 @app.route("/sobreNosotros")
 def about_us():
@@ -293,37 +518,25 @@ def about_us():
 def page_not_found(error):
     return render_template("pages/error404.html"), 404
 
+
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de prueba ///////////////////////////////////////////////////////////////////////
 #! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@app.route("/test")
-def test():
-    return render_template("/pages/test.html")
 
 
-@app.route("/ventas")
-def ventas_dashboard():
-    return render_template("/sales/sales.html")
-
-# Checar sesion
-@app.route("/checkSession", methods=["POST"])
-def checkSession():
-    user_active = session.get("user")
-    if user_active is not None:
-        return render_template("/pages/test.html", user=user_active)
-    else:
-        return render_template("/pages/test.html", user=user_active)
 
 
 def get_empleados():
     cur = mysql.connection.cursor()
-    cur.execute("""
+    cur.execute(
+        """
         SELECT e.idEmpleado, e.nombreEmpleado, e.apellidoP, e.apellidoM, e.puesto, 
         u.usuario, u.rol 
         FROM empleado e
         JOIN usuarios u ON e.idEmpleado = u.idEmpleadoFK
-    """)
+    """
+    )
     empleados = cur.fetchall()
     cur.close()
     return empleados

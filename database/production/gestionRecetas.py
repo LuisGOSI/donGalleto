@@ -13,7 +13,7 @@ def get_galletas():
     return (galletas)
 
 @app.route('/api/insumos')
-def get_insumos():
+def get_insumos_recetas():
     
     cur = mysql.connection.cursor()
     cur.execute("""

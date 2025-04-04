@@ -1,0 +1,121 @@
+{% extends '/sales/baseVentas/baseVenta.html' %}
+{% block title %}Corte de ventas{% endblock %}
+{% block content %}
+    
+    <div class="container">
+        <h1 class="text-center mb-4 titulo-principal">Corte de Ventas</h1>
+        <br>
+        <div class="row justify-content-center">
+            <table class="col-md-12 col-lg-12 tabla-principal">
+                <thead>
+                    <tr>
+                        <th class="encabezado-personalizado-cafe">Ganancias Totales</th>
+                        <th class="encabezado-personalizado-negro">Ganancias Netas</th>
+                        <th class="encabezado-personalizado-cafe">Ventas Realizadas</th>
+                        <th class="encabezado-personalizado-negro">Descuento aplicado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="celda-tabla-principal">${{ "%.2f"|format(datos['GananciasTotales']) if datos and datos['GananciasTotales'] is not none else '0.00' }}</td>
+                        <td class="celda-tabla-principal">${{ "%.2f"|format(datos['GananciasNetas']) if datos and datos['GananciasNetas'] is not none else '0.00' }}</td>
+                        <td class="celda-tabla-principal">{{ datos['VentasRealizadas']|int if datos and datos['VentasRealizadas'] is not none else '0' }}</td>
+                        <td class="celda-tabla-principal">${{ "%.2f"|format(datos['DescuentoAplicado']) if datos and datos['DescuentoAplicado'] is not none else '0.00' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>        
+        <br><br>
+        
+        {% if ventas %}
+        <div class="row justify-content-center"> 
+            <div class="col-md-6"> 
+                <div class="contenedor-busqueda text-center">
+                    <input type="text" class="entrada-busqueda" placeholder="Buscar...">
+                    <button class="boton-busqueda">
+                        <div class="icono-busqueda"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <br>
+        
+        <!-- Tabla de Ventas -->
+        {% set ventas_agrupadas = {} %}
+        {% for producto in ventas %}
+            {% set clave = (producto['No. Venta'], producto['Fecha y hora de venta']) %}
+            {% if clave not in ventas_agrupadas %}
+                {% set _ = ventas_agrupadas.update({clave: {
+                    'No. Venta': producto['No. Venta'],
+                    'Fecha y hora de venta': producto['Fecha y hora de venta'],
+                    'Productos': [],
+                    'Subtotal': producto['Subtotal'],
+                    'Descuento': producto['Descuento'],
+                    'Total Venta': producto['Total Venta']
+                }}) %}
+            {% endif %}
+            {% set _ = ventas_agrupadas[clave]['Productos'].append(producto) %}
+        {% endfor %}
+        
+        {% for venta in ventas_agrupadas.values() %}
+        <div class="row mb-4 justify-content-center">
+            <div class="col-md-9">
+                <div class="card-header encabezado-tabla"> 
+                    <div>No. {{ venta.get('No. Venta', 'N/A') }}</div> 
+                    <div>Fecha y hora de venta: {{ venta['Fecha y hora de venta'].strftime('%d/%m/%Y %H:%M') if venta.get('Fecha y hora de venta') else 'Fecha no disponible' }}</div>
+                </div>
+                
+                <div class="card-body">
+                    <table class="table tabla-ventas table-striped">
+                        <thead>
+                            <tr>
+                                <th class="encabezado-tabla-ventas">Producto</th>
+                                <th class="encabezado-tabla-ventas">Forma de venta</th>
+                                <th class="encabezado-tabla-ventas">Cantidad</th>
+                                <th class="encabezado-tabla-ventas">Precio Unitario</th>
+                                <th class="encabezado-tabla-ventas">Total Producto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in venta.get('Productos', []) %}
+                            <tr>
+                                <td class="fila-clara-tabla-ventas">{{ producto.get('Producto', 'Producto no especificado') }}</td>
+                                <td class="fila-clara-tabla-ventas">{{ producto.get('Forma de venta', 'N/A') }}</td>
+                                <td class="fila-clara-tabla-ventas">{{ producto.get('Cantidad', 0) | int}}</td>
+                                <td class="fila-clara-tabla-ventas">${{ "%.2f"|format(producto.get('Precio', 0)) }}</td>
+                                <td class="fila-clara-tabla-ventas">${{ "%.2f"|format(producto.get('Total Producto', 0)) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end fila-oscura-tabla-ventas">Subtotal:</td>
+                                <td class="fila-oscura-tabla-ventas">${{ "%.2f"|format(venta.get('Subtotal', 0)) }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-end fila-clara-tabla-ventas">Descuento:</td>
+                                <td class="fila-clara-tabla-ventas">{{ "%.2f"|format(venta.get('Descuento', 0)) }}%</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-end fila-oscura-tabla-ventas"><strong>Total:</strong></td>
+                                <td class="fila-oscura-tabla-ventas"><strong>${{ "%.2f"|format(venta.get('Total Venta', 0)) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="row justify-content-center">
+            <div class="col-md-9">
+                <div  class="textoVacio">
+                    Cuando realices ventas, aparecerán registradas aquí
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+    </div>
+
+{% endblock %}

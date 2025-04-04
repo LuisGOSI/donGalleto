@@ -22,14 +22,19 @@
             <div class="product-info">
                 <h3 class="product-title">{{ galleta[1] }}</h3>
                 <p class="product-price">{{ galleta[2] }} ₡/U</p>
-                <div class="product-actions">
-                    <div class="quantity-selector">
-                        <button class="quantity-btn">+</button>
-                        <input type="text" class="quantity-input" value="1">
-                        <button class="quantity-btn">-</button>
+
+                    <div class="product-actions">
+                        <div class="quantity-selector">
+                            <button class="quantity-btn">+</button>
+                            <input type="text" class="quantity-input" value="1">
+                            <button class="quantity-btn">-</button>
+                        </div>
+                        <form action="{{ url_for('detalle_producto') }}" method="post">
+                            <input type="hidden" name="galleta" value='{{ galleta | tojson | safe }}'>
+                            <button type="submit" class="add-to-cart">PRODUCTOS</button>
+                        </form>
                     </div>
-                    <button class="add-to-cart">Añadir al carrito</button>
-                </div>
+
             </div>
         </div>
         {% endfor %}

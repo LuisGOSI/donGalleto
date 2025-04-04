@@ -1,0 +1,118 @@
+{% extends '/sales/baseVentas/baseVenta.html' %}
+{% block title %}Listado de ventas{% endblock %}
+{% block content %}
+
+<div class="container sales-container">
+    <h1 class="title-listVentas">Listado de ventas</h1>
+    
+    <div class="sales-list">
+        <details class="sale-item">
+            <summary class="sale-summary">
+                <div class="sale-header">
+                    <div class="sale-number">Venta No. 1</div>
+                    <div class="sale-date">12/11/2025 12:15</div>
+                    <div class="sale-total">Total: $400</div>
+                </div>
+            </summary>
+            <div class="sale-details">
+                <table class="sale-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Forma de venta</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-light">
+                            <td>Galleta Oreo</td>
+                            <td>Gramaje</td>
+                            <td>500</td>
+                            <td>$300</td>
+                        </tr>
+                        <tr class="row-dark">
+                            <td>Galleta de Mantequilla</td>
+                            <td>Unidad</td>
+                            <td>10</td>
+                            <td>$100</td>
+                        </tr>
+                        <tr class="row-light">
+                            <td>Galleta de Chocolate</td>
+                            <td>Dinero</td>
+                            <td>200</td>
+                            <td>$200</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="row-dark">
+                            <td colspan="3" class="text-end">Subtotal:</td>
+                            <td class="text-left">$500</td>
+                        </tr>
+                        <tr class="row-light">
+                            <td colspan="3" class="text-end">Descuento:</td>
+                            <td class="text-left">$100</td>
+                        </tr>
+                        <tr class="row-dark total-row">
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td class="text-left"><strong>$400</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </details>
+        
+        <!-- Segunda venta (ejemplo) -->
+        <details class="sale-item">
+            <summary class="sale-summary">
+                <div class="sale-header">
+                    <div class="sale-number">Venta No. 2</div>
+                    <div class="sale-date">13/11/2025 14:30</div>
+                    <div class="sale-total">Total: $650</div>
+                </div>
+            </summary>
+            <div class="sale-details">
+                <table class="sale-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Forma de venta</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-light">
+                            <td>Pastel de Chocolate</td>
+                            <td>Unidad</td>
+                            <td>1</td>
+                            <td>$450</td>
+                        </tr>
+                        <tr class="row-dark">
+                            <td>Galleta de Coco</td>
+                            <td>Gramaje</td>
+                            <td>200</td>
+                            <td>$200</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="row-dark">
+                            <td colspan="3" class="text-end">Subtotal:</td>
+                            <td class="text-left">$650</td>
+                        </tr>
+                        <tr class="row-light">
+                            <td colspan="3" class="text-end">Descuento:</td>
+                            <td class="text-left">$0</td>
+                        </tr>
+                        <tr class="row-dark total-row">
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td class="text-left"><strong>$650</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </details>
+    </div>
+</div>
+
+{% endblock %}
