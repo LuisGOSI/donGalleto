@@ -61,7 +61,6 @@ def get_formatos_insumo(id_insumo):
 @app.route('/registerReceta', methods=['POST'])
 def registerReceta():
     if request.method == "POST":
-        # Datos básicos de la receta
         nombreReceta = request.form.get("nombreReceta")
         idGalletaFK = request.form.get("idGalletaFK")
         cantidadHorneadas = request.form.get("cantidadHorneadas")
@@ -76,15 +75,13 @@ def registerReceta():
             """
             cur.execute(query_receta, (idGalletaFK, nombreReceta, cantidadHorneadas, duracionAnaquel))
             mysql.connection.commit()
-            # Obtener el ID de la receta recién insertada
             idReceta = cur.lastrowid
 
             # Procesar los detalles de la receta
             detalles = []
-            # Buscamos todas las claves que correspondan a detalles del insumo
+            # Buscamos todas las claves que pertenezcan a detalles del insumo
             for key in request.form.keys():
                 if key.startswith("detalles[") and key.endswith("][idInsumoFK]"):
-                    # Extraemos el índice del detalle
                     index = key.split("[")[1].split("]")[0]
                     idInsumoFK = request.form.get(f"detalles[{index}][idInsumoFK]")
                     idFormatoFK = request.form.get(f"detalles[{index}][idUnidadFK]")
@@ -142,7 +139,6 @@ def get_detalles_receta(id_receta):
         
         detalles = cur.fetchall()
         
-        # Formatear la respuesta
         response = {
             "nombreReceta": receta_data[0],
             "cantidadHorneadas": receta_data[1],
@@ -199,7 +195,6 @@ def get_receta_para_editar(id_receta):
         """, (id_receta,))
         detalles = cur.fetchall()
         
-        # Formatear la respuesta
         response = {
             "idReceta": receta_data[0],
             "nombreReceta": receta_data[1],
@@ -231,7 +226,6 @@ def get_receta_para_editar(id_receta):
 @app.route('/updateReceta', methods=['POST'])
 def updateReceta():
     if request.method == "POST":
-        # Datos básicos de la receta
         idReceta = request.form.get("idReceta")
         nombreReceta = request.form.get("nombreReceta")
         idGalletaFK = request.form.get("idGalletaFK")
