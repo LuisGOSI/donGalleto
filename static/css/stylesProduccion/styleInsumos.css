@@ -84,27 +84,51 @@ td {
 /* =========================== */
 /* Estilos para botones       */
 /* =========================== */
-
-/* Estilo general para botones */
-.mermas-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
+.registrar-btn {
+    background-color: #add8e6;
+    border: 1px solid #007bff;
     border-radius: 5px;
     padding: 8px 15px;
     margin-bottom: 20px;
-    font-size: 14px;
+    float: right;
     transition: all 0.2s ease;
     position: relative;
     top: 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Efecto al hacer clic (activo) */
+.registrar-btn:active {
+    top: 2px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
+    background-color: #9cc9d7;
+}
+
+.registrar-btn:hover {
+    background-color: #b8e0eb;
+    cursor: pointer;
+}
+
+.mermas-btn {
+    background-color: #90ee90;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-bottom: 20px;
+    transition: all 0.2s ease;
+    position: relative;
+    top: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
 .mermas-btn:active {
     top: 2px;
     box-shadow: 0 0 2px rgba(0,0,0,0.2);
+    background-color: #00ff08;
+}
+
+.mermas-btn:hover {
+    background-color: #00ff51;
+    cursor: pointer;
 }
 
 /* -------------------------------------- */
@@ -174,7 +198,6 @@ td {
     background-color: #e53935; /* Rojo oscuro */
     cursor: pointer;
 }
-
 
 /* =========================== */
 /* Estilos el summary       */

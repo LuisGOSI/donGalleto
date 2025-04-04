@@ -33,12 +33,38 @@
 			<a href="{{url_for('moduloVentas')}}" class="sales-header-nav-item">Ventas</a>
 			<a href="{{url_for('listadoVentas')}}" class="sales-header-nav-item">Listado de Ventas</a>
 			<a href="{{url_for('corteVentas')}}" class="sales-header-nav-item">Corte de Ventas</a>
+			<a href="{{url_for('solicitudProduccion_dashboard')}}" class="sales-header-nav-item">Solicitudes de producción</a>
 			<form method="POST" action="/logout">
 				<button type="submit" class="sales-header-logout-btn">Cerrar sesion</button>
 			</form>
 		</div>
 	</div>
 	
+	{% elif user[4] == "produccion" %}
+	<div class="header-produccion">
+		
+		<div class="produccion-header-container">
+			<a href="produccion" class="produccion-header-logo"> <img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" />
+			<a href="{{url_for('receta')}}" class="produccion-header-nav-item">Recetas</a>
+				<a href="{{url_for('getInveGalletas')}}" class="produccion-header-nav-item">Inventario de Galletas</a>
+				<div class="dropdown-produccion">
+					<a href="#" class="produccion-header-nav-item" id="produccionDropdown" onclick="toggleDropdown(event)">
+						Producción
+					</a>
+					<div class="dropdown-menu-produccion" id="produccionDropdownMenu">
+						<a href="{{url_for('moduloProduccion')}}" class="dropdown-item-produccion">Módulo de Producción</a>
+						<a href="{{url_for('solicitudProduccion_dashboard')}}" class="dropdown-item-produccion">Solicitudes de producción</a>
+					</div>
+				</div>
+				<a href="{{url_for('registerProveedor')}}" class="produccion-header-nav-item">Proveedores</a>
+				<a href="{{url_for('gestion_insumos')}}" class="produccion-header-nav-item">Gestion de insumos</a>
+				<a href="{{url_for('insumos_inventory')}}" class="produccion-header-nav-item">Inventario de Insumos</a>
+				<form method="POST" action="/logout">
+					<button type="submit" class="produccion-header-logout-btn">Cerrar sesion</button>
+				</form>
+		</div>
+	</div>
+
 	{% else %}
 	<div class="header2">
 		<div class="header-container-2">

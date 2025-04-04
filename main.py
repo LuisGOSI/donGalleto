@@ -22,7 +22,7 @@ def home():
     return render_template("/pages/home.html")
 
 
-@app.route("/admin")
+@app.route("/dashboard")
 def admin_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
@@ -54,8 +54,7 @@ def produccion_dashboard():
     if user[4] not in ["produccion", "administrador"]:
         return redirect(url_for("login"))
     return render_template(
-        "/production/baseProduccion/baseProduccion.html", is_base_template=True
-    )
+        "/production/baseProduccion/baseProduccion.html", is_base_template=True, user=user)
 
 
 @app.route("/solicitudProduccion")
@@ -185,7 +184,7 @@ def moduloProduccion():
 
 
 # Rutas para el modulo de clientes / Sistema de carrito
-@app.route("/cliente")
+@app.route("/gestionClientes")
 def cliente_dashboard():
     if session.get("user") is None:
         return redirect(url_for("login"))
@@ -447,9 +446,15 @@ def historico_dashboard():
     idCliente = user[0]
     # Obtener el nombre del cliente de la tabla de clientes
     cur = mysql.connection.cursor()
-    cur.execute("SELECT nombreCliente FROM clientes WHERE idCliente = %s", (idCliente,))
+    cur.execute("""
+    SELECT idUsuario, c.nombreCliente
+    FROM clientes c
+    INNER JOIN usuarios u
+    ON c.idCliente = u.idClienteFK
+    WHERE idUsuario = %s;
+    """, (idCliente,))
     resultado_cliente = cur.fetchone()
-    nombreCliente = resultado_cliente[0] if resultado_cliente else "Cliente"
+    nombreCliente = resultado_cliente[1] if resultado_cliente else "Cliente"
     # Consulta para histórico de compras
     cur.execute("SELECT * FROM v_historicoCompras WHERE idCliente = %s", (idCliente,))
     column_names = [column[0] for column in cur.description]
