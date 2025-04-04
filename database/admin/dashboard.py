@@ -45,3 +45,22 @@ def getGalletasTop():
     galletas = cur.fetchall()
     cur.close()
     return galletas
+
+def getVentasPorDia():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 
+    DATE(fechaVenta) AS fecha,
+    COUNT(*) AS ventas
+FROM 
+    ventas
+WHERE 
+    fechaVenta >= CURDATE() - INTERVAL 9 DAY
+GROUP BY 
+    DATE(fechaVenta)
+ORDER BY 
+    fecha asc;
+    """)
+    ventas = cur.fetchall()
+    cur.close()
+    return ventas

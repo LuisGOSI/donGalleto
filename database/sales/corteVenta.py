@@ -1,12 +1,17 @@
 from dotenv import load_dotenv
 from db import mysql,app
-from flask import render_template, session
+from flask import render_template, session, redirect,url_for
 
 load_dotenv()
 
 
 @app.route("/corteVentas")
 def corteVentas():
+    if session.get("user") is None:
+        return redirect(url_for("login"))
+    user = session.get("user")
+    if user[4] != "ventas":
+        return render_template("pages/error404.html"), 404
     datos = getTotalGeneral()
     ventas = getDesgloseVenta()
     user = session.get("user")
