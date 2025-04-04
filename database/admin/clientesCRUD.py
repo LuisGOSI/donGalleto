@@ -30,7 +30,7 @@ def register_cliente():
             flash("Cliente registrado exitosamente", "success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al registrar el cliente: {str(e)}", "danger")
+            flash(f"Error al registrar el cliente", "danger")
         finally:
             cur.close()
         
@@ -61,7 +61,7 @@ def modify_cliente():
             flash("Cliente actualizado exitosamente", "success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al actualizar el cliente: {str(e)}", "danger")
+            flash(f"Error al actualizar el cliente", "danger")
         finally:
             cur.close()
         
@@ -84,7 +84,7 @@ def eliminar_cliente():
             flash("Cliente desactivado exitosamente", "success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al desactivar el cliente: {str(e)}", "danger")
+            flash(f"Error al desactivar el cliente", "danger")
         finally:
             cur.close()
         
@@ -139,7 +139,7 @@ def activar_cliente():
             flash("Cliente activado exitosamente", "success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al activar el cliente: {str(e)}", "danger")
+            flash(f"Error al activar el cliente", "danger")
         finally:
             cur.close()
         
