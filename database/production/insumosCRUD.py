@@ -19,7 +19,7 @@ def register_insumo():
             flash("Insumo registrado exitosamente", "insumo_success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al registrar insumo: {str(e)}", "insumo_error")
+            flash(f"Error al registrar insumo", "insumo_error")
         finally:
             cur.close()
         return redirect(url_for("gestion_insumos"))
@@ -90,7 +90,7 @@ def asignar_proveedor_presentacion():
             flash("Presentación y proveedor asignados correctamente", "presentacion_success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al asignar presentación y proveedor: {str(e)}", "presentacion_error")
+            flash(f"Error al asignar presentación y proveedor", "presentacion_error")
         finally:
             cur.close()
         return redirect(url_for("gestion_insumos"))
@@ -113,7 +113,7 @@ def editar_insumo():
             flash("Insumo actualizado correctamente", "insumo_success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al actualizar insumo: {str(e)}", "insumo_error")
+            flash(f"Error al actualizar insumo", "insumo_error")
         finally:
             cur.close()
         return redirect(url_for("gestion_insumos"))
@@ -173,7 +173,7 @@ def eliminar_insumo():
         flash("Insumo y todos sus datos relacionados eliminados correctamente", "insumo_success")
     except Exception as e:
         mysql.connection.rollback()
-        flash(f"Error al eliminar insumo: {str(e)}", "insumo_error")
+        flash(f"Error al eliminar insumo", "insumo_error")
     finally:
         cur.close()
     return redirect(url_for("gestion_insumos"))
@@ -236,7 +236,7 @@ def editar_presentacion_proveedor():
             flash("Presentación y proveedor actualizados correctamente", "presentacion_success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al actualizar presentación y proveedor: {str(e)}", "presentacion_error")
+            flash(f"Error al actualizar presentación y proveedor", "presentacion_error")
         finally:
             cur.close()
         return redirect(url_for("gestion_insumos"))
@@ -255,7 +255,7 @@ def eliminar_presentacion():
             flash("Presentación eliminada correctamente", "presentacion_success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al eliminar presentación: {str(e)}", "presentacion_error")
+            flash(f"Error al eliminar presentación", "presentacion_error")
         finally:
             cur.close()
         return redirect(url_for("gestion_insumos"))
@@ -283,7 +283,7 @@ def registrar_formato_receta():
             flash("Formato de receta registrado exitosamente", "formato_success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al registrar formato de receta: {str(e)}", "formato_error")
+            flash(f"Error al registrar formato de receta", "formato_error")
         finally:
             cur.close()
             
@@ -338,7 +338,7 @@ def editar_formato_receta():
             flash("Formato actualizado correctamente", "formato_success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al actualizar formato: {str(e)}", "formato_error")
+            flash(f"Error al actualizar formato", "formato_error")
         finally:
             cur.close()
             
@@ -367,7 +367,7 @@ def eliminar_formato_receta():
             flash("Formato eliminado correctamente", "formato_success")
         except Exception as e:
             mysql.connection.rollback()
-            flash(f"Error al eliminar formato: {str(e)}", "formato_error")
+            flash(f"Error al eliminar formato", "formato_error")
         finally:
             cur.close()
             

@@ -3,13 +3,50 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
+<style>
+    .ingredient-item {
+        transition: all 0.2s;
+        padding: 12px 20px;
+    }
+    .ingredient-item:hover {
+        background-color: #f8f9fa;
+    }
+    .modal-header {
+        border-bottom: none;
+        padding-bottom: 10px;
+    }
+    .modal-footer {
+        border-top: none;
+    }
+    .quantity-badge {
+        background-color: #e9ecef;
+        color: #495057;
+        font-weight: normal;
+    }
+
+    .btn-eliminar-detalle.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .btn-eliminar-detalle {
+        transition: opacity 0.2s ease;
+    }
+</style>
+
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        {% for category, message in messages %}
-            <div style="margin-top: 20px" class="alert alert-{{ category }}">
-                {{ message }}
-            </div>
-        {% endfor %}
+        <div class="alert-container mt-3">
+            {% for category, message in messages %}
+                {% if category == 'receta_success' or category == 'receta_error' %}
+                    <div class="alert alert-{{ 'success' if 'success' in category else 'danger' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
     {% endif %}
 {% endwith %}
 
@@ -32,19 +69,28 @@
                 <table style="width: 100%;">
                     <thead>
                         <tr>
-                            <th>Nombre de la Receta</th>
-                            <th>Ingredientes</th>
-                            <th>Preparación</th>
-                            <th>Acción</th>
+                            <th>Galleta</th>
+                            <th>Nombre Receta</th>
+                            <th>Cantidad Horneada</th>
+                            <th>Duración Anaquel</th>
+                            <th>Detalles</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for receta in recetas %}
                         <tr>
-                            <td>Pasta Carbonara</td>
-                            <td>Pasta, huevos, panceta, queso parmesano</td>
-                            <td>Cocinar la pasta, mezclar con los demás ingredientes</td>
+                            <td>{{ receta[4] }}</td> 
+                            <td>{{ receta[1] }}</td> 
+                            <td>{{ receta[2] }}</td> 
+                            <td>{{ receta[3] }} días</td> 
                             <td>
-                                <button class="btnEditRecetas">
+                                <button class="btn btn-primary btn-detalles" data-bs-toggle="modal" data-bs-target="#detallesModal" data-id="{{ receta[0] }}">
+                                    <i class="bi bi-eye"></i> Ver Detalles
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btnEditRecetas" data-id="{{ receta[0] }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-pencil-square" viewBox="0 0 16 16">
                                         <path
@@ -55,7 +101,7 @@
                                     Editar
                                 </button>
             
-                                <button class="btnEliminarRecetas">
+                                <button class="btnEliminarRecetas" data-bs-toggle="modal" data-bs-target="#eliminarRecetaModal" data-receta-id="{{ receta[0] }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-trash" viewBox="0 0 16 16">
                                         <path
@@ -67,39 +113,48 @@
                                 </button>
                             </td>
                         </tr>
-                        <tr>
-                            <td>Ensalada César</td>
-                            <td>Lechuga, pollo, croutons, aderezo</td>
-                            <td>Mezclar todos los ingredientes y añadir aderezo</td>
-                            <td>
-                                <button class="btnEditRecetas">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                        <path
-                                            d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                        <path fill-rule="evenodd"
-                                            d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
-                                    </svg>
-                                    Editar
-                                </button>
-            
-                                <button class="btnEliminarRecetas">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-trash" viewBox="0 0 16 16">
-                                        <path
-                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                                        <path fill-rule="evenodd"
-                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                                    </svg>
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
+                        {% endfor %}
+                    </tbody>               
                 </table>
             </div>
         </div>
     </section>
+</div>
+
+<!-- Modal de Detalles de Receta -->
+<div class="modal fade" id="detallesModal" tabindex="-1" aria-labelledby="detallesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <div class="w-100 text-center">
+                    <h3 class="modal-title mb-2" id="detallesModalLabel"></h3>
+                    <div class="d-flex justify-content-center gap-3 mt-2">
+                        <span class="badge bg-primary" id="infoGalleta"></span>
+                        <span class="badge bg-warning text-dark" id="infoHorneadas"></span>
+                        <span class="badge bg-success" id="infoAnaquel"></span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0"><i class="bi bi-list-ul"></i> Ingredientes</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush" id="detallesRecetaBody">
+                            <!-- Los ingredientes se cargarán aquí -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal de Registrar Receta -->
@@ -128,18 +183,20 @@
                             </select>
                         </div>
                     </div>
-                    
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="cantidadHorneadas" class="form-label">Cantidad Horneadas</label>
-                            <input type="number" class="form-control" id="cantidadHorneadas" name="cantidadHorneadas" min="1" required>
+                            <input type="number" class="form-control" id="cantidadHorneadas" name="cantidadHorneadas"
+                                min="1" required>
                         </div>
                         <div class="col-md-6">
                             <label for="duracionAnaquel" class="form-label">Duración en Anaquel (días)</label>
-                            <input type="number" class="form-control" id="duracionAnaquel" name="duracionAnaquel" min="1" required>
+                            <input type="number" class="form-control" id="duracionAnaquel" name="duracionAnaquel"
+                                min="1" required>
                         </div>
                     </div>
-                    
+
                     <!-- Sección de detalles de receta -->
                     <div class="card mb-3">
                         <div class="card-header d-flex justify-content-between align-items-center">
@@ -152,27 +209,29 @@
                             <!-- Los detalles se agregarán dinámicamente aquí -->
                             <div class="detalle-item mb-3 border p-3 rounded">
                                 <div class="row">
-                                    <div class="col-md-5">
+                                    <div class="col-md-4">
                                         <label class="form-label">Insumo</label>
-                                        <select class="form-select insumo-select" name="detalles[0][idInsumoFK]" required>
+                                        <select class="form-select insumo-select" name="detalles[0][idInsumoFK]"
+                                            required>
                                             <option value="" selected disabled>Seleccione un insumo</option>
                                             {% for insumo in insumos %}
-                                            <option value="{{ insumo[0] }}">{{ insumo[1] }} ({{ insumo[2] }})</option>
+                                            <option value="{{ insumo[0] }}" data-unidad-base="{{ insumo[2] }}">
+                                                {{ insumo[1] }} ({{ insumo[2] }})
+                                            </option>
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <label class="form-label">Formato</label>
-                                        <select class="form-select unidad-select" name="detalles[0][idUnidadFK]" required>
+                                        <select class="form-select unidad-select" name="detalles[0][idUnidadFK]"
+                                            required>
                                             <option value="" selected disabled>Seleccione formato</option>
-                                            {% for formato in formatos %}
-                                            <option value="{{ formato[0] }}">{{ formato[1] }}</option>
-                                            {% endfor %}
                                         </select>
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label">Cantidad</label>
-                                        <input type="number" step="0.01" min="0.01" class="form-control" name="detalles[0][cantidadFormato]" required>
+                                        <input type="number" step="0.01" min="0.01" class="form-control"
+                                            name="detalles[0][cantidadFormato]" required>
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end">
                                         <button type="button" class="btn btn-danger btn-eliminar-detalle" disabled>
@@ -183,11 +242,96 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Guardar Receta</button>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Receta -->
+<div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarModalLabel">Editar Receta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/updateReceta" method="POST" id="formEditarReceta">
+                    <input type="hidden" id="edit_idReceta" name="idReceta">
+                    
+                    <!-- Datos básicos de la receta -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_nombreReceta" class="form-label">Nombre de la Receta</label>
+                            <input type="text" class="form-control" id="edit_nombreReceta" name="nombreReceta" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_idGalletaFK" class="form-label">Galleta</label>
+                            <select class="form-select" id="edit_idGalletaFK" name="idGalletaFK" required>
+                                <option value="" disabled>Seleccione una galleta</option>
+                                {% for galleta in galletas %}
+                                <option value="{{ galleta[0] }}">{{ galleta[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="edit_cantidadHorneadas" class="form-label">Cantidad Horneadas</label>
+                            <input type="number" class="form-control" id="edit_cantidadHorneadas" name="cantidadHorneadas" min="1" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit_duracionAnaquel" class="form-label">Duración en Anaquel (días)</label>
+                            <input type="number" class="form-control" id="edit_duracionAnaquel" name="duracionAnaquel" min="1" required>
+                        </div>
+                    </div>
+
+                    <!-- Sección de detalles de receta -->
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Ingredientes</h5>
+                            <button type="button" class="btn btn-sm btn-success" id="btnAgregarDetalleEdit">
+                                <i class="bi bi-plus"></i> Añadir Ingrediente
+                            </button>
+                        </div>
+                        <div class="card-body" id="detallesContainerEdit">
+                            <!-- Los detalles se cargarán dinámicamente aquí -->
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Desactivar Receta -->
+<div class="modal fade" id="eliminarRecetaModal" tabindex="-1" aria-labelledby="eliminarRecetaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="eliminarRecetaModalLabel">Desactivar Receta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <form action="/eliminarReceta" method="POST">
+                    <input type="hidden" id="idRecetaEliminar" name="idRecetaEliminar">
+                    <p class="mb-0">¿Está seguro que deseas desactivar esta receta?</p>
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-danger">Desactivar</button>
                 </form>
             </div>
         </div>

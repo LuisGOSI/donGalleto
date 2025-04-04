@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash,jsonify
+from flask import render_template, request, redirect, url_for, flash,jsonify, session
 from dotenv import load_dotenv
 from datetime import datetime
 from db import app,mysql
@@ -41,7 +41,7 @@ def getInveGalletas():
     cur.close()
     galletasTabla = getGalletasTabla()
     galletasResumen = getGalletasResumen()
-    return render_template("/production/InveGalletas.html", galletasTabla=galletasTabla, galletasResumen=galletasResumen, lotesResumen=lotesResumen, hoy=hoy)
+    return render_template("/production/InveGalletas.html", galletasTabla=galletasTabla, galletasResumen=galletasResumen, lotesResumen=lotesResumen, hoy=hoy, user=user)
 
 
 @app.route("/registrarMermaGalleta", methods=["POST"])
