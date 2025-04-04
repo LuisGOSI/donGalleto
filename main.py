@@ -15,12 +15,10 @@ import json
 #! /////////////////////////////////////////////////////////////////////// Rutas de la app ///////////////////////////////////////////////////////////////////////
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 @app.route("/")
 def home():
     inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
-
 
 @app.route("/dashboard")
 def admin_dashboard():
@@ -37,6 +35,7 @@ def admin_dashboard():
         presentaciones=presentaciones,
         ganancias=ganancias,
         galletas=galletas,
+        user=user,
     )
 
 
@@ -340,8 +339,8 @@ def finalizar_compra():
 def clientes():
     if "user" not in session:
         return redirect(url_for("login"))
-    active_user = session.get("user")
-    if active_user[4] != "administrador":
+    user = session.get("user")
+    if user[4] != "administrador":
         return render_template("pages/error404.html"), 404
     status = request.args.get("status", default=1, type=int)  # Por defecto activos
     cur = mysql.connection.cursor()
@@ -370,6 +369,7 @@ def clientes():
         clientes=clientes,
         status=status,
         is_base_template=False,
+        user=user,
     )
 
 

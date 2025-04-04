@@ -75,9 +75,9 @@ body {
   display: block;
 }
 
-/*******************Estilo header 2***********************/
+/* ---------------------------------------------------- Estilo de header administrador y dashboard ---------------------------------------------------- */
 
-.header2 {
+.header-administrador {
   background-color: #3E302C;
   width: 100vw;
   position: sticky;
@@ -90,7 +90,7 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.header-container-2 {
+.admin-header-container {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -99,7 +99,7 @@ body {
   box-sizing: border-box;
 }
 
-.header-item-2 {
+.admin-header-nav-item {
   color: #fff;
   text-decoration: none;
   margin: 0 1.5rem;
@@ -108,7 +108,8 @@ body {
   transition: opacity 0.3s ease;
 }
 
-.header-item-2 {
+/* -------------- Botones de la barra de navegación de administrador-------------- */
+.admin-header-nav-item {
   color: #fff;
   text-decoration: none;
   margin: 0 1.5rem;
@@ -122,7 +123,7 @@ body {
   overflow: hidden;
 }
 
-.header-item-2::after {
+.admin-header-nav-item::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -133,22 +134,23 @@ body {
   transition: width 0.3s ease;
 }
 
-.header-item-2:hover {
+.admin-header-nav-item:hover {
   color: #ffd7cb;
-  transform: translateY(-2px);
+  opacity: 0.8; /* Alternativa sin afectar el layout */
 }
 
-.header-item-2:hover::after {
+.admin-header-nav-item:hover::after {
   width: 100%;
 }
 
-.logoDonGalleto img {
+.admin-header-logo img {
   max-height: 120px;
-  margin-right: 3rem;
-  margin-left: 3rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
 }
 
-.logout-btn-2 {
+/*--------------Boton de logout de barra de navegacion de ventas-------------- */
+.logout-btn-admin {
   margin-left: auto;
   background-color: #ffffff;
   color: #3E302C;
@@ -159,26 +161,39 @@ body {
   transition: all 0.3s ease;
 }
 
-.logout-btn-2:hover {
+.logout-btn-admin:hover {
   background-color: #f0f0f0;
   transform: translateY(-2px);
 }
 
-
-
-@media (max-width: 200px) {
-  header {
-    height: 48vh;
+/* Estilos responsive para header de ventas */
+@media screen and (max-width: 768px) {
+  .admin-header-container {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem;
+  }
+  
+  .admin-header-nav-item {
+      margin: 0.5rem 0;
+      width: 100%;
+      padding: 0.5rem 0;
+  }
+  
+  .admin-header-nav-item:first-child {
+      margin-bottom: 1rem;
+  }
+  
+  .logout-btn-admin {
+      margin: 1rem 0 0 0;
+      width: 100%;
+      text-align: center;
+      padding: 0.7rem;
   }
 }
 
-@media (max-width: 280px) {
-  header {
-    height: 300px;
-  }
-}
 
-/*******************Estilo header de ventas***********************/
+/* ---------------------------------------------------- Estilo header de ventas ---------------------------------------------------- */
 
 .header-ventas {
   background-color: #3E302C;
@@ -211,7 +226,7 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/************************Botones de la barra de navegación de ventas************************/
+/* -------------- Botones de la barra de navegación de ventas-------------- */
 .sales-header-nav-item {
   color: #fff;
   text-decoration: none;
@@ -252,7 +267,7 @@ body {
   margin-left: 1rem;
 }
 
-/************************Boton de logout de barra de navegacion de ventas************************/
+/*--------------Boton de logout de barra de navegacion de ventas-------------- */
 .sales-header-logout-btn {
   margin-left: auto;
   background-color: #ffffff;
@@ -295,7 +310,7 @@ body {
   }
 }
 
-/*******************Estilo header de produccion ***********************/
+/* ---------------------------------------------------- Estilo header de produccion ---------------------------------------------------- */
 
 .header-produccion {
   background-color: #3E302C;
@@ -328,7 +343,7 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/************************Botones de la barra de navegación de produccion ************************/
+/* -------------- Botones de la barra de navegación de produccion -------------- */
 .produccion-header-nav-item {
   color: #fff;
   text-decoration: none;
@@ -369,7 +384,7 @@ body {
   margin-left: 1rem;
 }
 
-/************************Boton de logout de barra de navegacion de ventas************************/
+/* -------------- Boton de logout de barra de navegacion de ventas --------------*/
 .produccion-header-logout-btn {
   margin-left: auto;
   background-color: #ffffff;
@@ -412,7 +427,7 @@ body {
   }
 }
 
-/*------------------------------- Estilo para dropdown --------------------------------- */
+/* -------------- Estilo para dropdown -------------- */
 .dropdown-produccion {
   display: inline-block;
   position: relative;
@@ -545,5 +560,11 @@ transform: translateY(0);
   
   .produccion-header-nav-item img {
       max-height: 20px;
+  }
+}
+
+@media (max-width: 280px) {
+  header {
+    height: 300px;
   }
 }

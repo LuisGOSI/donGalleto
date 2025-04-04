@@ -66,12 +66,14 @@
 	</div>
 
 	{% else %}
-	<div class="header2">
-		<div class="header-container-2">
-			<a class="logoDonGalleto" href="{{url_for('admin_dashboard')}}"><img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo don galleto" /></a>
-			
+	<div class="header-administrador">
+
+		<div class="admin-header-container">
+			<a class="admin-header-logo" href="{{url_for('admin_dashboard')}}"><img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo don galleto" /></a>
+			<a href="gestionUsuarios" class="admin-header-nav-item">Usuarios</a>
+			<a href="{{url_for('clientes')}}" class="admin-header-nav-item">Clientes</a>
 			<form method="POST" action="/logout">
-				<button type="submit" class="logout-btn-2">Cerrar sesion</button>
+				<button type="submit" class="logout-btn-admin">Cerrar sesion</button>
 			</form>
 		</div>
 	</div>

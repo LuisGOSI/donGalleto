@@ -11,16 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Open+Sans:wght@400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
     <title>Don galleto - {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}" />
     <link rel="stylesheet" href="/static/css/stylesAdmin/styleDashboard.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/stylesHeader/styleHeaderAdmin.css')}}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/stylesHeader/styleHeader.css')}}" />
     <link rel="icon" href="{{ url_for('static', filename='img/Don_galleto_icon.png')}}" type="image/x-icon" />
     <!-- Estilo de clientes CRUD -->
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/stylesAdmin/styleClientesCRUD.css')}}" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    {% include "/admin/baseAdmin/headerAdmin.html" %}
+    {% include "/bases/header.html" %}
     {% block content %}{% endblock %}
 </body>
 </html>
