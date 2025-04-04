@@ -66,7 +66,7 @@ th:last-child, td:last-child {
 
 th {
     background-color: #4a342e;
-    color: white;
+    color: rgb(0, 0, 0);
     text-align: center;
     padding: 10px;
 }
@@ -129,6 +129,137 @@ td {
 .mermas-btn:hover {
     background-color: #00ff51;
     cursor: pointer;
+}
+
+/* -------------------------------------- */
+/* Botón de Presentación Compra (Verde)  */
+/* -------------------------------------- */
+.btn-purchase {
+    background-color: #90ee90; /* Verde claro */
+    color: #2c6e49;
+}
+
+.btn-purchase .icon {
+    margin-right: 8px; /* Espaciado entre el ícono y el texto */
+}
+
+.btn-purchase:hover {
+    background-color: #00ff51; /* Verde brillante */
+    cursor: pointer;
+}
+
+/* -------------------------------------- */
+/* Botón de Formato de Receta (Amarillo) */
+/* -------------------------------------- */
+.btn-recipe {
+    background-color: #fff59d; /* Amarillo claro */
+    color: #f57f17;
+}
+
+.btn-recipe .icon {
+    margin-right: 8px; /* Espaciado entre el ícono y el texto */
+}
+
+.btn-recipe:hover {
+    background-color: #fbc02d; /* Amarillo brillante */
+    cursor: pointer;
+}
+
+/* -------------------------------------- */
+/* Botón de Editar (Azul)              */
+/* -------------------------------------- */
+.btn-edit {
+    background-color: #add8e6; /* Azul claro */
+    color: #2196F3;
+}
+
+.btn-edit .icon {
+    margin-right: 8px; /* Espaciado entre el ícono y el texto */
+}
+
+.btn-edit:hover {
+    background-color: #1e88e5; /* Azul brillante */
+    cursor: pointer;
+}
+
+/* -------------------------------------- */
+/* Botón de Eliminar (Rojo)            */
+/* -------------------------------------- */
+.btn-delete {
+    background-color: #f44336; /* Rojo */
+    color: white;
+}
+
+.btn-delete .icon {
+    margin-right: 8px; /* Espaciado entre el ícono y el texto */
+}
+
+.btn-delete:hover {
+    background-color: #e53935; /* Rojo oscuro */
+    cursor: pointer;
+}
+
+/* =========================== */
+/* Estilos el summary       */
+/* =========================== */
+
+details {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+    transition: all 0.3s ease, box-shadow 0.4s ease-in-out;
+}
+
+details:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+details[open] {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo del summary */
+summary {
+    list-style: none;
+    cursor: pointer;
+    position: relative;
+    padding: 15px 40px 15px 20px;
+    background: linear-gradient(to right, #D7B89D, #e6d4c2);
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #3E302C;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    outline: none;
+}
+
+/* Indicador de expansión */
+summary::after {
+    content: "+";
+    font-size: 24px;
+    color: #3E302C;
+    font-weight: bold;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+details[open] summary::after {
+    content: "−";
+    transform: rotate(180deg);
+}
+
+/* Animación de contenido desplegable */
+details[open] .sale-content {
+    animation: fadeSlideDown 0.4s ease forwards;
+}
+
+details:not([open]) .sale-content {
+    animation: fadeSlideUp 0.3s ease forwards;
 }
 
 
