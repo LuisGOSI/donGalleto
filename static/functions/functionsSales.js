@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const sellButton = document.querySelector(".btn-primary");
 
     let cart = [];
-    const CANTIDAD_GALLETAS = 0
 
     function PAQUETE_CANTIDAD(item) {        
         switch (item.type) {
@@ -20,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        CANTIDAD_GALLETAS = data.cantidadPara1kg;
                         item.price = (data.cantidadPara1kg * item.price) * 0.95;
                         renderCart();
                     })

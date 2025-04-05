@@ -45,9 +45,18 @@ def registrar_venta():
                 return jsonify({"error": f"Galleta '{nombre}' no encontrada"}), 400
             idGalleta = galleta[0]
             
-            if tipo == "paquete 1kg":
-                cantidad = cantidad * 6
-
+            cantidadVendida = cantidad
+            match tipo:
+                case "paquete 1kg":
+                    peso_galleta = revisar_gramaje_por_id(idGalleta)
+                    if isinstance(peso_galleta, dict) and "error" in peso_galleta:
+                        return peso_galleta, 400
+                    cantidadVendida = round(cantidad * 1000 / peso_galleta)
+                case "paquete 700gr":
+                    peso_galleta = revisar_gramaje_por_id(idGalleta)
+                    if isinstance(peso_galleta, dict) and "error" in peso_galleta:
+                        return peso_galleta, 400
+                    cantidadVendida = round(cantidad * 700 / peso_galleta)
             # Insertar en detalleventas
             cursor.execute(
                 """
@@ -68,7 +77,7 @@ def registrar_venta():
                 ORDER BY fechaCaducidad ASC
                 LIMIT 1
             """,
-                (cantidad, idGalleta, cantidad),
+                (cantidadVendida, idGalleta, cantidadVendida),
             )
 
         mysql.connection.commit()
@@ -167,5 +176,28 @@ def revisar_gramaje_por_nombre_700gr():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+def revisar_gramaje_por_id(idGalleta):
+    cursor = mysql.connection.cursor()
+    try: 
+        # Obtener el peso de una galleta por su ID
+        cursor.execute(
+            "SELECT gramaje FROM galletas WHERE idGalleta = %s", (idGalleta,)
+        )
+        galleta = cursor.fetchone()
+        if not galleta:
+            return jsonify({"error": "Galleta no encontrada"})
+        
+        peso_galleta = galleta[0]
+        
+        if peso_galleta <= 0:
+            return jsonify({"error": "El peso de la galleta no es válido"})
+        
+        return peso_galleta
+        
+    except Exception as e:
+        return jsonify({"error": str(e)})
     finally:
         cursor.close()
