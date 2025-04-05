@@ -75,38 +75,3 @@ window.onclick = function(event) {
     }
   }
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-    const unitBadges = document.querySelectorAll(".unit-badge");
-    const unitOptions = ["Unidad", "Paquetes", "Gramaje"];
-
-    unitBadges.forEach((badge) => {
-        let currentIndex = 0;
-
-        badge.addEventListener("click", function () {
-            currentIndex = (currentIndex + 1) % unitOptions.length;
-            badge.textContent = unitOptions[currentIndex];
-        });
-    });
-
-    // Manejar el aumento y disminución de cantidad
-    document.querySelectorAll(".product-card").forEach((card) => {
-      const quantityInput = card.querySelector(".quantity-input");
-      const increaseBtn = card.querySelector(".quantity-btn:first-of-type"); // Botón "+"
-      const decreaseBtn = card.querySelector(".quantity-btn:last-of-type");  // Botón "-"
-
-      increaseBtn.addEventListener("click", function () {
-          let currentValue = parseInt(quantityInput.value);
-          if (!isNaN(currentValue)) {
-              quantityInput.value = currentValue + 1; // Aumenta el valor
-          }
-      });
-
-      decreaseBtn.addEventListener("click", function () {
-          let currentValue = parseInt(quantityInput.value);
-          if (!isNaN(currentValue) && currentValue > 1) {
-              quantityInput.value = currentValue - 1; // Disminuye el valor, pero no baja de 1
-          }
-      });
-  });
-});

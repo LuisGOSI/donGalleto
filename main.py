@@ -30,12 +30,14 @@ def admin_dashboard():
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
+    ventas=dashboard.getVentasPorDia()
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
         ganancias=ganancias,
         galletas=galletas,
         user=user,
+        ventas=ventas
     )
 
 
@@ -396,6 +398,17 @@ def receta():
     )
     formatos = cur.fetchall()
 
+    # Obtener todas las recetas básicas para la tabla principal
+    cur.execute("""
+        SELECT r.idReceta, r.nombreReceta, r.cantidadHorneadas, r.duracionAnaquel, 
+               g.nombreGalleta
+        FROM recetas r
+        JOIN galletas g ON r.idGalletaFK = g.idGalleta
+        WHERE r.estatus = 1
+        ORDER BY g.nombreGalleta, r.nombreReceta
+    """)
+    recetas = cur.fetchall()
+    
     cur.close()
 
     return render_template(
@@ -404,7 +417,8 @@ def receta():
         galletas=galletas,
         insumos=insumos,
         formatos=formatos,
-        user=user,
+        recetas=recetas,
+        user=user
     )
 
 

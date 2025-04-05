@@ -33,8 +33,8 @@ body {
 }
 
 .product-container img {
-    width: 100px;           /* Ancho de la imagen */
-    height: 100px;          /* Alto de la imagen */
+    width: 190px;           /* Ancho de la imagen */
+    height: 190px;          /* Alto de la imagen */
     border-radius: 5px;    
 }
 
@@ -72,4 +72,9 @@ body {
     color: black;
     width: 48%;
     text-align: center;
+}
+
+.btn i {
+    font-size: 2.5rem;
+    margin-right: 8px;
 }
