@@ -17,21 +17,19 @@
         <div class="product-card">
             <div class="product-image">
                 <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
-                <div class="unit-badge">Unidad</div>
             </div>
             <div class="product-info">
                 <h3 class="product-title">{{ galleta[1] }}</h3>
-                <p class="product-price">{{ galleta[2] }} ₡/U</p>
+                <p class="product-price">{{ galleta[2] }} $/U</p>
 
                     <div class="product-actions">
-                        <div class="quantity-selector">
-                            <button class="quantity-btn">+</button>
-                            <input type="text" class="quantity-input" value="1">
-                            <button class="quantity-btn">-</button>
-                        </div>
+                        
                         <form action="{{ url_for('detalle_producto') }}" method="post">
                             <input type="hidden" name="galleta" value='{{ galleta | tojson | safe }}'>
-                            <button type="submit" class="add-to-cart">PRODUCTOS</button>
+                            <button type="submit" class="add-to-cart btn btn-success">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                Agregar al carrito
+                            </button>
                         </form>
                     </div>
 

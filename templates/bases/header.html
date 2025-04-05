@@ -71,6 +71,7 @@
 		<div class="admin-header-container">
 			<a class="admin-header-logo" href="{{url_for('admin_dashboard')}}"><img src="{{url_for('static', filename='img/DonGalleto-logo.png')}}" alt="Logo don galleto" /></a>
 			<a href="gestionUsuarios" class="admin-header-nav-item">Usuarios</a>
+			<a href="{{url_for('admin_dashboard')}}" class="admin-header-nav-item">Dashboard</a>
 			<a href="{{url_for('clientes')}}" class="admin-header-nav-item">Clientes</a>
 			<form method="POST" action="/logout">
 				<button type="submit" class="logout-btn-admin">Cerrar sesion</button>
