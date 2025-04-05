@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                     .then(response => response.json())
                     .then(data => {
+                        CANTIDAD_GALLETAS = data.cantidadPara1kg;
                         item.price = (data.cantidadPara1kg * item.price) * 0.95;
                         renderCart();
                     })
@@ -33,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                     .then(response => response.json())
                     .then(data => {
+                        CANTIDAD_GALLETAS = data.cantidadPara700gr;
                         item.price = (data.cantidadPara700gr * item.price) * 0.95;
                         renderCart();
                     })
