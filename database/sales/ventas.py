@@ -96,3 +96,76 @@ def registrar_venta():
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
+
+@app.route("/revisarGramajePorNombre1kg", methods=["POST"])
+def revisar_gramaje_por_nombre_1kg():
+    cursor = mysql.connection.cursor()
+    data = request.get_json()
+    nombreGalleta = data.get("name")
+    try: 
+        if not nombreGalleta:
+            return jsonify({"error": "Falta el nombre de la  galleta"}),   
+
+        
+        # Obtener el peso de una galleta por su ID
+        cursor.execute(
+            "SELECT gramaje FROM galletas WHERE nombreGalleta = %s", (nombreGalleta,)
+        )
+        galleta = cursor.fetchone()
+        if not galleta:
+            return jsonify({"error": "Galleta no encontrada"}), 404
+        
+        peso_galleta = galleta[0]
+        
+        if peso_galleta <= 0:
+            return jsonify({"error": "El peso de la galleta no es válido"}), 400
+        
+        # Calcular la cantidad de galletas necesarias para aproximarse a 1kg
+        cantidad_galletas = round(1000 / peso_galleta)
+        
+        return jsonify({
+            "pesoGalleta": peso_galleta,
+            "cantidadPara1kg": cantidad_galletas
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+
+@app.route("/revisarGramajePorNombre700gr", methods=["POST"])
+def revisar_gramaje_por_nombre_700gr():
+    cursor = mysql.connection.cursor()
+    data = request.get_json()
+    nombreGalleta = data.get("name")
+    try: 
+        if not nombreGalleta:
+            return jsonify({"error": "Falta el nombre de la  galleta"}),   
+
+        
+        # Obtener el peso de una galleta por su ID
+        cursor.execute(
+            "SELECT gramaje FROM galletas WHERE nombreGalleta = %s", (nombreGalleta,)
+        )
+        galleta = cursor.fetchone()
+        if not galleta:
+            return jsonify({"error": "Galleta no encontrada"}), 404
+        
+        peso_galleta = galleta[0]
+        
+        if peso_galleta <= 0:
+            return jsonify({"error": "El peso de la galleta no es válido"}), 400
+        
+        # Calcular la cantidad de galletas necesarias para aproximarse a 700gr
+        cantidad_galletas = round(700 / peso_galleta)
+        
+        return jsonify({
+            "pesoGalleta": peso_galleta,
+            "cantidadPara700gr": cantidad_galletas
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()

@@ -87,8 +87,6 @@ def generar_pdf_ticket(idVenta, productos, subtotal, descuento, total):
         
         # Pie de página
         elements.append(Spacer(1, 40))
-        elements.append(Paragraph("¡Gracias por su compra!", styles['Italic']))
-        elements.append(Paragraph("Visite nuestras redes sociales @DonGalleto", styles['Italic']))
         
         # Generar PDF
         doc.build(elements)
