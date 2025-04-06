@@ -129,19 +129,21 @@ def registerAdmin():
         return redirect(url_for("registerAdmin"))
     return render_template("/admin/registerAdmin.html")
 
+
 # Logout
 @app.route("/logout", methods=["POST"])
 def logout():
     if session.get("user") is not None:
-        session.pop("user")
+        session.clear()
         return redirect(url_for("login"))
     else:
         return redirect(url_for("login"))
 
 @app.route("/checkSession")
 def checkSession():
-    user = session.get("user")
+    session_items = {key: session[key] for key in session.keys()}
+    return jsonify(session_items)
     if user is not None:
-        return jsonify({"status": "success", "user": user})
+        return jsonify({user})
     else:
         return redirect(url_for("login"))

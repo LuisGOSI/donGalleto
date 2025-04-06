@@ -33,14 +33,14 @@ def admin_dashboard():
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
-    ventas=dashboard.getVentasPorDia()
+    ventas = dashboard.getVentasPorDia()
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
         ganancias=ganancias,
         galletas=galletas,
         user=user,
-        ventas=ventas
+        ventas=ventas,
     )
 
 
@@ -276,24 +276,24 @@ def eliminar_del_carrito(id, tipo_venta):
 
 @app.route("/finalizar_compra", methods=["POST"])
 def finalizar_compra():
-
-    user_id = session["user"][0]  # ID del cliente en sesión
-    carrito = session["carrito"]
+    user_id = session.get("user")[6]  # ID del cliente en sesión
+    carrito = session.get("carrito")
     total_compra = sum(item["precio"] * item["cantidad"] for item in carrito.values())
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     id_empleado = 1  # ID de un empleado específico para ventas en línea
     descuento = 0  # Puedes modificar esto si hay descuentos
-
+    tipo_venta = request.form.get("tipo_venta", "online")  # Por defecto online para clientes
     cur = mysql.connection.cursor()
 
     try:
         # Insertar la venta en la tabla `ventas`
         cur.execute(
             """
-            INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento, tipoVenta, estadoVenta)
+            VALUES (%s, %s, %s, %s, %s,
+                    CASE WHEN %s = 'online' THEN 'pendiente' ELSE 'confirmada' END)
             """,
-            (id_empleado, user_id, fecha_actual, descuento),
+            (id_empleado, user_id, fecha_actual, descuento, tipo_venta, tipo_venta),
         )
         mysql.connection.commit()
 
@@ -303,39 +303,69 @@ def finalizar_compra():
 
         # Insertar detalles de la venta en la tabla `detalleventas`
         for key, item in carrito.items():
+            print(f"Producto en carrito: {item}")
             id_galleta = key.split("_")[0]  # ID del producto (galleta)
-            tipo_venta = item.get(
-                "tipo_venta", "unidades"
+            tipo_venta_detalle = item.get(
+                "tipo_venta", "unidad"
             )  # Debe ser 'gramaje', 'paquetes' o 'unidades'
-
-            # Validar que el tipo de venta sea correcto según el ENUM
-            if tipo_venta not in ["gramaje", "paquetes", "unidades"]:
-                raise ValueError(f"Tipo de venta inválido: {tipo_venta}")
+            print(f"Tipo de venta: {tipo_venta_detalle}")
 
             cur.execute(
                 """
                 INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido)
                 VALUES (%s, %s, %s, %s, %s)
                 """,
-                (id_venta, id_galleta, item["cantidad"], tipo_venta, item["precio"]),
+                (
+                    id_venta,
+                    id_galleta,
+                    item["cantidad"],
+                    tipo_venta_detalle,
+                    item["precio"],
+                ),
             )
+            # Actualizar inventario solo si es venta local (confirmada)
+        if tipo_venta == "local":
+            for key, item in carrito.items():
+                id_galleta = key.split("_")[0]
+                cantidad = item["cantidad"]
+
+                # Convertir a unidades si es paquete
+                if item["tipo_venta"] == "paquete 1kg":
+                    peso_galleta = ventas.revisar_gramaje_por_id(id_galleta)
+                    cantidad = round(cantidad * 1000 / peso_galleta)
+                elif item["tipo_venta"] == "paquete 700gr":
+                    peso_galleta = ventas.revisar_gramaje_por_id(id_galleta)
+                    cantidad = round(cantidad * 700 / peso_galleta)
+
+                cur.execute(
+                    """
+                    UPDATE inventariogalletas 
+                    SET cantidadGalletas = cantidadGalletas - %s
+                    WHERE idProduccionFK = (SELECT idProduccion FROM produccion WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s) LIMIT 1)
+                    AND cantidadGalletas >= %s
+                    AND estadoLote = 'Disponible'
+                    ORDER BY fechaCaducidad ASC
+                    LIMIT 1
+                    """,
+                    (cantidad, id_galleta, cantidad),
+                )
 
         mysql.connection.commit()
 
         # Vaciar el carrito después de la compra
         session.pop("carrito")
         flash("Compra finalizada con éxito.", "success")
+        flash("Id de tu compra: " + str(id_venta), "success")
         return redirect(url_for("carrito_dashboard"))
-
     except Exception as e:
         mysql.connection.rollback()
-        flash(f"Ocurrió un error al procesar la compra: {e}", "danger")
+        flash(f"Ocurrió un error al procesar el pedido: {e}", "danger")
         print(f"❌ Error en la compra: {e}")
         return redirect(url_for("carrito_dashboard"))
 
     finally:
         cur.close()
-
+        
 
 # Fin de rutas para el modulo de clientes / Sistema de carrito
 
@@ -426,7 +456,7 @@ def receta():
         insumos=insumos,
         formatos=formatos,
         recetas=recetas,
-        user=user
+        user=user,
     )
 
 
