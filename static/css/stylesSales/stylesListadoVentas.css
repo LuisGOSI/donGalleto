@@ -197,11 +197,12 @@
 
 .subtotal-row td {  
     background-color: #f2ebe6;  
+    color: #3E302C;  /* Texto marrón oscuro */
 }  
 
 .discount-row td {  
     background-color: #e6d4c2;  
-    color: #8B4513;  
+    color: #3E302C;  /* Texto marrón oscuro */
 }  
 
 .total-row td {  
@@ -251,3 +252,156 @@
     from { opacity: 1; transform: translateY(0); max-height: 500px; }  
     to { opacity: 0; transform: translateY(-10px); max-height: 0; }  
 }  
+
+
+/* --------------------------------------  
+   11. Eltilo filtro  
+-------------------------------------- */  
+/* Estilos específicos para el filtro (se integran con tu CSS existente) */
+.filter-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+/* Botón de filtro principal */
+.btn-filter {
+    background-color: #3E302C;
+    color: #D7B89D;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    width: 160px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.btn-filter:hover {
+    background-color: #c5a78c;
+    color: #3E302C;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Botones del modal */
+.btn-apply-filter {
+    background-color: #8BA888;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-apply-filter:hover {
+    background-color: #7a9777;
+    color: white;
+}
+
+.btn-clear-filter {
+    background-color: #E2B4BD;
+    color: #3E302C;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-clear-filter:hover {
+    background-color: #d0a2ab;
+    color: #3E302C;
+}
+
+/* Estilos para las pestañas */
+.nav-tabs .nav-link {
+    color: #3E302C;
+    border: none;
+    padding: 10px 15px;
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link.active {
+    color: #3E302C;
+    background-color: transparent;
+    border-bottom: 3px solid #D7B89D;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #D7B89D;
+    border-color: transparent;
+}
+
+/* Estilos para los inputs */
+.form-control {
+    border: 1px solid #D7B89D;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.form-control:focus {
+    border-color: #3E302C;
+    box-shadow: 0 0 0 0.25rem rgba(62, 48, 44, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #3E302C;
+}
+
+/* Posicionamiento del contenedor */
+.d-flex.justify-content-between.align-items-center {
+    margin-bottom: 20px;
+}
+
+/* --------------------------------------  
+   12. ESTILO MENSAJE SIN VENTAS  
+-------------------------------------- */  
+.no-sales-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    background-color: #f9f5f0;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin: 20px 0;
+    border: 1px dashed #D7B89D;
+}
+
+.no-sales-content {
+    text-align: center;
+    color: #3E302C;
+    padding: 30px;
+}
+
+.no-sales-content i {
+    font-size: 3rem;
+    color: #D7B89D;
+    margin-bottom: 15px;
+}
+
+.no-sales-content p {
+    font-size: 1.2rem;
+    font-family: 'Charm', cursive;
+    margin: 0;
+}
+
+/* Estilo para mensajes de error */
+.no-sales-message.error-message {
+    border-color: #E2B4BD;
+}
+
+.no-sales-message.error-message i {
+    color: #E2B4BD;
+}
+
+.no-sales-message.error-message p {
+    font-family: 'Open Sans', sans-serif;
+    color: #3E302C;
+}
