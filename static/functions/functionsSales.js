@@ -6,9 +6,46 @@ document.addEventListener("DOMContentLoaded", () => {
     const clearButton = document.getElementById("clear-btn");
     const addButtons = document.querySelectorAll(".add-btn");
     const sellButton = document.querySelector(".btn-primary");
+    const buscarVentaBtn = document.getElementById("buscaVentaBtn");
+    const codigoVentaInput = document.getElementById("codigoVentaOnline");
+
 
     let cart = [];
-    const PAQUETE_CANTIDAD = 6;
+    let currentOnlineOrder = null;
+
+    function PAQUETE_CANTIDAD(item) {
+        switch (item.type) {
+            case "Paquete 1kg":
+                fetch("/revisarGramajePorNombre1kg", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(item)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        item.price = (data.cantidadPara1kg * item.price) * 0.93;
+                        renderCart();
+                    })
+                    .catch(error => console.error("Error:", error));
+                break;
+            case "Paquete 700gr":
+                fetch("/revisarGramajePorNombre700gr", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(item)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        item.price = (data.cantidadPara700gr * item.price) * 0.93;
+                        renderCart();
+                    })
+                    .catch(error => console.error("Error:", error));
+                break;
+            default:
+                item.price = item.price; // No change for Unidad
+                break;
+        }
+    }
 
     addButtons.forEach((button, index) => {
         button.addEventListener("click", () => {
@@ -16,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = productCard.querySelector("p:nth-of-type(1)").textContent;
             const price = parseFloat(productCard.querySelector("p:nth-of-type(2)").textContent.replace("Precio: ", "").replace(" C/U", ""));
             const type = "Unidad";
-            
+
             addToCart({ name, price, type, quantity: 1 });
         });
     });
@@ -35,7 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>
                     <select class="type-select" data-index="${index}">
                         <option value="Unidad" ${item.type === "Unidad" ? "selected" : ""}>Unidad</option>
-                        <option value="Paquete" ${item.type === "Paquete" ? "selected" : ""}>Paquete</option>
+                        <option value="Paquete 1kg" ${item.type === "Paquete 1kg" ? "selected" : ""}>Paquete 1kg</option>
+                        <option value="Paquete 700gr" ${item.type === "Paquete 700gr" ? "selected" : ""}>Paquete 700gr</option>
                     </select>
                 </td>
                 <td>
@@ -55,7 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
             cart[index].quantity = parseInt(event.target.value) || 1;
         } else if (event.target.classList.contains("type-select")) {
             cart[index].type = event.target.value;
-            cart[index].price = event.target.value === "Paquete" ? cart[index].price * PAQUETE_CANTIDAD : cart[index].price / PAQUETE_CANTIDAD;
+            PAQUETE_CANTIDAD(cart[index]);
+
         }
         renderCart();
     });
@@ -77,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     descuentoInput.addEventListener("input", updateTotals);
-    
+
     clearButton.addEventListener("click", () => {
         cart = [];
         renderCart();
@@ -88,7 +127,8 @@ document.addEventListener("DOMContentLoaded", () => {
             productos: cart,
             subtotal: parseFloat(subtotalInput.value),
             descuento: parseFloat(descuentoInput.value),
-            total: parseFloat(totalInput.value)
+            total: parseFloat(totalInput.value),
+            tipoVenta: "local"
         };
 
         fetch("/registrarVenta", {
@@ -96,13 +136,176 @@ document.addEventListener("DOMContentLoaded", () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(ventaData)
         })
-        .then(response => response.json())
-        .then(data => {
-            alert("Venta registrada exitosamente");
-            cart = [];
-            descuentoInput.value = 0;
-            renderCart();
-        })
-        .catch(error => console.error("Error al registrar la venta:", error));
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert("Venta registrada exitosamente: " + data.mensaje);
+                cart = [];
+                renderCart();
+                if (data.pdf_url) {
+                    window.open(data.pdf_url, '_blank');
+                }
+            })
+            .catch(error => {
+                alert("Error al registrar la venta: " + (error.error || error.message || "Error desconocido"));
+            });
+    });
+        // ========== NUEVA FUNCIONALIDAD PARA VENTAS ONLINE ==========
+
+    // Elementos del modal
+    const modal = document.getElementById("ventaOnlineModal");
+    const closeModal = document.querySelector(".close-modal");
+    const confirmarVentaBtn = document.getElementById("confirmarVentaBtn");
+    const cancelarVentaBtn = document.getElementById("cancelarVentaBtn");
+    const ventaIdSpan = document.getElementById("ventaId");
+    const ventaInfoDiv = document.getElementById("ventaInfo");
+
+    // Buscar venta online
+    buscarVentaBtn.addEventListener("click", async function() {
+        const codigoVenta = codigoVentaInput.value.trim();        
+        
+        if (!codigoVenta) {
+            alert('Por favor ingrese un código de venta');
+            return;
+        }
+
+        try {
+            buscarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+            buscarVentaBtn.disabled = true;
+            
+            const response = await fetch(`/obtenerVentaOnline/${codigoVenta}`);
+            const data = await response.json();
+            
+            if (response.ok) {
+                currentOnlineOrder = data;
+                console.log('Venta encontrada:', data);
+                
+                
+                // Mostrar información de la venta en el modal
+                ventaIdSpan.textContent = codigoVenta;
+                ventaInfoDiv.innerHTML = `
+                    <p><strong>Fecha:</strong> ${(data.venta.fechaVenta)}</p>
+                    <p><strong>Estado:</strong> ${data.venta.estadoVenta}</p>
+                    <p><strong>Total:</strong> $${data.venta.totalVenta.toFixed(2)}</p>
+                    <h4>Productos:</h4>
+                    <ul>
+                        ${data.detalles.map(p => `
+                            <li>${p.nombre} - ${p.cantidadVendida} ${p.tipoVenta}/es - $${p.precioUnitarioVendido} - C/U </li>
+                        `).join('')}
+                    </ul>
+                `;
+                
+                // Mostrar u ocultar botones según el estado
+                if (data.venta.estadoVenta === 'pendiente') {
+                    confirmarVentaBtn.style.display = 'block';
+                    cancelarVentaBtn.style.display = 'block';
+                } else {
+                    confirmarVentaBtn.style.display = 'none';
+                    cancelarVentaBtn.style.display = 'none';
+                    ventaInfoDiv.innerHTML += `<p class="alert">Esta venta ya ha sido ${data.venta.estadoVenta}</p>`;
+                }
+                
+                modal.style.display = 'block';
+            } else {
+                alert(data.error || 'Error al buscar la venta');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al conectar con el servidor');
+        } finally {
+            buscarVentaBtn.innerHTML = 'Buscar';
+            buscarVentaBtn.disabled = false;
+        }
+    });
+
+    // Cerrar modal
+    closeModal.addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    // Confirmar venta
+    confirmarVentaBtn.addEventListener('click', async function() {
+        console.log('Confirmar venta:', currentOnlineOrder);
+        
+        if (!currentOnlineOrder) return;
+        
+        confirmarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Confirmando...';
+        confirmarVentaBtn.disabled = true;
+        
+        try {
+            const response = await fetch(`/confirmarVentaOnline/${currentOnlineOrder.venta.idVenta}`, {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert('Venta confirmada con éxito');
+                modal.style.display = 'none';
+                codigoVentaInput.value = '';
+                currentOnlineOrder = null;
+            } else {
+                alert(data.error || 'Error al confirmar la venta');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al conectar con el servidor');
+        } finally {
+            confirmarVentaBtn.innerHTML = 'Confirmar Venta';
+            confirmarVentaBtn.disabled = false;
+        }
+    });
+
+    // Cancelar venta
+    cancelarVentaBtn.addEventListener('click', async function() {
+        if (!currentOnlineOrder) return;
+        
+        if (!confirm('¿Estás seguro de que deseas cancelar esta venta?')) {
+            return;
+        }
+        
+        cancelarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelando...';
+        cancelarVentaBtn.disabled = true;
+        
+        try {
+            const response = await fetch(`/cancelarVentaOnline/${currentOnlineOrder.venta.idVenta}`, {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert('Venta cancelada con éxito');
+                modal.style.display = 'none';
+                codigoVentaInput.value = '';
+                currentOnlineOrder = null;
+            } else {
+                alert(data.error || 'Error al cancelar la venta');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al conectar con el servidor');
+        } finally {
+            cancelarVentaBtn.innerHTML = 'Cancelar Venta';
+            cancelarVentaBtn.disabled = false;
+        }
+    });
+
+    // Cerrar modal al hacer clic fuera
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Validación del input de código
+    codigoVentaInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
     });
 });
+
+

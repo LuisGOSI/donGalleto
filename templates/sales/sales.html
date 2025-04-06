@@ -36,8 +36,8 @@
 
         <div class="sales-section">
             <div class="sales-input-group">
-                <input type="text" placeholder="Código">
-                <button class="btn btn-secondary">Cargar</button>
+                <input type="text" placeholder="Código de venta online" id="codigoVentaOnline" name="codigoVentaOnline" class="input-field">
+                <button id="buscaVentaBtn" name="buscaVentaBtn" class="btn btn-secondary">Buscar</button>
             </div>
             <table class="sales-table">
                 <thead>
@@ -53,6 +53,7 @@
 
                 </tbody>
             </table>
+            
             <div class="financial-inputs">
                 <div class="input-group">
                     <label for="subtotal">Subtotal</label>
@@ -73,6 +74,19 @@
             </div>
         </div>
     </div>
+
+    <div id="ventaOnlineModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Venta <span id="ventaId"></span></h2>
+            <div id="ventaInfo"></div>
+            <div class="modal-actions">
+                <button id="confirmarVentaBtn" class="btn btn-success">Confirmar Venta</button>
+                <button id="cancelarVentaBtn" class="btn btn-danger">Cancelar Venta</button>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 {% endblock %}

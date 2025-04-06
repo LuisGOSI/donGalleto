@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
-from db import app, mysql
+from db import app, mysql, captcha
 
 #! ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Logica de sesiones de la app ///////////////////////////////////////////////////////////////////////
@@ -9,6 +9,7 @@ from db import app, mysql
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    new_captcha_dict = captcha.create()
     user = session.get("user")
     if user is not None:
         match user[4]:
@@ -42,21 +43,27 @@ def login():
                         return redirect(url_for("cliente_dashboard"))
             else:
                 flash("Usuario o contraseña incorrectos")
-                return render_template("/pages/login.html")
-        return render_template("/pages/login.html")
+                return render_template("/pages/login.html", captcha=new_captcha_dict)
+        return render_template("/pages/login.html", captcha=new_captcha_dict)
 
 
 # Registro de usuario
 @app.route("/register", methods=["POST"])
 def registerUser():
+    new_captcha_dict = captcha.create()
+    cur = mysql.connection.cursor()
     try:
         if request.method == "POST":
+            c_hash = request.form.get('captcha-hash')
+            c_text = request.form.get('captcha-text')
+            if captcha.verify(c_hash, c_text) is False:
+                flash("Captcha incorrecto")
+                return render_template("/pages/login.html", captcha=new_captcha_dict)
             name = request.form["name"]
             email = request.form["email"]
             password = generate_password_hash(request.form["password"])
             phone = request.form["phone"]
             role = request.form["role"]
-            cur = mysql.connection.cursor()
             cur.execute(
                 "INSERT INTO clientes (nombreCliente, telefono) VALUES (%s, %s)",
                 (name, phone),)
@@ -122,19 +129,21 @@ def registerAdmin():
         return redirect(url_for("registerAdmin"))
     return render_template("/admin/registerAdmin.html")
 
+
 # Logout
 @app.route("/logout", methods=["POST"])
 def logout():
     if session.get("user") is not None:
-        session.pop("user")
+        session.clear()
         return redirect(url_for("login"))
     else:
         return redirect(url_for("login"))
 
 @app.route("/checkSession")
 def checkSession():
-    user = session.get("user")
+    session_items = {key: session[key] for key in session.keys()}
+    return jsonify(session_items)
     if user is not None:
-        return jsonify({"status": "success", "user": user})
+        return jsonify({user})
     else:
         return redirect(url_for("login"))

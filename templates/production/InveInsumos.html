@@ -67,7 +67,7 @@
                         {% for datos in lotesResumen %}
                             {% if datos.dias_restantes is not none and datos.dias_restantes == 0 %}
                                 <p>
-                                    (No. Lote:<strong>{{ datos.id_lote }}</strong>) Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> insumos de 
+                                    (No. Lote:<strong>{{ datos.id_lote }}</strong>) Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> </strong> {{datos.unidad_medida}}/s de 
                                     "<strong>{{ datos.nombre }}</strong>" que caducan hoy.
                                 </p>
                             {% endif %}
@@ -420,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function() {
             tablaActivos.style.display = "none";
             tablaCaducados.style.display = "block";
             if(proximosCaducar) proximosCaducar.style.display = "none";
-            statusLabel.textContent = "Mostrar Activos";
+            statusLabel.textContent = "Mostrar Disponibles";
         } else {
             // Mostrar activos y ocultar caducados
             tablaActivos.style.display = "block";
