@@ -3,13 +3,13 @@
 {% block content %}
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
 {% endwith %}
 
 <div class="container">
@@ -61,27 +61,20 @@
                             <td>{{ usuario.telefono }}</td>
                             <td>
                                 <button class="btnEditUsuarios" data-bs-toggle="modal"
-                                    data-bs-target="#editUsuarioModal" 
-                                    idUsuario="{{ usuario['idUsuario'] }}"
+                                    data-bs-target="#editUsuarioModal" idUsuario="{{ usuario['idUsuario'] }}"
                                     data-nombreEmpleado="{{ usuario['nombreEmpleado'] }}"
-                                    apellidoP="{{ usuario['apellidoP'] }}"
-                                    apellidoM="{{ usuario['apellidoM'] }}"
-                                    email="{{ usuario['email'] }}"
-                                    puesto="{{ usuario['puesto'] }}"
-                                    rol="{{ usuario['rol'] }}"
-                                    telefono="{{ usuario['telefono'] }}">
+                                    apellidoP="{{ usuario['apellidoP'] }}" apellidoM="{{ usuario['apellidoM'] }}"
+                                    email="{{ usuario['email'] }}" puesto="{{ usuario['puesto'] }}"
+                                    rol="{{ usuario['rol'] }}" telefono="{{ usuario['telefono'] }}">
                                     <i class="icon fas fa-edit"></i>
-                                Modificar
+                                    Modificar
                                 </button>
 
                                 <button class="btnEliminarUsuarios" data-bs-toggle="modal"
-                                    data-bs-target="#deleteUsuarioModal" 
-                                    data-id="{{ usuario['idUsuario'] }}"
-                                    nombreEmpleado="{{ usuario['nombreEmpleado'] }}" 
-                                    apellidoP="{{ usuario['apellidoP'] }}"
-                                    apellidoM="{{ usuario['apellidoM'] }}"
-                                    email="{{ usuario['email'] }}"
-                                    rol="{{ usuario['rol'] }}" 
+                                    data-bs-target="#deleteUsuarioModal" data-id="{{ usuario['idUsuario'] }}"
+                                    nombreEmpleado="{{ usuario['nombreEmpleado'] }}"
+                                    apellidoP="{{ usuario['apellidoP'] }}" apellidoM="{{ usuario['apellidoM'] }}"
+                                    email="{{ usuario['email'] }}" rol="{{ usuario['rol'] }}"
                                     telefono="{{ usuario['telefono'] }}">
                                     <i class="icon fas fa-trash"></i>
                                     Eliminar
@@ -101,42 +94,58 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <form action="/registerUsuario" method="POST" class="container mt-4 p-4 border rounded bg-light">
+                <form action="/registerUsuario" method="POST" class="container mt-4 p-4 border rounded bg-light" id="registroForm" novalidate>
                     <h2 class="text-center mb-4">Registrar usuario</h2>
 
                     <div class="mb-3">
                         <label for="nombreEmpleado" class="form-label">Nombre del empleado</label>
-                        <input type="text" class="form-control" id="nombreEmpleado" name="nombreEmpleado" required>
+                        <input type="text" class="form-control" id="nombreEmpleado" name="nombreEmpleado" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$" title="Solo letras y espacios permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un nombre válido (solo letras y espacios).</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="apellidoP" class="form-label">Apellido Paterno</label>
-                        <input type="text" class="form-control" id="apellidoP" name="apellidoP" required>
+                        <input type="text" class="form-control" id="apellidoP" name="apellidoP" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$" title="Solo letras y espacios permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un apellido paterno válido (solo letras y espacios).</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="apellidoM" class="form-label">Apellido Materno</label>
-                        <input type="text" class="form-control" id="apellidoM" name="apellidoM" required>
+                        <input type="text" class="form-control" id="apellidoM" name="apellidoM" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$" title="Solo letras y espacios permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un apellido materno válido (solo letras y espacios).</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="puesto" class="form-label">Puesto</label>
-                        <input type="text" class="form-control" id="puesto" name="puesto" required>
+                        <input type="text" class="form-control" id="puesto" name="puesto" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]{2,50}$" title="Solo letras, números, espacios y algunos símbolos (-_.) permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un puesto válido.</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="tel" class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="tel" name="tel" required>
+                        <input type="tel" class="form-control" id="tel" name="tel" required
+                            pattern="^[0-9]{10}$" title="Ingresa un número de 10 dígitos" maxlength="10">
+                        <div class="invalid-feedback">Por favor ingresa un número telefónico válido (10 dígitos).</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email" class="form-control" id="email" name="email" required
+                            pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" maxlength="100">
+                        <div class="invalid-feedback">Por favor ingresa un correo electrónico válido.</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="contrasenia" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="contrasenia" name="contrasenia">
+                        <input type="password" class="form-control" id="contrasenia" name="contrasenia" required
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" 
+                            title="La contraseña debe tener al menos 8 caracteres, incluyendo una letra, un número y un carácter especial" 
+                            minlength="8" maxlength="50">
+                        <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres, incluyendo una letra, un número y un carácter especial.</div>
                     </div>
 
                     <div class="mb-3">
@@ -147,9 +156,10 @@
                             <option value="produccion">Producción</option>
                             <option value="ventas">Ventas</option>
                         </select>
+                        <div class="invalid-feedback">Por favor selecciona un rol.</div>
                     </div>
 
-                    <div class="modal-footer" class="text">
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Agregar usuario</button>
                     </div>
@@ -164,54 +174,71 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <form id="editUsuarioForm" method="POST" action="/modifyUsuario">
+                <form id="editUsuarioForm" method="POST" action="/modifyUsuario" novalidate>
                     <input type="hidden" id="IdUsuario" name="idUsuario">
                     <h2 class="text-center mb-4">Modificar Usuario</h2>
                     <div class="mb-3">
-                        <label for="nombreEmpleado" class="form-label">Nombre del empleado</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        <label for="nombre" class="form-label">Nombre del empleado</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$" title="Solo letras y espacios permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un nombre válido (solo letras y espacios).</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
-                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required>
+                        <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$" title="Solo letras y espacios permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un apellido paterno válido (solo letras y espacios).</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
-                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" required>
+                        <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$" title="Solo letras y espacios permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un apellido materno válido (solo letras y espacios).</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="puesto" class="form-label">Puesto</label>
-                        <input type="text" class="form-control" id="pues" name="puesto" required>
+                        <label for="pues" class="form-label">Puesto</label>
+                        <input type="text" class="form-control" id="pues" name="puesto" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]{2,50}$" title="Solo letras, números, espacios y algunos símbolos (-_.) permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un puesto válido.</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="tel" class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="telefono" name="tel" required>
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="tel" class="form-control" id="telefono" name="tel" required
+                            pattern="^[0-9]{10}$" title="Ingresa un número de 10 dígitos" maxlength="10">
+                        <div class="invalid-feedback">Por favor ingresa un número telefónico válido (10 dígitos).</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="correo" name="email" required>
+                        <label for="correo" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="correo" name="email" required
+                            pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" maxlength="100">
+                        <div class="invalid-feedback">Por favor ingresa un correo electrónico válido.</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="contrasenia" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="contrasenia" name="contrasenia" required>
+                        <input type="password" class="form-control" id="contrasenia" name="contrasenia" required
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" 
+                            title="La contraseña debe tener al menos 8 caracteres, incluyendo una letra, un número y un carácter especial" 
+                            minlength="8" maxlength="50">
+                        <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres, incluyendo una letra, un número y un carácter especial.</div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="rol" class="form-label">Rol</label>
+                        <label for="funcion" class="form-label">Rol</label>
                         <select class="form-control" name="rol" id="funcion" required>
                             <option value="" disabled selected>Selecciona un rol</option>
                             <option value="administrador">Administrador</option>
                             <option value="produccion">Producción</option>
                             <option value="ventas">Ventas</option>
                         </select>
+                        <div class="invalid-feedback">Por favor selecciona un rol.</div>
                     </div>
-                    <div class="modal-footer" class="text">
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Modificar Usuario</button>
                     </div>

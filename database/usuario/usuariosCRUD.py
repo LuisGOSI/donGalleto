@@ -70,21 +70,37 @@ def registerUsuario():
     email = request.form["email"]
     contrasenia = generate_password_hash(request.form["contrasenia"])
     rol = request.form["rol"]
+
     cur = mysql.connection.cursor()
+    
+    # Verificar si el email ya existe
+    cur.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+    existe = cur.fetchone()
+
+    if existe:
+        cur.close()
+        flash("El correo electrónico ya está registrado.", "danger")  # usa 'danger' en lugar de 'error'
+        return redirect(url_for("usuarios"))
+
+
+    # Insertar empleado
     cur.execute(
         "INSERT INTO empleado (nombreEmpleado, puesto, apellidoP, apellidoM, telefono) VALUES (%s, %s, %s, %s, %s);",
-        (nombreEmpleado, puesto, apellidoP, apellidoM,telefono)
+        (nombreEmpleado, puesto, apellidoP, apellidoM, telefono)
     )
     idEmpleado = cur.lastrowid
+
+    # Insertar usuario
     cur.execute(
         "INSERT INTO usuarios (email, password, rol, idEmpleadoFK) VALUES (%s, %s, %s, %s)",
-        (email,contrasenia,rol, idEmpleado),
+        (email, contrasenia, rol, idEmpleado),
     )
     mysql.connection.commit()
     cur.close()
-    
+
     flash("Usuario registrado con éxito", "success")
     return redirect(url_for("usuarios"))
+
 
 @app.route("/modifyUsuario", methods=["POST"])
 def modifyUsuario():
