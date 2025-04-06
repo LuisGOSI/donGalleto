@@ -5,20 +5,23 @@ from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
-from database.sales import ventas, corteVenta 
+from database.sales import ventas, corteVenta
 from datetime import datetime
 from db import app, mysql
 from sessions import *
+from pdf_ticket import *
 import json
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de la app ///////////////////////////////////////////////////////////////////////
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 @app.route("/")
 def home():
     inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
+
 
 @app.route("/dashboard")
 def admin_dashboard():
@@ -30,12 +33,14 @@ def admin_dashboard():
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
+    ventas = dashboard.getVentasPorDia()
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
         ganancias=ganancias,
         galletas=galletas,
         user=user,
+        ventas=ventas,
     )
 
 
@@ -57,7 +62,10 @@ def produccion_dashboard():
     if user[4] not in ["produccion"]:
         return render_template("pages/error404.html"), 404
     return render_template(
-        "/production/baseProduccion/baseProduccion.html", is_base_template=True, user=user)
+        "/production/baseProduccion/baseProduccion.html",
+        is_base_template=True,
+        user=user,
+    )
 
 
 @app.route("/solicitudProduccion")
@@ -139,7 +147,7 @@ def gestion_insumos():
         proveedores=proveedores,
         formatos_receta=formatos_receta,
         is_base_template=False,
-        user=user
+        user=user,
     )
 
 
@@ -198,7 +206,7 @@ def cliente_dashboard():
 def detalle_producto():
     if session.get("user") is None:
         return render_template("pages/error404.html"), 404
-    galleta_json = request.form.get("galleta") or request.args.get("galleta")  
+    galleta_json = request.form.get("galleta") or request.args.get("galleta")
     galleta = json.loads(galleta_json) if galleta_json else None
 
     return render_template(
@@ -246,16 +254,14 @@ def agregar_al_carrito(id):
 
     session.modified = True
     flash("✅ Producto agregado al carrito", "success")
-    return redirect(
-    url_for("detalle_producto", galleta=json.dumps(producto))
-    )
+    return redirect(url_for("detalle_producto", galleta=json.dumps(producto)))
 
 
-@app.route('/eliminar_carrito/<int:id>/<tipo_venta>', methods=['POST'])
+@app.route("/eliminar_carrito/<int:id>/<tipo_venta>", methods=["POST"])
 def eliminar_del_carrito(id, tipo_venta):
     if "carrito" in session:
         carrito = session["carrito"]
-        
+
         clave = f"{id}_{tipo_venta}"  # Genera la clave en el formato correcto
 
         if clave in carrito:
@@ -265,29 +271,29 @@ def eliminar_del_carrito(id, tipo_venta):
         else:
             print(f"No se encontró la clave: {clave}")  # Depuración si no lo encuentra
 
-    return redirect(url_for('carrito_dashboard'))  # Volver a la vista del carrito
+    return redirect(url_for("carrito_dashboard"))  # Volver a la vista del carrito
 
 
 @app.route("/finalizar_compra", methods=["POST"])
 def finalizar_compra():
-
-    user_id = session["user"][0]  # ID del cliente en sesión
-    carrito = session["carrito"]
+    user_id = session.get("user")[6]  # ID del cliente en sesión
+    carrito = session.get("carrito")
     total_compra = sum(item["precio"] * item["cantidad"] for item in carrito.values())
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     id_empleado = 1  # ID de un empleado específico para ventas en línea
     descuento = 0  # Puedes modificar esto si hay descuentos
-
+    tipo_venta = request.form.get("tipo_venta", "online")  # Por defecto online para clientes
     cur = mysql.connection.cursor()
 
     try:
         # Insertar la venta en la tabla `ventas`
         cur.execute(
             """
-            INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento, tipoVenta, estadoVenta)
+            VALUES (%s, %s, %s, %s, %s,
+                    CASE WHEN %s = 'online' THEN 'pendiente' ELSE 'confirmada' END)
             """,
-            (id_empleado, user_id, fecha_actual, descuento)
+            (id_empleado, user_id, fecha_actual, descuento, tipo_venta, tipo_venta),
         )
         mysql.connection.commit()
 
@@ -297,40 +303,72 @@ def finalizar_compra():
 
         # Insertar detalles de la venta en la tabla `detalleventas`
         for key, item in carrito.items():
+            print(f"Producto en carrito: {item}")
             id_galleta = key.split("_")[0]  # ID del producto (galleta)
-            tipo_venta = item.get("tipo_venta", "unidades")  # Debe ser 'gramaje', 'paquetes' o 'unidades'
-
-            # Validar que el tipo de venta sea correcto según el ENUM
-            if tipo_venta not in ["gramaje", "paquetes", "unidades"]:
-                raise ValueError(f"Tipo de venta inválido: {tipo_venta}")
+            tipo_venta_detalle = item.get(
+                "tipo_venta", "unidad"
+            )  # Debe ser 'gramaje', 'paquetes' o 'unidades'
+            print(f"Tipo de venta: {tipo_venta_detalle}")
 
             cur.execute(
                 """
                 INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido)
                 VALUES (%s, %s, %s, %s, %s)
                 """,
-                (id_venta, id_galleta, item["cantidad"], tipo_venta, item["precio"])
+                (
+                    id_venta,
+                    id_galleta,
+                    item["cantidad"],
+                    tipo_venta_detalle,
+                    item["precio"],
+                ),
             )
+            # Actualizar inventario solo si es venta local (confirmada)
+        if tipo_venta == "local":
+            for key, item in carrito.items():
+                id_galleta = key.split("_")[0]
+                cantidad = item["cantidad"]
+
+                # Convertir a unidades si es paquete
+                if item["tipo_venta"] == "paquete 1kg":
+                    peso_galleta = ventas.revisar_gramaje_por_id(id_galleta)
+                    cantidad = round(cantidad * 1000 / peso_galleta)
+                elif item["tipo_venta"] == "paquete 700gr":
+                    peso_galleta = ventas.revisar_gramaje_por_id(id_galleta)
+                    cantidad = round(cantidad * 700 / peso_galleta)
+
+                cur.execute(
+                    """
+                    UPDATE inventariogalletas 
+                    SET cantidadGalletas = cantidadGalletas - %s
+                    WHERE idProduccionFK = (SELECT idProduccion FROM produccion WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s) LIMIT 1)
+                    AND cantidadGalletas >= %s
+                    AND estadoLote = 'Disponible'
+                    ORDER BY fechaCaducidad ASC
+                    LIMIT 1
+                    """,
+                    (cantidad, id_galleta, cantidad),
+                )
 
         mysql.connection.commit()
 
         # Vaciar el carrito después de la compra
         session.pop("carrito")
         flash("Compra finalizada con éxito.", "success")
+        flash("Id de tu compra: " + str(id_venta), "success")
         return redirect(url_for("carrito_dashboard"))
-
     except Exception as e:
         mysql.connection.rollback()
-        flash(f"Ocurrió un error al procesar la compra: {e}", "danger")
+        flash(f"Ocurrió un error al procesar el pedido: {e}", "danger")
         print(f"❌ Error en la compra: {e}")
         return redirect(url_for("carrito_dashboard"))
 
     finally:
         cur.close()
+        
 
+# Fin de rutas para el modulo de clientes / Sistema de carrito
 
-
-#Fin de rutas para el modulo de clientes / Sistema de carrito
 
 @app.route("/clientes")
 def clientes():
@@ -397,16 +435,18 @@ def receta():
     formatos = cur.fetchall()
 
     # Obtener todas las recetas básicas para la tabla principal
-    cur.execute("""
+    cur.execute(
+        """
         SELECT r.idReceta, r.nombreReceta, r.cantidadHorneadas, r.duracionAnaquel, 
-               g.nombreGalleta
+        g.nombreGalleta
         FROM recetas r
         JOIN galletas g ON r.idGalletaFK = g.idGalleta
         WHERE r.estatus = 1
         ORDER BY g.nombreGalleta, r.nombreReceta
-    """)
+    """
+    )
     recetas = cur.fetchall()
-    
+
     cur.close()
 
     return render_template(
@@ -427,7 +467,6 @@ def carrito_dashboard():
     user = session.get("user")
     if user[4] not in ["cliente"]:
         return render_template("pages/error404.html"), 404
-    
 
     if "carrito" not in session or not session["carrito"]:
         carrito = {}
@@ -461,13 +500,16 @@ def historico_dashboard():
     idCliente = user[0]
     # Obtener el nombre del cliente de la tabla de clientes
     cur = mysql.connection.cursor()
-    cur.execute("""
+    cur.execute(
+        """
     SELECT idUsuario, c.nombreCliente
     FROM clientes c
     INNER JOIN usuarios u
     ON c.idCliente = u.idClienteFK
     WHERE idUsuario = %s;
-    """, (idCliente,))
+    """,
+        (idCliente,),
+    )
     resultado_cliente = cur.fetchone()
     nombreCliente = resultado_cliente[1] if resultado_cliente else "Cliente"
     # Consulta para histórico de compras
@@ -502,9 +544,12 @@ def ventas_dashboard():
         return render_template("pages/error404.html"), 404
     data = cookies.getCookies()
     print("Data de ventas:", data)
-    return render_template("sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True)
+    return render_template(
+        "sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True
+    )
 
-@app.route("/moduloVentas")	
+
+@app.route("/moduloVentas")
 def moduloVentas():
     if "user" not in session:
         return render_template("pages/error404.html"), 404
@@ -512,7 +557,10 @@ def moduloVentas():
     if user[4] not in ["ventas"]:
         return render_template("pages/error404.html"), 404
     data = cookies.getCookies()
-    return render_template("/sales/sales.html", data=data, user=user, is_base_template=False)
+    return render_template(
+        "/sales/sales.html", data=data, user=user, is_base_template=False
+    )
+
 
 @app.route("/listadoVentas")
 def listadoVentas():
@@ -630,9 +678,6 @@ def page_not_found(error):
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de prueba ///////////////////////////////////////////////////////////////////////
 #! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 
 def get_empleados():

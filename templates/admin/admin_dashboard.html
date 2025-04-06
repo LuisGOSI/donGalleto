@@ -3,65 +3,86 @@
 {% block content %}
 <h1 style="margin-top: 10px; font-weight: bold; font-family: 'Charm', cursive;  font-size: 60px; color: #3E302C; ">Dashboard</h1><br>
 
-
-    <div class="charts-section" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; font-family: 'Open Sans', sans-serif; font-weight: bold;  ">
-        <div class="chart-card" style="background: #4E3629; color: white; padding: 15px; border-radius: 8px; width: 45%; font-family: 'Open Sans', sans-serif; font-weight: bold;">
-            <h3 class="text-white fw-bold">Tipos de ventas</h3>
-            <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 250px;"></canvas>
-        </div>
-    
-        <div class="chart-card" style="background: #D7B89D; padding: 15px; border-radius: 8px; width: 45%; font-family: 'Open Sans', sans-serif; font-weight: bold;">
-            <h3 class="fw-bold">Ganancias por los ultimos 5 dias</h3>
-            <canvas id="gananciasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 250px;"></canvas>
-        </div>
-    </div>
-    <br>
-    <div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px; font-family: 'Open Sans', sans-serif; font-weight: bold;"> 
-        <div class="row">
-            <h3 class="text-white text-center fw-bold" style="margin: 10px;">Productos más vendidos TOP 3</h3>
-            {% for galleta in galletas %}
-            <div class="col-md-4">
-                <div class="product">
-                    <h4 class="product-text" style="font-weight: bold;">{{ galleta[1] }}</h4>
+<div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px; font-family: 'Open Sans', sans-serif; font-weight: bold;"> 
+    <div class="row">
+        <h3 class="text-white text-center fw-bold" style="margin: 10px;">Productos más vendidos TOP 3</h3>
+        {% for galleta in galletas %}
+        <div class="col-md-4">
+            <div class="product">
+                <h4 class="product-text" style="font-weight: bold;">{{ galleta[1] }}</h4>
 
 
-                    <div class="product-container">
-                        <img class="imagenGalleta" src="{{ galleta[2] }}" alt="{{ galleta[1] }}">
-                        <div class="product-info">
-                            <div style="font-size: 1.1rem;">Cantidad vendida: {{ galleta[3] | int }} galletas
-                            </div>
-                        <div style="font-size: 1.1rem; ">Ganancias: ${{ galleta[4] }}</div>
+                <div class="product-container">
+                    <img class="imagenGalleta" src="{{ galleta[2] }}" alt="{{ galleta[1] }}">
+                    <div class="product-info">
+                        <div style="font-size: 1.1rem;">Cantidad vendida: <br>{{ galleta[3] | int }} galletas
                         </div>
+                    <div style="font-size: 1.1rem; ">Ganancias Netas:<br> ${{ galleta[4] | round(2) }}</div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<br>
+
+
+
+<div class="charts-section" style="display: flex; justify-content: center; gap: 20px; align-items: flex-start;">
+    <!-- Gráfico de Tipos de Ventas (más pequeño) -->
+    <div class="chart-card" style="background: #4E3629; color: black; padding: 10px; border-radius: 8px; width: 30%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: white; font-weight: bold; margin-top: 0; text-align: center; font-size: 30px;">Tipos de ventas</h3>
+        <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 150px; display: block; padding: 10px;"></canvas>
+    </div>
+
+    <!-- Gráfico de Ganancias (más grande) -->
+    <div class="chart-card" style="background: #D7B89D; padding: 15px; border-radius: 8px;width: 55%; height:485px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <h3 style="color: black; font-weight: bold; margin-top: 0; text-align: center;">Ganancias netas de últimos 5 días</h3>
+        <canvas id="gananciasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%;  display: block;"></canvas>
+    </div>
+</div>
+    
+    <br>
+    <div style="margin-bottom: 20px; font-family: 'Open Sans', sans-serif; padding-left:100px;padding-right:100px;">
+        <div class="chart-card" style="background: #4E3629; padding: 15px; border-radius: 8px; width: 100%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: white; font-weight: bold; margin-top: 0; text-align: center; font-size: 30px;">Ventas diarias</h3>
+            <canvas id="ventasDiariasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 400px; display: block;"></canvas>
         </div>
     </div>
-    
 
-<div class="row mt-4">
-    <h3 class="text-center">Gestión del Sistema</h3>
-    
-    <div class="col-md-4">
-        <div class="card text-white bg-dark mb-3">
-            <div class="card-header">Usuarios</div>
-            <div class="card-body text-center">
-                <a href="/gestionUsuarios" class="btn btn-light">Gestionar usuarios</a>
+
+    <div class="container gestion-container">
+        <h3 class="text-center mb-4"><i class="fas fa-cogs me-2"></i>Gestión del Sistema</h3>
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card text-white bg-dark mb-3 shadow">
+                    <div class="card-header text-center">
+                        <i class="fas fa-users-cog me-2"></i>Usuarios
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="/gestionUsuarios" class="btn btn-light">
+                            <i class="fas fa-user-gear me-1"></i> Gestionar usuarios
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card text-white bg-dark mb-3 shadow">
+                    <div class="card-header text-center">
+                        <i class="fas fa-address-book me-2"></i>Clientes
+                    </div>
+                    <div class="card-body text-center">
+                        <a href="/clientes" class="btn btn-light">
+                            <i class="fas fa-user-friends me-1"></i> Gestionar clientes
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="col-md-4">
-        <div class="card text-white bg-dark mb-3">
-            <div class="card-header">Clientes</div>
-            <div class="card-body text-center">
-                <a href="/clientes" class="btn btn-light">Gestionar clientes</a>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
+    
 <script src="{{ url_for('static', filename='functions/funcionesDashboard.js') }}" defer></script>
 <script id="presentacionesData" type="application/json">
     {{ presentaciones | tojson }}
@@ -69,5 +90,9 @@
 
 <script id="gananciasData" type="application/json">
     {{ ganancias | tojson }}
+</script>
+
+<script id="ventasData" type="application/json">
+    {{ ventas | tojson }}
 </script>
 {% endblock %}

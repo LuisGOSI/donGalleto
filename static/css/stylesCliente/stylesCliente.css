@@ -225,36 +225,6 @@ body {
   align-items: center;
 }
 
-.quantity-selector {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.quantity-btn {
-  background: none;
-  border: none;
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
-  cursor: pointer;
-  color: #666;
-  transition: background-color 0.2s;
-}
-
-.quantity-btn:hover {
-  background: #f5f5f5;
-}
-
-.quantity-input {
-  width: 30px;
-  height: 28px;
-  border: none;
-  text-align: center;
-  font-size: 14px;
-}
 
 .add-to-cart {
   background: var(--primary-color);
