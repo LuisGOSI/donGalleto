@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash,jsonify
+from flask import render_template, request, redirect, url_for, flash,jsonify, session
 from dotenv import load_dotenv
 from datetime import datetime
 from db import app,mysql  
@@ -7,6 +7,11 @@ load_dotenv()
 
 @app.route("/getInveGalletas")   
 def getInveGalletas():
+    if "user" not in session:
+        return render_template("pages/error404.html"), 404
+    user = session.get("user")
+    if user[4] not in ["produccion"]:
+        return render_template("pages/error404.html"), 404
     hoy = datetime.today().date()
     lotesResumen = []
     cur = mysql.connection.cursor()
@@ -35,7 +40,7 @@ def getInveGalletas():
     cur.close()
     galletasTabla = getGalletasTabla()
     galletasResumen = getGalletasResumen()
-    return render_template("/production/InveGalletas.html", galletasTabla=galletasTabla, galletasResumen=galletasResumen, lotesResumen=lotesResumen, hoy=hoy)
+    return render_template("/production/InveGalletas.html", galletasTabla=galletasTabla, galletasResumen=galletasResumen, lotesResumen=lotesResumen, hoy=hoy, user=user)
 
 
 @app.route("/registrarMermaGalleta", methods=["POST"])
