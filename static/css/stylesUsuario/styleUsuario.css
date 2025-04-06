@@ -66,13 +66,12 @@ td {
 .btnEditUsuarios, .btnEliminarUsuarios, .btnActivarUsuarios {
     padding: 8px 16px;
     border-radius: 4px;
-    display: inline-flex;
     align-items: center;
     gap: 8px;
     font-size: 14px;
     cursor: pointer;
     margin-right: 8px;
-    
+    margin-bottom: 10px;
 }
 
 /* -------------------------------------- */

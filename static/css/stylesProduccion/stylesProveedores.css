@@ -19,10 +19,9 @@
 }
 
 .tble-Proveedores tr {
-    border-bottom: 1px solid #000000; /* Añade una línea horizontal gris claro */
+    border-bottom: 1px solid #000000;
 }
 
-/* Opcional: Si no quieres que la última fila tenga borde inferior */
 .tble-Proveedores tr:last-child {
     border-bottom: none;
 }
@@ -37,6 +36,7 @@
     font-size: 14px;
     cursor: pointer;
     margin-right: 8px;
+    margin-bottom: 10px;
 }
 
 /* -------------------------------------- */
