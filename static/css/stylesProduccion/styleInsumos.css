@@ -152,7 +152,7 @@ td {
 /* Botón de Formato de Receta (Amarillo) */
 /* -------------------------------------- */
 .btn-recipe {
-    background-color: #fff59d; /* Amarillo claro */
+    background-color: #EED8C5; /* Amarillo claro */
     color: #f57f17;
 }
 
@@ -178,12 +178,12 @@ td {
 }
 
 .btn-edit:hover {
-    background-color: #1e88e5; /* Azul brillante */
+    background-color: #d8e9f7; /* Azul brillante */
     cursor: pointer;
 }
 
 /* -------------------------------------- */
-/* Botón de Eliminar (Rojo)            */
+/* Botón de Eliminar Presentación (Rojo) */
 /* -------------------------------------- */
 .btn-delete {
     background-color: #f44336; /* Rojo */

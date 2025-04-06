@@ -40,17 +40,41 @@
     
 }
 
+
+/* -------------------------------------- */
+/* Botón Editar (Azul)                    */
+/* -------------------------------------- */
 .btnEditClientes {
-    background-color: #f2fa5e;
-    border: 1px solid #b7c102;
-    color: #000000;
+    background-color: #add8e6; /* Azul claro */
+    color: #2196F3;
+    border: none;
 }
 
-.btnEliminarClientes {
-    background-color: #f8d7da;
-    border: 1px solid #f5c2c7;
-    color: #842029;
+.btnEditClientes .icon {
+    margin-right: 8px;
 }
+
+.btnEditClientes:hover {
+    background-color: #d8e9f7; /* Azul brillante */
+}
+
+/* -------------------------------------- */
+/* Botón Eliminar (Rojo)                  */
+/* -------------------------------------- */
+.btnEliminarClientes {
+    background-color: #f44336; /* Rojo */
+    color: white;
+    border: none;
+}
+
+.btnEliminarClientes .icon {
+    margin-right: 8px;
+}
+
+.btnEliminarClientes:hover {
+    background-color: #e53935; /* Rojo oscuro */
+}
+
 
 .btnActivarClientes {
     background-color: #28a745; /* Color verde para activar */
@@ -64,14 +88,6 @@
     gap: 8px;
     padding: 8px 16px;
     transition: background-color 0.3s ease;
-}
-
-.btnEditClientes:hover {
-    background-color: #ffe633;
-}
-
-.btnEliminarClientes:hover {
-    background-color: #f1aeb5;
 }
 
 .btnActivarClientes:hover {
