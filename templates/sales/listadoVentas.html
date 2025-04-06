@@ -2,117 +2,266 @@
 {% block title %}Listado de ventas{% endblock %}
 {% block content %}
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <div class="container sales-container">
     <h1 class="title-listVentas">Listado de ventas</h1>
+    <!-- Botón y modal de filtros -->
+    <div class="filter-section mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <button type="button" class="btn btn-filter" data-bs-toggle="modal" data-bs-target="#filterModal">
+                <i class="fas fa-filter">  Filtrar</i>
+            </button>
+        </div>    
+        
+        <!-- Modal de Bootstrap para los filtros -->
+        <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #3E302C; color: white;">
+                        <h5 class="modal-title" id="filterModalLabel"><i class="fas fa-filter me-2"></i>Filtrar ventas</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs" id="filterTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="day-tab" data-bs-toggle="tab" data-bs-target="#day-tab-pane" type="button" role="tab">
+                                    <i class="fas fa-calendar-day me-1"></i> Día
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="week-tab" data-bs-toggle="tab" data-bs-target="#week-tab-pane" type="button" role="tab">
+                                    <i class="fas fa-calendar-week me-1"></i> Semana
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="month-tab" data-bs-toggle="tab" data-bs-target="#month-tab-pane" type="button" role="tab">
+                                    <i class="fas fa-calendar-alt me-1"></i> Mes
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="range-tab" data-bs-toggle="tab" data-bs-target="#range-tab-pane" type="button" role="tab">
+                                    <i class="fas fa-calendar-range me-1"></i> Rango
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content p-3 border border-top-0 rounded-bottom" id="filterTabContent">
+                            <!-- Filtro por día específico -->
+                            <div class="tab-pane fade show active" id="day-tab-pane" role="tabpanel" tabindex="0">
+                                <div class="mb-3">
+                                    <label for="specificDay" class="form-label">Seleccionar día:</label>
+                                    <input type="date" class="form-control" id="specificDay">
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro por semana específica -->
+                            <div class="tab-pane fade" id="week-tab-pane" role="tabpanel" tabindex="0">
+                                <div class="mb-3">
+                                    <label for="weekSelection" class="form-label">Seleccionar semana:</label>
+                                    <input type="week" class="form-control" id="weekSelection">
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro por mes específico -->
+                            <div class="tab-pane fade" id="month-tab-pane" role="tabpanel" tabindex="0">
+                                <div class="mb-3">
+                                    <label for="monthSelection" class="form-label">Seleccionar mes:</label>
+                                    <input type="month" class="form-control" id="monthSelection">
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro por rango de fechas -->
+                            <div class="tab-pane fade" id="range-tab-pane" role="tabpanel" tabindex="0">
+                                <div class="mb-3">
+                                    <label for="startDate" class="form-label">Fecha inicio:</label>
+                                    <input type="date" class="form-control" id="startDate">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="endDate" class="form-label">Fecha fin:</label>
+                                    <input type="date" class="form-control" id="endDate">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-clear-filter" id="clearFilters">
+                            <i class="fas fa-broom me-1"></i> Limpiar filtros
+                        </button>
+                        <button type="button" class="btn btn-apply-filter" id="applyFilters">
+                            <i class="fas fa-check-circle me-1"></i> Aplicar filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <div class="sales-list">
-        <details class="sale-item">
-            <summary class="sale-summary">
-                <div class="sale-header">
-                    <div class="sale-number">Venta No. 1</div>
-                    <div class="sale-date">12/11/2025 12:15</div>
-                    <div class="sale-total">Total: $400</div>
+        {% if ventas %}
+            {% for venta in ventas %}
+            <details class="sale-item">
+                <summary class="sale-summary">
+                    <div class="sale-header">
+                        <div class="sale-number">Venta No. {{ venta.idVenta }}</div>
+                        <div class="sale-date">{{ venta.fechaVenta.strftime('%d/%m/%Y %H:%M') }}</div>
+                        <div class="sale-total">Total: ${{ "%.2f"|format(venta.totalVenta) }}</div>
+                    </div>
+                </summary>
+                <div class="sale-details">
+                    <table class="sale-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Forma de venta</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in venta.productos %}
+                            <tr class="{{ 'row-light' if loop.index0 is even else 'row-dark' }}">
+                                <td>{{ producto.nombre }}</td>
+                                <td>{{ producto.tipoVenta }}</td>
+                                <td>{{ producto.cantidad }}</td>
+                                <td>${{ "%.2f"|format(producto.precio) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="row-dark">
+                                <td colspan="3" class="text-end">Subtotal:</td>
+                                <td class="text-left">${{ "%.2f"|format(venta.subtotal) }}</td>
+                            </tr>
+                            <tr class="row-light">
+                                <td colspan="3" class="text-end">Descuento:</td>
+                                <td class="text-left">{{ "%.2f"|format(venta.descuento) }}%</td>
+                            </tr>
+                            <tr class="row-dark total-row">
+                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                <td class="text-left"><strong>${{ "%.2f"|format(venta.totalVenta) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
-            </summary>
-            <div class="sale-details">
-                <table class="sale-table">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Forma de venta</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="row-light">
-                            <td>Galleta Oreo</td>
-                            <td>Gramaje</td>
-                            <td>500</td>
-                            <td>$300</td>
-                        </tr>
-                        <tr class="row-dark">
-                            <td>Galleta de Mantequilla</td>
-                            <td>Unidad</td>
-                            <td>10</td>
-                            <td>$100</td>
-                        </tr>
-                        <tr class="row-light">
-                            <td>Galleta de Chocolate</td>
-                            <td>Dinero</td>
-                            <td>200</td>
-                            <td>$200</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr class="row-dark">
-                            <td colspan="3" class="text-end">Subtotal:</td>
-                            <td class="text-left">$500</td>
-                        </tr>
-                        <tr class="row-light">
-                            <td colspan="3" class="text-end">Descuento:</td>
-                            <td class="text-left">$100</td>
-                        </tr>
-                        <tr class="row-dark total-row">
-                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                            <td class="text-left"><strong>$400</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
+            </details>
+            {% endfor %}
+        {% else %}
+            <div class="no-ventas">
+                {% if error %}
+                    <p>Error: {{ error }}</p>
+                {% else %}
+                    <div class="no-sales-message">
+                        <div class="no-sales-content">
+                            <i class="fas fa-box-open"></i>
+                            <p>No hay ventas registradas</p>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
-        </details>
-        
-        <!-- Segunda venta (ejemplo) -->
-        <details class="sale-item">
-            <summary class="sale-summary">
-                <div class="sale-header">
-                    <div class="sale-number">Venta No. 2</div>
-                    <div class="sale-date">13/11/2025 14:30</div>
-                    <div class="sale-total">Total: $650</div>
-                </div>
-            </summary>
-            <div class="sale-details">
-                <table class="sale-table">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Forma de venta</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="row-light">
-                            <td>Pastel de Chocolate</td>
-                            <td>Unidad</td>
-                            <td>1</td>
-                            <td>$450</td>
-                        </tr>
-                        <tr class="row-dark">
-                            <td>Galleta de Coco</td>
-                            <td>Gramaje</td>
-                            <td>200</td>
-                            <td>$200</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr class="row-dark">
-                            <td colspan="3" class="text-end">Subtotal:</td>
-                            <td class="text-left">$650</td>
-                        </tr>
-                        <tr class="row-light">
-                            <td colspan="3" class="text-end">Descuento:</td>
-                            <td class="text-left">$0</td>
-                        </tr>
-                        <tr class="row-dark total-row">
-                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                            <td class="text-left"><strong>$650</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </details>
+        {% endif %}
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Función para cargar ventas con filtros
+        function loadSales(filterType = null, filterValue = null) {
+            let url = '/listadoVentas';
+            
+            if (filterType && filterValue) {
+                url += `?filter_type=${filterType}&filter_value=${encodeURIComponent(filterValue)}`;
+            }
+            
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    // Parsear el HTML y extraer solo la parte de las ventas
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newSalesList = doc.querySelector('.sales-list').innerHTML;
+                    
+                    // Reemplazar el contenido actual
+                    document.querySelector('.sales-list').innerHTML = newSalesList;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.querySelector('.sales-list').innerHTML = `
+                        <div class="no-ventas">
+                            <p>Error al cargar las ventas: ${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        // Lógica para aplicar filtros
+        document.getElementById('applyFilters').addEventListener('click', function() {
+            const activeTab = document.querySelector('#filterTabs .nav-link.active').id;
+            let filterType, filterValue;
+            
+            if (activeTab === 'day-tab') {
+                filterType = 'day';
+                filterValue = document.getElementById('specificDay').value;
+                if (!filterValue) {
+                    alert('Por favor selecciona un día');
+                    return;
+                }
+            } else if (activeTab === 'week-tab') {
+                filterType = 'week';
+                const weekInput = document.getElementById('weekSelection').value;
+                if (!weekInput) {
+                    alert('Por favor selecciona una semana');
+                    return;
+                }
+                filterValue = weekInput;
+            } else if (activeTab === 'month-tab') {
+                filterType = 'month';
+                const monthInput = document.getElementById('monthSelection').value;
+                if (!monthInput) {
+                    alert('Por favor selecciona un mes');
+                    return;
+                }
+                filterValue = monthInput;
+            } else if (activeTab === 'range-tab') {
+                filterType = 'range';
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                if (!startDate || !endDate) {
+                    alert('Por favor selecciona ambas fechas');
+                    return;
+                }
+                
+                if (new Date(startDate) > new Date(endDate)) {
+                    alert('La fecha de inicio no puede ser mayor a la fecha final');
+                    return;
+                }
+                
+                filterValue = `${startDate}|${endDate}`;
+            }
+            
+            // Aplicar filtro
+            loadSales(filterType, filterValue);
+            
+            // Cerrar el modal
+            bootstrap.Modal.getInstance(document.getElementById('filterModal')).hide();
+        });
+        
+        // Limpiar filtros
+        document.getElementById('clearFilters').addEventListener('click', function() {
+            // Resetear inputs
+            document.getElementById('specificDay').value = '';
+            document.getElementById('weekSelection').value = '';
+            document.getElementById('monthSelection').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            
+            // Cargar ventas sin filtros
+            loadSales();
+            
+            // Cerrar el modal
+            bootstrap.Modal.getInstance(document.getElementById('filterModal')).hide();
+        });
+    });
+</script>
 {% endblock %}
