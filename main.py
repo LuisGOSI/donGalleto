@@ -22,7 +22,6 @@ def home():
     inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
 
-
 @app.route("/dashboard")
 def admin_dashboard():
     if "user" not in session:
