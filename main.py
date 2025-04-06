@@ -5,7 +5,7 @@ from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
-from database.sales import ventas, corteVenta, listadoVentas 
+from database.sales import ventas, corteVenta 
 from datetime import datetime
 from db import app, mysql
 from sessions import *
@@ -415,7 +415,7 @@ def receta():
         galletas=galletas,
         insumos=insumos,
         formatos=formatos,
-        recetas=recetas
+        recetas=recetas,
         user=user,
     )
 
