@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.style.display = 'block';
             
             try {
-                // Obtener datos sin mostrar loader
+                // Obtener datos
                 const [inventarioResponse, recetasResponse] = await Promise.all([
                     fetch(`/api/inventario-galleta/${currentGalletaId}`),
                     fetch(`/api/recetas-galleta/${currentGalletaId}`)
