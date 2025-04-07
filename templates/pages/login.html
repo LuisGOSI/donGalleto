@@ -28,18 +28,34 @@
 	
 	<div class="signup">
 		<form method="POST" action="/register">
-			<label for="chk" aria-hidden="true">Registrarse</label>
+			<label class="registrarse" for="chk" aria-hidden="true">Registrarse</label>
 			<input type="text" name="name" placeholder="Nombre" required />
 			<input type="email" name="email" placeholder="Email" required />
 			<input type="number" name="phone" placeholder="Telefono" required />
 			<input type="password" name="password" placeholder="Contraseña" required />
 			<div class="captcha-container">
-				{{captcha_html(captcha)|safe}}
+				{{ captcha_html(captcha)|safe }}
 			</div>
+			<div class="captcha-label">Verifica que no eres un robot</div>
 			<input type="hidden" name="role" value="cliente" />
 			<button type="submit" class="buttonLogin">Registrarse</button>
 		</form>
 	</div>
 </div>
+
+<script>
+	document.querySelector('.registrarse').addEventListener('click', function() {
+    const signup = document.querySelector('.signup');
+    
+    // Alterna entre mostrar y ocultar el scroll al hacer clic en "Registrarse"
+    if (signup.style.overflowY === 'auto') {
+        signup.style.overflowY = 'hidden'; // Oculta el scroll
+    } else {
+        signup.style.overflowY = 'auto'; // Muestra el scroll
+    }
+});
+
+
+</script>
 
 {% endblock %}
