@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, session
-from database.production import insumosCRUD, gestionRecetas
+from database.production import insumosCRUD, gestionRecetas, solicitudProduccion
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos
@@ -20,7 +20,6 @@ from flask_mail import Message
 
 @app.route("/")
 def home():
-    inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
 
 
@@ -35,6 +34,8 @@ def admin_dashboard():
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
     ventas = dashboard.getVentasPorDia()
+    inversion=dashboard.getInversionGalletas()
+    recomendada=dashboard.getGalletaRecomendad()
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
@@ -42,6 +43,8 @@ def admin_dashboard():
         galletas=galletas,
         user=user,
         ventas=ventas,
+        inversion=inversion,
+        recomendada=recomendada,
     )
 
 

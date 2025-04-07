@@ -7,7 +7,6 @@ body{
     background: url(../img/fondoGalleta.jpeg) no-repeat center center/cover;
     min-height: 100vh;
     font-family: 'Jost', sans-serif;
-    /* background: linear-gradient(to bottom, #3e2723, #4e342e, #5d4037); */
 }
 
 .button-back-container{
@@ -47,12 +46,33 @@ body{
 
 .signup{
     height: 460px;
+    max-height: 90vh;
     background: #eee;
     border-radius: 60% / 10%;
     transform: translateY(-180px);
     transition: .8s ease-in-out;
+    overflow-y: hid;
+    padding-bottom: 80px;
+
 }
 
+.registrarse{
+    overflow-y: hidden;
+}
+
+/* ----------------------------- Personalización de la barra de desplazamiento ---------------------------- */
+.signup::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.signup::-webkit-scrollbar-thumb {
+    background-color: #4d3730; 
+    border-radius: 10px; 
+}
+.signup::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+}
 .signup label{
     color: #6d4c41;
     transform: scale(.6);
@@ -118,4 +138,58 @@ input{
 }
 #chk:checked ~ .login label{
     transform: scale(.6);
+}
+
+/* ----------------------------- Estilo de captcha ---------------------------- */
+.captcha-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-left: 10px;
+    flex-direction: column; /* Cambiado para que la imagen esté arriba */
+}
+.captcha-container img{
+    width: 200px;
+    height: 60px;
+    border-radius: 5px;
+}
+.captcha-container input{
+    width: 60%;
+    height: 10px;
+    background: #e0dede;
+    justify-content: center;
+    display: flex;
+    margin: 20px auto;
+    padding: 12px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+}
+.captcha-container button{
+    width: 60%;
+    height: 40px;
+    margin: 10px auto;
+    justify-content: center;
+    display: block;
+    color: #fff;
+    background: #4d3730;
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 30px;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    transition: .2s ease-in;
+    cursor: pointer;
+}
+
+.captcha-label{
+    color: #4d3730;
+    font-size: 17px;
+    justify-content: center;
+    display: flex;
+    margin: 20px auto;
+    font-weight: bold;
+    transition: .5s ease-in-out;
 }

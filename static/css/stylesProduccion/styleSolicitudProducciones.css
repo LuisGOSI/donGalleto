@@ -184,7 +184,7 @@ margin-bottom: 10px;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
     background-color: rgba(0,0,0,0.4);
 }
 
@@ -194,6 +194,8 @@ margin-bottom: 10px;
     padding: 20px;
     border-radius: 5px;
     width: 400px;
+    max-height: 90vh; /* Limita la altura máxima */
+    overflow-y: auto; /* Solo scroll interno si es necesario */
     position: relative;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
@@ -249,4 +251,57 @@ margin-bottom: 10px;
     padding: 10px 15px;
     border-radius: 10px;
     cursor: pointer;
+}
+
+/* Añade esto para mejorar el desplazamiento en móviles */
+@media (max-height: 600px) {
+    .modal-content {
+        margin: 2% auto;
+        max-height: 96vh;
+    }
+}
+
+
+
+/* Estilos para SweetAlert2 personalizados */
+.swal2-popup {
+    border-radius: 15px !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.swal2-title {
+    color: #7f4e1e !important;
+    font-weight: bold !important;
+}
+
+.swal2-confirm {
+    background-color: #009E0F !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-confirm:hover {
+    background-color: #007A0C !important;
+    transform: scale(1.05) !important;
+}
+
+.swal2-cancel {
+    transition: all 0.3s ease !important;
+}
+
+.swal2-cancel:hover {
+    transform: scale(1.05) !important;
+}
+
+.swal2-icon.swal2-warning {
+    color: #ff9800 !important;
+    border-color: #ff9800 !important;
+}
+
+.swal2-icon.swal2-error [class^=swal2-x-mark-line] {
+    background-color: #d33 !important;
+}
+
+/* Prevenir doble scroll */
+body.modal-open {
+    overflow: hidden;
 }
