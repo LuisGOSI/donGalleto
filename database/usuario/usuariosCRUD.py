@@ -70,21 +70,37 @@ def registerUsuario():
     email = request.form["email"]
     contrasenia = generate_password_hash(request.form["contrasenia"])
     rol = request.form["rol"]
+
     cur = mysql.connection.cursor()
+    
+    # Verificar si el email ya existe
+    cur.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+    existe = cur.fetchone()
+
+    if existe:
+        cur.close()
+        flash("El correo electrónico ya está registrado.", "danger")  # usa 'danger' en lugar de 'error'
+        return redirect(url_for("usuarios"))
+
+
+    # Insertar empleado
     cur.execute(
         "INSERT INTO empleado (nombreEmpleado, puesto, apellidoP, apellidoM, telefono) VALUES (%s, %s, %s, %s, %s);",
-        (nombreEmpleado, puesto, apellidoP, apellidoM,telefono)
+        (nombreEmpleado, puesto, apellidoP, apellidoM, telefono)
     )
     idEmpleado = cur.lastrowid
+
+    # Insertar usuario
     cur.execute(
         "INSERT INTO usuarios (email, password, rol, idEmpleadoFK) VALUES (%s, %s, %s, %s)",
-        (email,contrasenia,rol, idEmpleado),
+        (email, contrasenia, rol, idEmpleado),
     )
     mysql.connection.commit()
     cur.close()
-    
+
     flash("Usuario registrado con éxito", "success")
     return redirect(url_for("usuarios"))
+
 
 @app.route("/modifyUsuario", methods=["POST"])
 def modifyUsuario():
@@ -135,6 +151,11 @@ def get_users(estado=1):
 
 @app.route("/getUsuarios", methods=["GET"])
 def get_users_json():
+    if session.get("user") is None:
+        return render_template("pages/error404.html"), 404
+    user = session.get("user")
+    if user[4] != "administrador":
+        return render_template("pages/error404.html"), 404
     estado = request.args.get("estado", default=1, type=int)
     usuarios = get_users(estado)
     return {"usuarios": usuarios}

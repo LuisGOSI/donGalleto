@@ -125,6 +125,11 @@ def get_proveedores(estado=1):
 
 @app.route("/getProveedores", methods=["GET"])
 def get_proveedores_json():
+    if session.get("user") is None:
+        return render_template("pages/error404.html"), 404
+    user = session.get("user")
+    if user[4] != "produccion":
+        return render_template("pages/error404.html"), 404
     estado = request.args.get("estado", default=1, type=int)
     proveedores = get_proveedores(estado)
     return {"proveedores": proveedores}

@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, session
-from database.production import insumosCRUD, gestionRecetas
+from database.production import insumosCRUD, gestionRecetas, solicitudProduccion
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos, moduloProduccion
@@ -19,7 +19,6 @@ import json
 
 @app.route("/")
 def home():
-    inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
 
 
@@ -34,6 +33,8 @@ def admin_dashboard():
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
     ventas = dashboard.getVentasPorDia()
+    inversion=dashboard.getInversionGalletas()
+    recomendada=dashboard.getGalletaRecomendad()
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
@@ -41,6 +42,8 @@ def admin_dashboard():
         galletas=galletas,
         user=user,
         ventas=ventas,
+        inversion=inversion,
+        recomendada=recomendada,
     )
 
 
@@ -527,23 +530,31 @@ def historico_dashboard():
     user = session.get("user")
     if user[4] not in ["cliente"]:
         return render_template("pages/error404.html"), 404
-    idCliente = user[0]
-    # Obtener el nombre del cliente de la tabla de clientes
+    
+    idUsuario = user[0]
+    # Obtener el id del cliente y nombre de la tabla clientes
     cur = mysql.connection.cursor()
     cur.execute(
         """
-    SELECT idUsuario, c.nombreCliente
+    SELECT c.idCliente, c.nombreCliente
     FROM clientes c
     INNER JOIN usuarios u
     ON c.idCliente = u.idClienteFK
     WHERE idUsuario = %s;
     """,
-        (idCliente,),
+        (idUsuario,),
     )
     resultado_cliente = cur.fetchone()
-    nombreCliente = resultado_cliente[1] if resultado_cliente else "Cliente"
+    
+    if resultado_cliente:
+        idCliente = resultado_cliente[0]  # Ahora usamos el idCliente de la tabla clientes
+        nombreCliente = resultado_cliente[1]
+    else:
+        return render_template("pages/error404.html"), 404  # Si no hay cliente asociado
+    
     # Consulta para histórico de compras
-    cur.execute("SELECT * FROM v_historicoCompras WHERE idCliente = %s", (idCliente,))
+    cur.execute("SELECT * FROM v_historicoCompras where idCliente = %s", (idCliente,))
+    print("ID del cliente:", idCliente)
     column_names = [column[0] for column in cur.description]
     historico_compras = []
     for row in cur.fetchall():
@@ -554,7 +565,6 @@ def historico_dashboard():
     cur.close()
     # Verificar si hay compras
     historico = len(historico_compras) > 0
-
     return render_template(
         "/client/Historico.html",
         is_base_template=False,
@@ -595,14 +605,101 @@ def moduloVentas():
 @app.route("/listadoVentas")
 def listadoVentas():
     if "user" not in session:
+        return redirect(url_for("login"))
+    active_user = session.get("user")
+    if active_user[4] not in ["ventas", "administrador"]:
         return render_template("pages/error404.html"), 404
-    user = session.get("user")
-    if user[4] not in ["ventas"]:
-        return render_template("pages/error404.html"), 404
-    return render_template(
-        "/sales/listadoVentas.html", user=user, is_base_template=False
-    )
-
+    
+    cur = mysql.connection.cursor()
+    
+    try:
+        # Consulta base
+        query = """
+            SELECT 
+                v.idVenta,
+                v.fechaVenta,
+                v.descuento,
+                SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido) AS subtotal,
+                SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido) * (1 - v.descuento/100) AS totalVenta,
+                GROUP_CONCAT(CONCAT_WS('||', g.nombreGalleta, dv.tipoVenta, dv.cantidadVendida, dv.PrecioUnitarioVendido) SEPARATOR ';;') AS productos
+            FROM ventas v
+            JOIN detalleventas dv ON v.idVenta = dv.idVentaFK
+            JOIN galletas g ON dv.idGalletaFK = g.idGalleta
+            {where_clause}
+            GROUP BY v.idVenta
+            ORDER BY v.fechaVenta DESC
+            LIMIT 100
+        """
+        
+        # Obtener parámetros de filtro
+        filter_type = request.args.get('filter_type')
+        filter_value = request.args.get('filter_value')
+        
+        where_clause = ""
+        params = []
+        
+        if filter_type and filter_value:
+            if filter_type == 'day':
+                where_clause = "WHERE DATE(v.fechaVenta) = %s"
+                params.append(filter_value)
+            elif filter_type == 'week':
+                year, week = filter_value.split('-W')
+                where_clause = """
+                    WHERE YEAR(v.fechaVenta) = %s 
+                    AND WEEK(v.fechaVenta, 3) = %s
+                """
+                params.extend([year, week])
+            elif filter_type == 'month':
+                year, month = filter_value.split('-')
+                where_clause = """
+                    WHERE YEAR(v.fechaVenta) = %s 
+                    AND MONTH(v.fechaVenta) = %s
+                """
+                params.extend([year, month])
+            elif filter_type == 'range':
+                start_date, end_date = filter_value.split('|')
+                where_clause = "WHERE DATE(v.fechaVenta) BETWEEN %s AND %s"
+                params.extend([start_date, end_date])
+        
+        # Ejecutar consulta
+        cur.execute(query.format(where_clause=where_clause), params)
+        
+        ventas = []
+        for row in cur.fetchall():
+            # Procesar productos (igual que antes)
+            productos_raw = row[5].split(';;') if row[5] else []
+            productos = []
+            for prod in productos_raw:
+                partes = prod.split('||')
+                productos.append({
+                    'nombre': partes[0],
+                    'tipoVenta': partes[1],
+                    'cantidad': int(partes[2]),
+                    'precio': float(partes[3])
+                })
+            
+            ventas.append({
+                'idVenta': row[0],
+                'fechaVenta': row[1],
+                'descuento': float(row[2]),
+                'subtotal': float(row[3]),
+                'totalVenta': float(row[4]),
+                'productos': productos
+            })
+            
+        return render_template("/sales/listadoVentas.html", 
+                             user=session.get("user"),
+                             ventas=ventas,
+                             is_base_template=False)
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return render_template("/sales/listadoVentas.html", 
+                             user=session.get("user"),
+                             ventas=[],
+                             error=str(e))
+    finally:
+        cur.close()
 
 @app.route("/sobreNosotros")
 def about_us():
