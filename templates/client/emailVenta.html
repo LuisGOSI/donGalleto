@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmación de compra</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+  <div style="width: 100%; max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <div style="background-color: #333; color: #fff; padding: 15px; text-align: center; font-size: 24px; border-radius: 8px 8px 0 0;">
+      ¡Gracias por tu compra!
+    </div>
+
+    <div style="margin-top: 20px;">
+      <h2 style="font-size: 18px; color: #333;">Detalles de tu pedido</h2>
+
+      <!-- Mostrar el id de la compra -->
+      <p><strong>ID de Compra:</strong> {{ id_venta }}</p>
+
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="padding: 12px; text-align: left; background-color: #f8f8f8; border: 1px solid #ddd;">Producto</th>
+            <th style="padding: 12px; text-align: left; background-color: #f8f8f8; border: 1px solid #ddd;">Precio</th>
+            <th style="padding: 12px; text-align: left; background-color: #f8f8f8; border: 1px solid #ddd;">Cantidad</th>
+            <th style="padding: 12px; text-align: left; background-color: #f8f8f8; border: 1px solid #ddd;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if carrito %}
+            {% for key, item in carrito.items() %}
+              <tr>
+                <td style="padding: 12px; border: 1px solid #ddd;">{{ item["nombre"] }}</td>
+                <td style="padding: 12px; border: 1px solid #ddd;">$ {{ "%.2f"|format(item["precio"]) }}</td>
+                <td style="padding: 12px; border: 1px solid #ddd;">{{ item["cantidad"] }} {{ item.get("tipo_venta", "N/A") }}</td>
+                <td style="padding: 12px; border: 1px solid #ddd;">$ {{ "%.2f"|format(item["precio"] * item["cantidad"]) }}</td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" style="padding: 12px; text-align: center; border: 1px solid #ddd;">Tu carrito está vacío.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <div style="text-align: right; font-size: 18px; font-weight: bold; margin-top: 10px;">
+        <p>Total: $ {{ "%.2f"|format(total_precio) }}</p>
+      </div>
+    </div>
+
+    <div style="text-align: center; font-size: 12px; color: #888; margin-top: 20px;">
+      <p>© 2025 Tienda Artesanal | Todos los derechos reservados</p>
+    </div>
+  </div>
+</body>
+</html>
