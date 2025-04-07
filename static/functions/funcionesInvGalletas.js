@@ -140,3 +140,90 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(error => console.error("Error al cargar la tabla inicial:", error));
 });
+
+// -------------------------------
+// FUNCIONES PARA SANITIZAR ENTRADAS EN EL MODAL DE MERMAS
+// -------------------------------
+(function () {
+    'use strict';
+    const form = document.getElementById('formRegistrarMerma');
+
+    // Función de sanitización
+    function sanitizeInput(input) {
+        if (input.value && input.type !== 'password') {
+            input.value = input.value
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    }
+
+    // Función de validación
+    function validateField(input) {
+        const isValid = input.checkValidity();
+
+        if (isValid) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+
+        return isValid;
+    }
+
+    // Detectar todos los campos de entrada
+    function applyValidationListeners(container) {
+        const inputs = container.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', function () {
+                clearTimeout(this.debounceTimer);
+                this.debounceTimer = setTimeout(() => {
+                    validateField(this);
+                }, 400);
+            });
+
+            input.addEventListener('blur', function () {
+                sanitizeInput(this);
+                validateField(this);
+            });
+
+            input.addEventListener('focus', function () {
+                if (this.title) {
+                    this.setAttribute('data-original-title', this.title);
+                }
+            });
+        });
+    }
+
+    applyValidationListeners(form); // Aplicar en los elementos iniciales
+
+    // Formulario completo al enviar
+    form.addEventListener('submit', function (event) {
+        const allInputs = form.querySelectorAll('input, select, textarea');
+        let isFormValid = true;
+
+        allInputs.forEach(input => {
+            sanitizeInput(input);
+            if (!validateField(input)) {
+                isFormValid = false;
+            }
+        });
+
+        if (!isFormValid) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const firstInvalid = form.querySelector('.is-invalid');
+            if (firstInvalid) firstInvalid.focus();
+
+            const errorAlert = document.getElementById('formRegistrarMermaErrorAlert');
+            errorAlert.innerHTML = '<div class="alert alert-danger">Por favor, corrige los errores marcados en el formulario.</div>';
+        }
+
+        form.classList.add('was-validated');
+    }, false);
+})();
