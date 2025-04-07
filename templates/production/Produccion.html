@@ -30,26 +30,24 @@
 </div>
 
 <div class="product-grid">
-
-    {% block catalogo %}
-
     {% for galleta in galletas %}
     <div class="product-card">
         <div class="product-container">
-            <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
+            <img src="/{{ galleta[4] }}" alt="{{ galleta[1] }}">
             <div class="product-details">
                 <h6>{{ galleta[1] }}</h6>
                 <div class="product-actions">
-                    <button class="btn custom-buttonReceta">Receta de galleta</button>
+                    <button class="btn custom-buttonReceta" 
+                            onclick="buscarRecetas({{ galleta[0] }})">Receta de galleta</button>
                     <button class="btn custom-buttonProducir">Producir</button>
                 </div>
             </div>
         </div>
     </div>
     {% endfor %}
-    {% endblock %}
-    </div>
 </div>
+</div>
+
 
 
 {% endblock %}

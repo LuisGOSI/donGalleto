@@ -1,4 +1,4 @@
-// ---------------------------------------------------- Funcion para modal de recetas ----------------------------------------------------
+// Modal setup 
 document.addEventListener('DOMContentLoaded', () => {
     const modalContainer = document.createElement('div');
     modalContainer.id = 'recipeModal';
@@ -10,82 +10,81 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     modalContainer.classList.add('modal');
     document.body.appendChild(modalContainer);
+    
     const modal = document.getElementById('recipeModal');
     const modalContent = document.getElementById('recipe-content');
     const closeButton = modal.querySelector('.close-button');
-
-    function openModal(receta) {
-        modalContent.innerHTML = `
-            <h2>${receta.nombre}</h2>
-            <h3>Ingredientes:</h3>
-            <ul>
-                ${receta.ingredientes.map(ingrediente => `<li>${ingrediente}</li>`).join('')}
-            </ul>
-            <h3>Instrucciones:</h3>
-            <ol>
-                ${receta.instrucciones.map(instruccion => `<li>${instruccion}</li>`).join('')}
-            </ol>
-        `;
+    
+    // Función para buscar recetas 
+// Función para buscar recetas 
+window.buscarRecetas = async function(galletaId) {
+    try {
+        modalContent.innerHTML = `<p>Cargando recetas...</p>`;
         modal.classList.add('show-modal');
+        
+        const response = await fetch(`/buscarRecetasPorId/${galletaId}`);
+        const data = await response.json();
+        
+        if (data.error) {
+            modalContent.innerHTML = `<p>${data.error}</p>`;
+            return;
+        }
+        
+        let html = `<h2>Recetas para ${data.galleta}</h2>`;
+        
+        if (data.recetas.length === 0) {
+            html += `<p>No hay recetas disponibles para esta galleta.</p>`;
+        } else {
+            let index = 1;
+            data.recetas.forEach(receta => {
+                html += `
+                    <div class="receta">
+                        <br>
+                        <h3>${index++}-${receta.nombre}</h3>
+                        <h4>Ingredientes:</h4>
+                        <ul>
+                            ${receta.ingredientes.map(ing => {
+                                // Mostrar de diferente forma según si tiene conversión o no
+                                if (ing.tiene_conversion) {
+                                    return `<li>${ing.cantidad_formato} ${ing.formato}${ing.cantidad_formato > 1 ? 's' : ''} de ${ing.nombre} | ${ing.cantidad_exacta} ${ing.unidad}${ing.cantidad_exacta > 1 ? 's' : ''}</li>`;
+                                } else {
+                                    return `<li>${ing.cantidad_formato} ${ing.formato}${ing.cantidad_formato > 1 ? 's' : ''} de ${ing.nombre} | No cuenta con presentacion de receta, favor de registrar</li>`;
+                                }
+                            }).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+        }
+        
+        modalContent.innerHTML = html;
+        
+        // Agregar event listeners a los botones de selección
+        document.querySelectorAll('.btn-select-recipe').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const recetaId = this.getAttribute('data-receta-id');
+                const recetaNombre = this.parentElement.querySelector('h3').textContent;
+                seleccionarRecetaParaProduccion(galletaId, recetaId, recetaNombre);
+                closeModal();
+            });
+        });
+    } catch (error) {
+        console.error('Error al cargar recetas:', error);
+        modalContent.innerHTML = `<p>Error al cargar las recetas. Intente nuevamente.</p>`;
     }
+};
+    
+    // Cerrar modal
+    closeButton.onclick = closeModal;
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    };
+    
     function closeModal() {
         modal.classList.remove('show-modal');
     }
-
-    // Lista de recetas
-    const recetas = [
-        {
-            nombre: "Galleta Chispas de Chocolate",
-            ingredientes: [
-                "2 1/4 tazas de harina",
-                "1 cucharadita de bicarbonato de sodio",
-                "1 cucharadita de sal",
-                "1 taza de mantequilla",
-                "3/4 taza de azúcar",
-                "3/4 taza de azúcar morena",
-                "2 huevos",
-                "2 cucharaditas de extracto de vainilla",
-                "2 tazas de chispas de chocolate"
-            ],
-            instrucciones: [
-                "Precalentar el horno a 375°F (190°C)",
-                "Mezclar harina, bicarbonato y sal",
-                "En otro bowl, batir mantequilla y azúcares",
-                "Agregar huevos y vainilla a la mezcla de mantequilla",
-                "Incorporar ingredientes secos",
-                "Añadir chispas de chocolate",
-                "Formar bolitas y colocar en bandeja",
-                "Hornear por 9-11 minutos",
-                "Dejar enfriar en rejilla"
-            ]
-        }
-        // Agregar las demás recetas aquí
-    ];
-    function escucharRecetas() {
-        const recetaButtons = document.querySelectorAll('.custom-buttonReceta');
-        
-        recetaButtons.forEach((button, index) => {
-            button.removeEventListener('click', recipeClickHandler);
-            button.addEventListener('click', recipeClickHandler);
-        });
-
-        function recipeClickHandler(event) {
-            const index = Array.from(recetaButtons).indexOf(event.target);
-            
-            if (recetas[index]) {
-                openModal(recetas[index]);
-            } else {
-                console.error('Receta no encontrada');
-            }
-        }
-    }
-    escucharRecetas();
-    closeButton.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
 });
 
 // ---------------------------------------------------- Funciones para estados de producción ----------------------------------------------------
