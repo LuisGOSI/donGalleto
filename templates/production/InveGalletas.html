@@ -23,7 +23,9 @@
                     });
                 </script>
             {% endif %}
+        </section>
         {% endwith %}
+    </div>
 <div class="modal fade" id="alertaGalletasAmarilla" tabindex="-1" aria-labelledby="alertaGalletasLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -142,38 +144,47 @@
             </div>
 
     </div>
+<!-- Modal de Registrar Merma -->
 <div class="modal fade" id="registroMermaModal" tabindex="-1" aria-labelledby="modalMermaLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <form action="/registrarMermaGalleta" method="POST" class="container mt-4 p-4 border rounded bg-light">
-                    <h2 class="text-center mb-4">Registrar Merma</h2>
-                    <input type="hidden" id="idInventarioGalletaFK" name="idInventarioGalletaFK">
-                    <input type="hidden" id="cantidadActual" name="cantidadActual">
-                    <div class="mb-3">
-                        <label for="tipoMerma" class="form-label">Motivo de Merma</label>
-                        <select class="form-control" id="tipoMerma" name="tipoMerma" required>
-                            <option value="Producto dañado">Producto dañado</option>
-                            <option value="Galletas caducas">Galletas caducas</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="cantidad" class="form-label">Cantidad</label>
-                        <input type="number" class="form-control" id="cantidad" name="cantidad" required oninput="this.value = this.value.replace(/\./g, '')">
-                    </div>
-                    <div class="mb-3">
-                        <label for="observaciones" class="form-label">Observaciones</label>
-                        <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Registrar Merma</button>
-                    </div>
-                </form>
+      <div class="modal-content">
+        <div class="modal-body">
+          <form action="/registrarMermaGalleta" method="POST" class="container mt-4 p-4 border rounded bg-light" id="formRegistrarMerma" novalidate>
+            <h2 class="text-center mb-4">Registrar Merma</h2>
+            <input type="hidden" id="idInventarioGalletaFK" name="idInventarioGalletaFK">
+            <input type="hidden" id="cantidadActual" name="cantidadActual">
+  
+            <div class="mb-3">
+              <label for="tipoMerma" class="form-label">Motivo de Merma</label>
+              <select class="form-control" id="tipoMerma" name="tipoMerma" required>
+                <option value="Producto dañado">Producto dañado</option>
+                <option value="Galletas caducas">Galletas caducas</option>
+              </select>
+              <div class="invalid-feedback">Por favor, seleccione un motivo de merma.</div>
             </div>
+  
+            <div class="mb-3">
+              <label for="cantidad" class="form-label">Cantidad</label>
+              <input type="number" class="form-control" id="cantidad" name="cantidad" required min="1" oninput="this.value = this.value.replace(/\./g, '')">
+              <div class="invalid-feedback">Por favor, ingrese una cantidad válida (mínimo 1).</div>
+            </div>
+  
+            <div class="mb-3">
+              <label for="observaciones" class="form-label">Observaciones</label>
+              <textarea class="form-control" id="observaciones" name="observaciones" rows="3" maxlength="500"></textarea>
+              <div class="invalid-feedback">Las observaciones no deben exceder los 500 caracteres.</div>
+            </div>
+  
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Registrar Merma</button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
-</div>
+  </div>
+  
 
 
 <div class="modal fade" id="enviarMerma" tabindex="-1" aria-labelledby="modalMermaLabel" aria-hidden="true">

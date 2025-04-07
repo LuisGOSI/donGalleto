@@ -94,29 +94,34 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <form action="/registerCliente" method="POST" class="container mt-4 p-4 border rounded bg-light">
+                <form action="/registerCliente" method="POST" class="container mt-4 p-4 border rounded bg-light" novalidate>
                     <h2 class="text-center mb-4">Registrar Cliente</h2>
-
                     <div class="mb-3">
                         <label for="nombreCliente" class="form-label">Nombre del Cliente</label>
-                        <input type="text" class="form-control" id="nombreCliente" name="nombreCliente" required>
+                        <input type="text" class="form-control" id="nombreCliente" name="nombreCliente" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$" title="Solo letras y espacios permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un nombre válido (solo letras y espacios).</div>
                     </div>
-
                     <div class="mb-3">
                         <label for="telefono" class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                        <input type="tel" class="form-control" id="telefono" name="telefono" required
+                            pattern="^[0-9]{10}$" title="Ingresa un número de 10 dígitos" maxlength="10">
+                        <div class="invalid-feedback">Por favor ingresa un número telefónico válido (10 dígitos).</div>
                     </div>
-
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <input type="email" class="form-control" id="email" name="email" required
+                            pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" maxlength="100">
+                        <div class="invalid-feedback">Por favor ingresa un correo electrónico válido.</div>
                     </div>
-
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="password" class="form-control" id="password" name="password" required
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" 
+                            title="La contraseña debe tener al menos 8 caracteres, incluyendo una letra, un número y un carácter especial" 
+                            minlength="8" maxlength="50">
+                        <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres, incluyendo una letra, un número y un carácter especial.</div>
                     </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Agregar Cliente</button>
@@ -132,20 +137,26 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
-                <form id="editClienteForm" method="POST" action="/modifyCliente">
+                <form id="editClienteForm" method="POST" action="/modifyCliente" novalidate>
                     <input type="hidden" id="IdCliente" name="idCliente">
                     <h2 class="text-center mb-4">Modificar Cliente</h2>
                     <div class="mb-3">
                         <label for="Nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="Nombre" name="Nombre" required>
+                        <input type="text" class="form-control" id="Nombre" name="Nombre" required
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,50}$" title="Solo letras y espacios permitidos (2-50 caracteres)" maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un nombre válido (solo letras y espacios).</div>
                     </div>
                     <div class="mb-3">
                         <label for="Telefono" class="form-label">Teléfono</label>
-                        <input type="tel" class="form-control" id="Telefono" name="Telefono" required>
+                        <input type="tel" class="form-control" id="Telefono" name="Telefono" required
+                            pattern="^[0-9]{10}$" title="Ingresa un número de 10 dígitos" maxlength="10">
+                        <div class="invalid-feedback">Por favor ingresa un número telefónico válido (10 dígitos).</div>
                     </div>
                     <div class="mb-3">
                         <label for="Email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="Email" name="Email" required>
+                        <input type="email" class="form-control" id="Email" name="Email" required
+                            pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" maxlength="100">
+                        <div class="invalid-feedback">Por favor ingresa un correo electrónico válido.</div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

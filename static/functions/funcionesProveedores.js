@@ -224,3 +224,91 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }, 4000);
 });
+
+// -------------------------------
+// FUNCIONES PARA SANITIZAR ENTRADAS EN EL MODAL DE AGREGACION Y MODIFICACION DE PROVEEDORES
+// -------------------------------
+(function () {
+    'use strict';
+    
+    // Función para sanitizar entradas
+    function sanitizeInput(input) {
+        if (input.value && input.type !== 'password') {
+            input.value = input.value
+                .replace(/&/g, '&amp;')  // Sanitiza el símbolo '&'
+                .replace(/</g, '&lt;')   // Sanitiza el símbolo '<'
+                .replace(/>/g, '&gt;')   // Sanitiza el símbolo '>'
+                .replace(/"/g, '&quot;') // Sanitiza el símbolo '"'
+                .replace(/'/g, '&#039;'); // Sanitiza el símbolo "'"
+        }
+    }
+
+    // Función para validar campos
+    function validateField(input) {
+        const isValid = input.checkValidity();
+        if (isValid) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+        return isValid;
+    }
+
+    // Escuchadores de eventos para validar en tiempo real
+    function applyValidationListeners(form) {
+        const inputs = form.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', function () {
+                sanitizeInput(this); // Sanitiza la entrada en tiempo real
+                validateField(this);  // Valida el campo
+            });
+
+            input.addEventListener('blur', function () {
+                sanitizeInput(this); // Sanitiza la entrada al perder el foco
+                validateField(this);  // Valida el campo
+            });
+        });
+    }
+
+    // Validación en la acción de envío del formulario
+    function validateForm(event, form) {
+        const inputs = form.querySelectorAll('input, textarea');
+        let isFormValid = true;
+
+        inputs.forEach(input => {
+            sanitizeInput(input); // Sanitiza la entrada
+            if (!validateField(input)) {
+                isFormValid = false;
+            }
+        });
+
+        if (!isFormValid) {
+            event.preventDefault();
+            event.stopPropagation();
+            const firstInvalid = form.querySelector('.is-invalid');
+            if (firstInvalid) firstInvalid.focus();
+        }
+
+        form.classList.add('was-validated');
+    }
+
+    // Aplicar validación en los formularios
+    const formRegistrarProveedor = document.getElementById('formRegistrarProveedor');
+    const editProveedorForm = document.getElementById('editProveedorForm');
+
+    if (formRegistrarProveedor) {
+        applyValidationListeners(formRegistrarProveedor);
+        formRegistrarProveedor.addEventListener('submit', function (event) {
+            validateForm(event, formRegistrarProveedor); // Validación al enviar el formulario
+        });
+    }
+
+    if (editProveedorForm) {
+        applyValidationListeners(editProveedorForm);
+        editProveedorForm.addEventListener('submit', function (event) {
+            validateForm(event, editProveedorForm); // Validación al enviar el formulario
+        });
+    }
+})();
