@@ -7,10 +7,11 @@ from database.cliente import clientes
 from database.cookies import cookies
 from database.sales import ventas, corteVenta
 from datetime import datetime
-from db import app, mysql
+from db import app, mysql, mail
 from sessions import *
 from pdf_ticket import *
 import json
+from flask_mail import Message
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de la app ///////////////////////////////////////////////////////////////////////
@@ -276,9 +277,10 @@ def eliminar_del_carrito(id, tipo_venta):
 
 @app.route("/finalizar_compra", methods=["POST"])
 def finalizar_compra():
+    user = session.get("user")
     user_id = session.get("user")[6]  # ID del cliente en sesión
     carrito = session.get("carrito")
-    total_compra = sum(item["precio"] * item["cantidad"] for item in carrito.values())
+    total_precio = sum(item["precio"] * item["cantidad"] for item in carrito.values())
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     id_empleado = 1  # ID de un empleado específico para ventas en línea
     descuento = 0  # Puedes modificar esto si hay descuentos
@@ -349,8 +351,25 @@ def finalizar_compra():
                     """,
                     (cantidad, id_galleta, cantidad),
                 )
-
         mysql.connection.commit()
+
+        total_items = sum(
+        item["cantidad"] for item in carrito.values()
+        )
+
+        msg = Message('RECIBO',
+        sender='contacto.soydongalleto@gmail.com',
+        recipients=[user[2]])  # Accediendo al correo del usuario
+        msg.html = render_template(
+        "/client/emailVenta.html",
+        total_items=total_items,
+        total_precio=total_precio,
+        carrito=carrito,
+        id_venta=id_venta,
+        )
+        mail.send(msg)
+
+
 
         # Vaciar el carrito después de la compra
         session.pop("carrito")
@@ -700,3 +719,15 @@ def get_empleados():
     empleados = cur.fetchall()
     cur.close()
     return empleados
+
+
+@app.route('/enviar-correo')
+def enviar_correo():
+    msg = Message('¡Hola desde Flask!',
+                  sender='contacto.soydongalleto@gmail.com',
+                  recipients=['johan.antonio25@gmail.com'])
+    msg.body = 'Este es un mensaje enviado desde una app Flask.'
+    mail.send(msg)
+    return 'Correo enviado'
+
+

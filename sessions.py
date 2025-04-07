@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
-from db import app, mysql, captcha
+from db import app, mysql, captcha, mail
+from flask_mail import  Message
 
 #! ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Logica de sesiones de la app ///////////////////////////////////////////////////////////////////////
@@ -78,6 +79,11 @@ def registerUser():
             mysql.connection.commit()
             cur.close()
             session["user"] = user
+            msg = Message('¡Bienvenido!',
+                    sender='contacto.soydongalleto@gmail.com',
+                    recipients=[user[2]])
+            msg.html = render_template("client/emailRegistro.html")
+            mail.send(msg)
             return redirect(url_for("cliente_dashboard"))
     except(Exception) as error:
         if "Duplicate entry" in str(error):
