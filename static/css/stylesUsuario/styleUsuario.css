@@ -16,7 +16,7 @@
 /* =========================== */
 
 .tble-usuarios {
-    width: calc(95% - 30px);
+    width: calc(100% - 30px);
     border-collapse: collapse;
     margin-bottom: 20px;
     border-radius: 20px;
@@ -62,29 +62,52 @@ td {
 /* =========================== */
 /* Estilos para botones */
 /* =========================== */
+
 .btnEditUsuarios, .btnEliminarUsuarios, .btnActivarUsuarios {
     padding: 8px 16px;
     border-radius: 4px;
-    display: inline-flex;
     align-items: center;
     gap: 8px;
     font-size: 14px;
     cursor: pointer;
     margin-right: 8px;
-    
+    margin-bottom: 10px;
 }
 
+/* -------------------------------------- */
+/* Botón Editar (Azul)                    */
+/* -------------------------------------- */
 .btnEditUsuarios {
-    background-color: #f2fa5e;
-    border: 1px solid #ced4da;
-    color: #495057;
+    background-color: #add8e6; /* Azul claro */
+    color: #2196F3;
+    border: none;
 }
 
-.btnEliminarUsuarios {
-    background-color: #f8d7da;
-    border: 1px solid #f5c2c7;
-    color: #842029;
+.btnEditUsuarios .icon {
+    margin-right: 8px;
 }
+
+.btnEditUsuarios:hover {
+    background-color: #d8e9f7; /* Azul brillante */
+}
+
+/* -------------------------------------- */
+/* Botón Eliminar (Rojo)                  */
+/* -------------------------------------- */
+.btnEliminarUsuarios {
+    background-color: #f44336; /* Rojo */
+    color: white;
+    border: none;
+}
+
+.btnEliminarUsuarios .icon {
+    margin-right: 8px;
+}
+
+.btnEliminarUsuarios:hover {
+    background-color: #e53935; /* Rojo oscuro */
+}
+
 .registrar-btn {
     background-color: #add8e6;
     border: 1px solid #007bff;
@@ -121,14 +144,6 @@ td {
     gap: 8px;
     padding: 8px 16px;
     transition: background-color 0.3s ease;
-}
-
-.btnEditUsuarios:hover {
-    background-color: #ffe633;
-}
-
-.btnEliminarUsuarios:hover {
-    background-color: #f1aeb5;
 }
 
 .btnActivarUsuarios:hover {

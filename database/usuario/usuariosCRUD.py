@@ -135,6 +135,11 @@ def get_users(estado=1):
 
 @app.route("/getUsuarios", methods=["GET"])
 def get_users_json():
+    if session.get("user") is None:
+        return render_template("pages/error404.html"), 404
+    user = session.get("user")
+    if user[4] != "administrador":
+        return render_template("pages/error404.html"), 404
     estado = request.args.get("estado", default=1, type=int)
     usuarios = get_users(estado)
     return {"usuarios": usuarios}

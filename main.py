@@ -5,19 +5,22 @@ from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos
 from database.cliente import clientes
 from database.cookies import cookies
-from database.sales import ventas, corteVenta 
+from database.sales import ventas, corteVenta
 from datetime import datetime
 from db import app, mysql
 from sessions import *
+from pdf_ticket import *
 import json
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de la app ///////////////////////////////////////////////////////////////////////
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 @app.route("/")
 def home():
     return render_template("/pages/home.html")
+
 
 @app.route("/dashboard")
 def admin_dashboard():
@@ -29,7 +32,7 @@ def admin_dashboard():
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
-    ventas=dashboard.getVentasPorDia()
+    ventas = dashboard.getVentasPorDia()
     inversion=dashboard.getInversionGalletas()
     recomendada=dashboard.getGalletaRecomendad()
     return render_template(
@@ -40,7 +43,7 @@ def admin_dashboard():
         user=user,
         ventas=ventas,
         inversion=inversion,
-        recomendada=recomendada
+        recomendada=recomendada,
     )
 
 
@@ -62,7 +65,10 @@ def produccion_dashboard():
     if user[4] not in ["produccion"]:
         return render_template("pages/error404.html"), 404
     return render_template(
-        "/production/baseProduccion/baseProduccion.html", is_base_template=True, user=user)
+        "/production/baseProduccion/baseProduccion.html",
+        is_base_template=True,
+        user=user,
+    )
 
 
 @app.route("/solicitudProduccion")
@@ -144,7 +150,7 @@ def gestion_insumos():
         proveedores=proveedores,
         formatos_receta=formatos_receta,
         is_base_template=False,
-        user=user
+        user=user,
     )
 
 
@@ -203,7 +209,7 @@ def cliente_dashboard():
 def detalle_producto():
     if session.get("user") is None:
         return render_template("pages/error404.html"), 404
-    galleta_json = request.form.get("galleta") or request.args.get("galleta")  
+    galleta_json = request.form.get("galleta") or request.args.get("galleta")
     galleta = json.loads(galleta_json) if galleta_json else None
 
     return render_template(
@@ -251,16 +257,14 @@ def agregar_al_carrito(id):
 
     session.modified = True
     flash("✅ Producto agregado al carrito", "success")
-    return redirect(
-    url_for("detalle_producto", galleta=json.dumps(producto))
-    )
+    return redirect(url_for("detalle_producto", galleta=json.dumps(producto)))
 
 
-@app.route('/eliminar_carrito/<int:id>/<tipo_venta>', methods=['POST'])
+@app.route("/eliminar_carrito/<int:id>/<tipo_venta>", methods=["POST"])
 def eliminar_del_carrito(id, tipo_venta):
     if "carrito" in session:
         carrito = session["carrito"]
-        
+
         clave = f"{id}_{tipo_venta}"  # Genera la clave en el formato correcto
 
         if clave in carrito:
@@ -270,29 +274,29 @@ def eliminar_del_carrito(id, tipo_venta):
         else:
             print(f"No se encontró la clave: {clave}")  # Depuración si no lo encuentra
 
-    return redirect(url_for('carrito_dashboard'))  # Volver a la vista del carrito
+    return redirect(url_for("carrito_dashboard"))  # Volver a la vista del carrito
 
 
 @app.route("/finalizar_compra", methods=["POST"])
 def finalizar_compra():
-
-    user_id = session["user"][0]  # ID del cliente en sesión
-    carrito = session["carrito"]
+    user_id = session.get("user")[6]  # ID del cliente en sesión
+    carrito = session.get("carrito")
     total_compra = sum(item["precio"] * item["cantidad"] for item in carrito.values())
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     id_empleado = 1  # ID de un empleado específico para ventas en línea
     descuento = 0  # Puedes modificar esto si hay descuentos
-
+    tipo_venta = request.form.get("tipo_venta", "online")  # Por defecto online para clientes
     cur = mysql.connection.cursor()
 
     try:
         # Insertar la venta en la tabla `ventas`
         cur.execute(
             """
-            INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento, tipoVenta, estadoVenta)
+            VALUES (%s, %s, %s, %s, %s,
+                    CASE WHEN %s = 'online' THEN 'pendiente' ELSE 'confirmada' END)
             """,
-            (id_empleado, user_id, fecha_actual, descuento)
+            (id_empleado, user_id, fecha_actual, descuento, tipo_venta, tipo_venta),
         )
         mysql.connection.commit()
 
@@ -302,40 +306,72 @@ def finalizar_compra():
 
         # Insertar detalles de la venta en la tabla `detalleventas`
         for key, item in carrito.items():
+            print(f"Producto en carrito: {item}")
             id_galleta = key.split("_")[0]  # ID del producto (galleta)
-            tipo_venta = item.get("tipo_venta", "unidades")  # Debe ser 'gramaje', 'paquetes' o 'unidades'
-
-            # Validar que el tipo de venta sea correcto según el ENUM
-            if tipo_venta not in ["gramaje", "paquetes", "unidades"]:
-                raise ValueError(f"Tipo de venta inválido: {tipo_venta}")
+            tipo_venta_detalle = item.get(
+                "tipo_venta", "unidad"
+            )  # Debe ser 'gramaje', 'paquetes' o 'unidades'
+            print(f"Tipo de venta: {tipo_venta_detalle}")
 
             cur.execute(
                 """
                 INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido)
                 VALUES (%s, %s, %s, %s, %s)
                 """,
-                (id_venta, id_galleta, item["cantidad"], tipo_venta, item["precio"])
+                (
+                    id_venta,
+                    id_galleta,
+                    item["cantidad"],
+                    tipo_venta_detalle,
+                    item["precio"],
+                ),
             )
+            # Actualizar inventario solo si es venta local (confirmada)
+        if tipo_venta == "local":
+            for key, item in carrito.items():
+                id_galleta = key.split("_")[0]
+                cantidad = item["cantidad"]
+
+                # Convertir a unidades si es paquete
+                if item["tipo_venta"] == "paquete 1kg":
+                    peso_galleta = ventas.revisar_gramaje_por_id(id_galleta)
+                    cantidad = round(cantidad * 1000 / peso_galleta)
+                elif item["tipo_venta"] == "paquete 700gr":
+                    peso_galleta = ventas.revisar_gramaje_por_id(id_galleta)
+                    cantidad = round(cantidad * 700 / peso_galleta)
+
+                cur.execute(
+                    """
+                    UPDATE inventariogalletas 
+                    SET cantidadGalletas = cantidadGalletas - %s
+                    WHERE idProduccionFK = (SELECT idProduccion FROM produccion WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s) LIMIT 1)
+                    AND cantidadGalletas >= %s
+                    AND estadoLote = 'Disponible'
+                    ORDER BY fechaCaducidad ASC
+                    LIMIT 1
+                    """,
+                    (cantidad, id_galleta, cantidad),
+                )
 
         mysql.connection.commit()
 
         # Vaciar el carrito después de la compra
         session.pop("carrito")
         flash("Compra finalizada con éxito.", "success")
+        flash("Id de tu compra: " + str(id_venta), "success")
         return redirect(url_for("carrito_dashboard"))
-
     except Exception as e:
         mysql.connection.rollback()
-        flash(f"Ocurrió un error al procesar la compra: {e}", "danger")
+        flash(f"Ocurrió un error al procesar el pedido: {e}", "danger")
         print(f"❌ Error en la compra: {e}")
         return redirect(url_for("carrito_dashboard"))
 
     finally:
         cur.close()
+        
 
+# Fin de rutas para el modulo de clientes / Sistema de carrito
 
-
-#Fin de rutas para el modulo de clientes / Sistema de carrito
 
 @app.route("/clientes")
 def clientes():
@@ -402,16 +438,18 @@ def receta():
     formatos = cur.fetchall()
 
     # Obtener todas las recetas básicas para la tabla principal
-    cur.execute("""
+    cur.execute(
+        """
         SELECT r.idReceta, r.nombreReceta, r.cantidadHorneadas, r.duracionAnaquel, 
-               g.nombreGalleta
+        g.nombreGalleta
         FROM recetas r
         JOIN galletas g ON r.idGalletaFK = g.idGalleta
         WHERE r.estatus = 1
         ORDER BY g.nombreGalleta, r.nombreReceta
-    """)
+    """
+    )
     recetas = cur.fetchall()
-    
+
     cur.close()
 
     return render_template(
@@ -421,7 +459,7 @@ def receta():
         insumos=insumos,
         formatos=formatos,
         recetas=recetas,
-        user=user
+        user=user,
     )
 
 
@@ -432,7 +470,6 @@ def carrito_dashboard():
     user = session.get("user")
     if user[4] not in ["cliente"]:
         return render_template("pages/error404.html"), 404
-    
 
     if "carrito" not in session or not session["carrito"]:
         carrito = {}
@@ -463,20 +500,31 @@ def historico_dashboard():
     user = session.get("user")
     if user[4] not in ["cliente"]:
         return render_template("pages/error404.html"), 404
-    idCliente = user[0]
-    # Obtener el nombre del cliente de la tabla de clientes
+    
+    idUsuario = user[0]
+    # Obtener el id del cliente y nombre de la tabla clientes
     cur = mysql.connection.cursor()
-    cur.execute("""
-    SELECT idUsuario, c.nombreCliente
+    cur.execute(
+        """
+    SELECT c.idCliente, c.nombreCliente
     FROM clientes c
     INNER JOIN usuarios u
     ON c.idCliente = u.idClienteFK
     WHERE idUsuario = %s;
-    """, (idCliente,))
+    """,
+        (idUsuario,),
+    )
     resultado_cliente = cur.fetchone()
-    nombreCliente = resultado_cliente[1] if resultado_cliente else "Cliente"
+    
+    if resultado_cliente:
+        idCliente = resultado_cliente[0]  # Ahora usamos el idCliente de la tabla clientes
+        nombreCliente = resultado_cliente[1]
+    else:
+        return render_template("pages/error404.html"), 404  # Si no hay cliente asociado
+    
     # Consulta para histórico de compras
-    cur.execute("SELECT * FROM v_historicoCompras WHERE idCliente = %s", (idCliente,))
+    cur.execute("SELECT * FROM v_historicoCompras where idCliente = %s", (idCliente,))
+    print("ID del cliente:", idCliente)
     column_names = [column[0] for column in cur.description]
     historico_compras = []
     for row in cur.fetchall():
@@ -487,7 +535,6 @@ def historico_dashboard():
     cur.close()
     # Verificar si hay compras
     historico = len(historico_compras) > 0
-
     return render_template(
         "/client/Historico.html",
         is_base_template=False,
@@ -507,9 +554,12 @@ def ventas_dashboard():
         return render_template("pages/error404.html"), 404
     data = cookies.getCookies()
     print("Data de ventas:", data)
-    return render_template("sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True)
+    return render_template(
+        "sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True
+    )
 
-@app.route("/moduloVentas")	
+
+@app.route("/moduloVentas")
 def moduloVentas():
     if "user" not in session:
         return render_template("pages/error404.html"), 404
@@ -517,16 +567,109 @@ def moduloVentas():
     if user[4] not in ["ventas"]:
         return render_template("pages/error404.html"), 404
     data = cookies.getCookies()
-    return render_template("/sales/sales.html", data=data, user=user, is_base_template=False)
+    return render_template(
+        "/sales/sales.html", data=data, user=user, is_base_template=False
+    )
+
 
 @app.route("/listadoVentas")
 def listadoVentas():
     if "user" not in session:
+        return redirect(url_for("login"))
+    active_user = session.get("user")
+    if active_user[4] not in ["ventas", "administrador"]:
         return render_template("pages/error404.html"), 404
-    user = session.get("user")
-    if user[4] not in ["ventas"]:
-        return render_template("pages/error404.html"), 404
-    return render_template("/sales/listadoVentas.html", user=user, is_base_template=False)
+    
+    cur = mysql.connection.cursor()
+    
+    try:
+        # Consulta base
+        query = """
+            SELECT 
+                v.idVenta,
+                v.fechaVenta,
+                v.descuento,
+                SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido) AS subtotal,
+                SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido) * (1 - v.descuento/100) AS totalVenta,
+                GROUP_CONCAT(CONCAT_WS('||', g.nombreGalleta, dv.tipoVenta, dv.cantidadVendida, dv.PrecioUnitarioVendido) SEPARATOR ';;') AS productos
+            FROM ventas v
+            JOIN detalleventas dv ON v.idVenta = dv.idVentaFK
+            JOIN galletas g ON dv.idGalletaFK = g.idGalleta
+            {where_clause}
+            GROUP BY v.idVenta
+            ORDER BY v.fechaVenta DESC
+            LIMIT 100
+        """
+        
+        # Obtener parámetros de filtro
+        filter_type = request.args.get('filter_type')
+        filter_value = request.args.get('filter_value')
+        
+        where_clause = ""
+        params = []
+        
+        if filter_type and filter_value:
+            if filter_type == 'day':
+                where_clause = "WHERE DATE(v.fechaVenta) = %s"
+                params.append(filter_value)
+            elif filter_type == 'week':
+                year, week = filter_value.split('-W')
+                where_clause = """
+                    WHERE YEAR(v.fechaVenta) = %s 
+                    AND WEEK(v.fechaVenta, 3) = %s
+                """
+                params.extend([year, week])
+            elif filter_type == 'month':
+                year, month = filter_value.split('-')
+                where_clause = """
+                    WHERE YEAR(v.fechaVenta) = %s 
+                    AND MONTH(v.fechaVenta) = %s
+                """
+                params.extend([year, month])
+            elif filter_type == 'range':
+                start_date, end_date = filter_value.split('|')
+                where_clause = "WHERE DATE(v.fechaVenta) BETWEEN %s AND %s"
+                params.extend([start_date, end_date])
+        
+        # Ejecutar consulta
+        cur.execute(query.format(where_clause=where_clause), params)
+        
+        ventas = []
+        for row in cur.fetchall():
+            # Procesar productos (igual que antes)
+            productos_raw = row[5].split(';;') if row[5] else []
+            productos = []
+            for prod in productos_raw:
+                partes = prod.split('||')
+                productos.append({
+                    'nombre': partes[0],
+                    'tipoVenta': partes[1],
+                    'cantidad': int(partes[2]),
+                    'precio': float(partes[3])
+                })
+            
+            ventas.append({
+                'idVenta': row[0],
+                'fechaVenta': row[1],
+                'descuento': float(row[2]),
+                'subtotal': float(row[3]),
+                'totalVenta': float(row[4]),
+                'productos': productos
+            })
+            
+        return render_template("/sales/listadoVentas.html", 
+                             user=session.get("user"),
+                             ventas=ventas,
+                             is_base_template=False)
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return render_template("/sales/listadoVentas.html", 
+                             user=session.get("user"),
+                             ventas=[],
+                             error=str(e))
+    finally:
+        cur.close()
 
 @app.route("/sobreNosotros")
 def about_us():
@@ -545,9 +688,6 @@ def page_not_found(error):
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Rutas de prueba ///////////////////////////////////////////////////////////////////////
 #! //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 
 def get_empleados():

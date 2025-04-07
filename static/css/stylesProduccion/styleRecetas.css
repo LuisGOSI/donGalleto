@@ -37,27 +37,45 @@
     font-size: 14px;
     cursor: pointer;
     margin-right: 8px;
+    margin-bottom: 10px;
 }
 
+/* -------------------------------------- */
+/* Botón de Editar (Azul)                */
+/* -------------------------------------- */
 .btnEditRecetas {
-    background-color: #f2fa5e;
-    border: 1px solid #b7c102;
-    color: #000000;
+    background-color: #add8e6; /* Azul claro */
+    color: #2196F3;
+    border: none; /* Eliminamos el borde anterior */
 }
 
-.btnEliminarRecetas {
-    background-color: #f8d7da;
-    border: 1px solid #f5c2c7;
-    color: #842029;
+.btnEditRecetas .icon {
+    margin-right: 8px;
 }
 
 .btnEditRecetas:hover {
-    background-color: #ffe633;
+    background-color: #d8e9f7; /* Azul brillante */
+    cursor: pointer;
+}
+
+/* -------------------------------------- */
+/* Botón de Eliminar (Rojo)              */
+/* -------------------------------------- */
+.btnEliminarRecetas {
+    background-color: #f44336; /* Rojo */
+    color: white;
+    border: none;
+}
+
+.btnEliminarRecetas .icon {
+    margin-right: 8px;
 }
 
 .btnEliminarRecetas:hover {
-    background-color: #f1aeb5;
+    background-color: #e53935; /* Rojo oscuro */
+    cursor: pointer;
 }
+
 
 .alert {
     padding: 15px;

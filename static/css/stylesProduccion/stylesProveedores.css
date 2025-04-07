@@ -19,15 +19,14 @@
 }
 
 .tble-Proveedores tr {
-    border-bottom: 1px solid #000000; /* Añade una línea horizontal gris claro */
+    border-bottom: 1px solid #000000;
 }
 
-/* Opcional: Si no quieres que la última fila tenga borde inferior */
 .tble-Proveedores tr:last-child {
     border-bottom: none;
 }
 
-/******************Botones*******************/
+/******************Botones Proveedores*******************/
 .btnEditProveedores, .btnEliminarProveedores, .btnActivarProveedores {
     padding: 8px 16px;
     border-radius: 4px;
@@ -37,19 +36,45 @@
     font-size: 14px;
     cursor: pointer;
     margin-right: 8px;
-    
+    margin-bottom: 10px;
 }
 
+/* -------------------------------------- */
+/* Botón Editar (Azul)                    */
+/* -------------------------------------- */
 .btnEditProveedores {
-    background-color: #f2fa5e;
-    border: 1px solid #ced4da;
-    color: #495057;
+    background-color: #add8e6; /* Azul claro */
+    color: #2196F3;
+    border: none;
 }
 
+.btnEditProveedores .icon {
+    margin-right: 8px;
+}
+
+.btnEditProveedores:hover {
+    background-color: #d8e9f7; /* Azul brillante */
+}
+
+/* -------------------------------------- */
+/* Botón Eliminar (Rojo)                  */
+/* -------------------------------------- */
 .btnEliminarProveedores {
-    background-color: #f8d7da;
-    border: 1px solid #f5c2c7;
-    color: #842029;
+    background-color: #f44336; /* Rojo */
+    color: white;
+    border: none;
+}
+
+.btnEliminarProveedores .icon {
+    margin-right: 8px;
+}
+
+.btnEliminarProveedores:hover {
+    background-color: #e53935; /* Rojo oscuro */
+}
+
+.btnActivarProveedores:hover {
+    background-color: #218838; /* Cambio a un verde más oscuro */
 }
 
 .btnActivarProveedores {
@@ -64,18 +89,6 @@
     gap: 8px;
     padding: 8px 16px;
     transition: background-color 0.3s ease;
-}
-
-.btnEditProveedores:hover {
-    background-color: #ffe633;
-}
-
-.btnEliminarProveedores:hover {
-    background-color: #f1aeb5;
-}
-
-.btnActivarProveedores:hover {
-    background-color: #218838; /* Cambio a un verde más oscuro */
 }
 
 .alert {
