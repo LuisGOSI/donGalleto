@@ -22,7 +22,7 @@ def getInveGalletas():
         if isinstance(fecha_caducidad, str):
             fecha_caducidad = datetime.strptime(fecha_caducidad, "%Y-%m-%d").date()
         dias_restantes = (fecha_caducidad - hoy).days
-        if dias_restantes < 0 and estado != "Caducado":
+        if dias_restantes <= 0 and estado == "Disponible":
             cur.execute("""
                 UPDATE inventarioGalletas
                 SET estadoLote = 'Caducado' 

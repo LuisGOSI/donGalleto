@@ -3,21 +3,105 @@
 {% block content %}
 <h1 style="margin-top: 10px; font-weight: bold; font-family: 'Charm', cursive;  font-size: 60px; color: #3E302C; ">Dashboard</h1><br>
 
+<div class="container-fluid mb-4" style="padding-left:100px; padding-right:100px">
+    <div class="row g-4">
+        <!-- Columna izquierda - Recomendación del día (50%) -->
+        <div class="col-md-6">
+            <div class="h-100 p-3" style="background: #5a3e2d; border-radius: 10px; font-family: 'Open Sans', sans-serif; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <div class="text-center h-100 d-flex flex-column justify-content-center">
+                    <h5 class="text-white mb-2" style="font-weight: 600;">
+                        <i class="fas fa-crown me-1" style="color: #FFD700;"></i>Recomendación del Día
+                    </h5>
+                    
+                    {% if recomendada and recomendada[0] %}
+                        <img src="{{ recomendada[0]['imagen'] }}" 
+                            alt="{{ recomendada[0]['nombreGalleta'] }}" 
+                            class="img-fluid mx-auto mb-2" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #E3C7A1;">
+                        
+                        <h5 class="text-white mb-2" style="font-weight: 700;">
+                            {{ recomendada[0]['nombreGalleta'] }}
+                        </h5>
+                        
+                        <div class="d-flex justify-content-center text-white small gap-3">
+                            <div>
+                                <i class="fas fa-box-open"></i> 
+                                {{ recomendada[0]['total_existencias'] | int }} unidades
+                            </div>
+                        </div>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/thisIsFine.png') }}" 
+                             alt="Galleta recomendada" 
+                             class="img-fluid mx-auto mb-2" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #E3C7A1;">
+                        
+                        <h5 class="text-white mb-2" style="font-weight: 700;">
+                            No hay recomendación disponible
+                        </h5>
+                        
+                        <div class="d-flex justify-content-center text-white small gap-3">
+                            <div>
+                                <i class="fas fa-box-open"></i> 
+                                0 unidades disponibles
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="h-100" style="background: #4E3629; border-radius: 10px; font-family: 'Open Sans', sans-serif; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                <div class="row g-0 h-50 align-items-center" style="background: #3a2a1f; border-radius: 10px 10px 0 0; padding: 15px;">
+                    <div class="col-8">
+                        <h5 class="text-white fw-bold mb-0">
+                            <i class="fas fa-coins me-2"></i>Inversión Total
+                        </h5>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="text-warning fw-bold fs-3">
+                            {% if inversion and inversion[0] and inversion[0]['inversion'] is not none %}
+                                ${{ inversion[0]['inversion'] | round(2) }}
+                            {% else %}
+                                $0.00
+                            {% endif %}
+                        </div>
+                        <small class="text-white-50">Stock actual</small>
+                    </div>
+                </div>
+                <div class="row g-0 h-50 align-items-center" style="background: #2d4a2d; border-radius: 0 0 10px 10px; padding: 15px;">
+                    <div class="col-8">
+                        <h5 class="text-white fw-bold mb-0">
+                            <i class="fas fa-chart-line me-2"></i>Ganancias Potenciales
+                        </h5>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="text-white fw-bold fs-3">
+                            {% if inversion and inversion[0] and inversion[0]['Ganancias'] is not none %}
+                                ${{ inversion[0]['Ganancias'] | round(2) }}
+                            {% else %}
+                                $0.00
+                            {% endif %}
+                        </div>
+                        <small class="text-white-50">Valor estimado</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+
+
 <div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px; font-family: 'Open Sans', sans-serif; font-weight: bold;"> 
     <div class="row">
-        <h3 class="text-white text-center fw-bold" style="margin: 10px;">Productos más vendidos TOP 3</h3>
+        <h3 class="text-white text-center fw-bold" style="margin: 10px;">Cantidad de Galletas mas vendidas TOP 3</h3>
         {% for galleta in galletas %}
         <div class="col-md-4">
             <div class="product">
                 <h4 class="product-text" style="font-weight: bold;">{{ galleta[1] }}</h4>
-
-
-                <div class="product-container">
-                    <img class="imagenGalleta" src="{{ galleta[2] }}" alt="{{ galleta[1] }}">
-                    <div class="product-info">
-                        <div style="font-size: 1.1rem;">Cantidad vendida: <br>{{ galleta[3] | int }} galletas
-                        </div>
-                    <div style="font-size: 1.1rem; ">Ganancias Netas:<br> ${{ galleta[4] | round(2) }}</div>
+                <div class="product-container" style="margin: 0 auto; text-align: center;">
+                    <img class="imagenGalleta" src="{{ galleta[2] }}" alt="{{ galleta[1] }}" style="display: block; margin: 0 auto;">
+                    <div class="product-info" style="margin-top: 10px;">
+                        <div style="font-size: 1.1rem; ">Cantidad vendida:<br>{{ galleta[3] | int }} galletas</div>
+                        <div style="font-size: 1.1rem; text-align: center;">Ganancias: ${{ galleta[4] | round(2) }}</div>
                     </div>
                 </div>
             </div>
@@ -26,30 +110,19 @@
     </div>
 </div>
 <br>
-
-
-
 <div class="charts-section" style="display: flex; justify-content: center; gap: 20px; align-items: flex-start;">
-    <!-- Gráfico de Tipos de Ventas (más pequeño) -->
+
     <div class="chart-card" style="background: #4E3629; color: black; padding: 10px; border-radius: 8px; width: 30%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-        <h3 style="color: white; font-weight: bold; margin-top: 0; text-align: center; font-size: 30px;">Tipos de ventas</h3>
+        <h3 style="color: white; font-weight: bold; margin-top: 0; text-align: center; font-size: 28px;">Ganancias por tipo de venta</h3>
         <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 150px; display: block; padding: 10px;"></canvas>
     </div>
 
-    <!-- Gráfico de Ganancias (más grande) -->
     <div class="chart-card" style="background: #D7B89D; padding: 15px; border-radius: 8px;width: 55%; height:485px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-        <h3 style="color: black; font-weight: bold; margin-top: 0; text-align: center;">Ganancias netas de últimos 5 días</h3>
+        <h3 style="color: black; font-weight: bold; margin-top: 0; text-align: center;">Ganancias de  los últimos 5 días de la semana</h3>
         <canvas id="gananciasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%;  display: block;"></canvas>
     </div>
 </div>
     
-    <br>
-    <div style="margin-bottom: 20px; font-family: 'Open Sans', sans-serif; padding-left:100px;padding-right:100px;">
-        <div class="chart-card" style="background: #4E3629; padding: 15px; border-radius: 8px; width: 100%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            <h3 style="color: white; font-weight: bold; margin-top: 0; text-align: center; font-size: 30px;">Ventas diarias</h3>
-            <canvas id="ventasDiariasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 400px; display: block;"></canvas>
-        </div>
-    </div>
     
 <script src="{{ url_for('static', filename='functions/funcionesDashboard.js') }}" defer></script>
 <script id="presentacionesData" type="application/json">
@@ -58,9 +131,5 @@
 
 <script id="gananciasData" type="application/json">
     {{ ganancias | tojson }}
-</script>
-
-<script id="ventasData" type="application/json">
-    {{ ventas | tojson }}
 </script>
 {% endblock %}
