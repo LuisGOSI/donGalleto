@@ -147,11 +147,11 @@ input{
     align-items: center;
     margin-top: 20px;
     margin-left: 10px;
+    flex-direction: column; /* Cambiado para que la imagen esté arriba */
 }
 .captcha-container img{
-    margin-right: 10px;
-    width: 100px;
-    height: 40px;
+    width: 200px;
+    height: 60px;
     border-radius: 5px;
 }
 .captcha-container input{
