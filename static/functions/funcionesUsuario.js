@@ -249,3 +249,273 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }, 4000);
 });
+
+
+//////// // Funciones para la sanitización de formulario /////////////
+(function() {
+    'use strict';
+    const form = document.getElementById('registroForm');
+    
+    function sanitizeInput(input) {
+        if (input.value) {
+            if (input.type !== 'password') {
+                input.value = input.value
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+        }
+    }
+    
+    function validateField(input) {
+        const isValid = input.checkValidity();
+        
+        if (isValid) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+        
+        return isValid;
+    }
+    
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            clearTimeout(this.debounceTimer);
+            this.debounceTimer = setTimeout(() => {
+                validateField(this);
+            }, 500);
+        });
+        
+        input.addEventListener('blur', function() {
+            sanitizeInput(this);
+            validateField(this);
+        });
+        
+        input.addEventListener('focus', function() {
+            if (this.title) {
+                this.setAttribute('data-original-title', this.title);
+            }
+        });
+    });
+    
+    form.addEventListener('submit', function(event) {
+        let isFormValid = true;
+        
+        inputs.forEach(input => {
+            sanitizeInput(input);
+            if (!validateField(input)) {
+                isFormValid = false;
+            }
+        });
+        
+        if (!isFormValid) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const firstInvalidField = form.querySelector('.is-invalid');
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+            }
+            const errorAlert = document.getElementById('formErrorAlert');
+            if (!errorAlert) {
+                const alert = document.createElement('div');
+                alert.id = 'formErrorAlert';
+                alert.className = 'alert alert-danger mt-3';
+                alert.role = 'alert';
+                alert.innerHTML = 'Por favor, corrige los errores marcados en el formulario.';
+                form.prepend(alert);
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                }, 5000);
+            }
+        }
+        
+        form.classList.add('was-validated');
+    }, false);
+    
+    const nombreFields = form.querySelectorAll('#nombreEmpleado, #apellidoP, #apellidoM');
+    nombreFields.forEach(field => {
+        field.addEventListener('input', function(e) {
+            const invalidChars = /[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g;
+            if (invalidChars.test(this.value)) {
+                this.classList.add('is-invalid');
+                this.value = this.value.replace(invalidChars, '');
+                const fieldName = this.previousElementSibling.textContent;
+                showTemporaryMessage(this, `Caracteres no válidos eliminados en "${fieldName}"`);
+            }
+        });
+    });
+    
+    const telField = form.querySelector('#tel');
+    telField.addEventListener('input', function(e) {
+        const invalidChars = /[^0-9]/g;
+        if (invalidChars.test(this.value)) {
+            this.classList.add('is-invalid');
+            this.value = this.value.replace(invalidChars, '');
+            showTemporaryMessage(this, 'Solo se permiten números en el teléfono');
+        }
+    });
+    
+    function showTemporaryMessage(element, message) {
+        let msgElement = element.nextElementSibling.nextElementSibling;
+        if (!msgElement || !msgElement.classList.contains('temp-message')) {
+            msgElement = document.createElement('div');
+            msgElement.className = 'temp-message text-danger small mt-1';
+            element.parentNode.insertBefore(msgElement, element.nextElementSibling.nextElementSibling);
+        }
+        msgElement.textContent = message;
+        
+        setTimeout(() => {
+            if (msgElement.parentNode) {
+                msgElement.parentNode.removeChild(msgElement);
+            }
+        }, 3000);
+    }
+})();
+
+// Función para validar el formulario para editar usuarios
+(function() {
+    'use strict';
+    const form = document.getElementById('editUsuarioForm');
+    function sanitizeInput(input) {
+        if (input.value) {
+            if (input.type !== 'password' && input.type !== 'hidden') {
+                input.value = input.value
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+        }
+    }
+    
+    function validateField(input) {
+        const isValid = input.checkValidity();
+        if (input.type === 'hidden') return true;
+        
+        if (isValid) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+        
+        return isValid;
+    }
+    
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.type === 'hidden') return;
+            
+            clearTimeout(this.debounceTimer);
+            this.debounceTimer = setTimeout(() => {
+                validateField(this);
+            }, 500);
+        });
+        
+        input.addEventListener('blur', function() {
+            if (this.type === 'hidden') return;
+            
+            sanitizeInput(this);
+            validateField(this);
+        });
+        
+        input.addEventListener('focus', function() {
+            if (this.type === 'hidden') return;
+            
+            if (this.title) {
+                this.setAttribute('data-original-title', this.title);
+            }
+        });
+    });
+    
+    form.addEventListener('submit', function(event) {
+        let isFormValid = true;
+        inputs.forEach(input => {
+            if (input.type === 'hidden') return;
+            
+            sanitizeInput(input);
+            if (!validateField(input)) {
+                isFormValid = false;
+            }
+        });
+        
+        if (!isFormValid) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const firstInvalidField = form.querySelector('.is-invalid');
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+            }
+            
+            const errorAlert = document.getElementById('formEditErrorAlert');
+            if (!errorAlert) {
+                const alert = document.createElement('div');
+                alert.id = 'formEditErrorAlert';
+                alert.className = 'alert alert-danger mt-3';
+                alert.role = 'alert';
+                alert.innerHTML = 'Por favor, corrige los errores marcados en el formulario.';
+                form.prepend(alert);
+            
+                setTimeout(() => {
+                    if (alert.parentNode) {
+                        alert.parentNode.removeChild(alert);
+                    }
+                }, 5000);
+            }
+        }
+        
+        form.classList.add('was-validated');
+    }, false);
+    
+    const nombreFields = form.querySelectorAll('#nombre, #apellidoPaterno, #apellidoMaterno');
+    nombreFields.forEach(field => {
+        field.addEventListener('input', function(e) {
+            const invalidChars = /[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g;
+            if (invalidChars.test(this.value)) {
+                this.classList.add('is-invalid');
+                this.value = this.value.replace(invalidChars, '');
+                const fieldName = this.previousElementSibling.textContent;
+                showTemporaryMessage(this, `Caracteres no válidos eliminados en "${fieldName}"`);
+            }
+        });
+    });
+    
+    const telField = form.querySelector('#telefono');
+    telField.addEventListener('input', function(e) {
+        const invalidChars = /[^0-9]/g;
+        if (invalidChars.test(this.value)) {
+            this.classList.add('is-invalid');
+            this.value = this.value.replace(invalidChars, '');
+            showTemporaryMessage(this, 'Solo se permiten números en el teléfono');
+        }
+    });
+    
+    function showTemporaryMessage(element, message) {
+        let msgElement = element.nextElementSibling.nextElementSibling;
+        if (!msgElement || !msgElement.classList.contains('temp-message')) {
+            msgElement = document.createElement('div');
+            msgElement.className = 'temp-message text-danger small mt-1';
+            element.parentNode.insertBefore(msgElement, element.nextElementSibling.nextElementSibling);
+        }
+        
+        msgElement.textContent = message;
+        setTimeout(() => {
+            if (msgElement.parentNode) {
+                msgElement.parentNode.removeChild(msgElement);
+            }
+        }, 3000);
+    }
+})();

@@ -19,7 +19,6 @@ import json
 
 @app.route("/")
 def home():
-    inventarioDeGalletas.getInveGalletas()
     return render_template("/pages/home.html")
 
 
@@ -34,6 +33,8 @@ def admin_dashboard():
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
     ventas = dashboard.getVentasPorDia()
+    inversion=dashboard.getInversionGalletas()
+    recomendada=dashboard.getGalletaRecomendad()
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
@@ -41,6 +42,8 @@ def admin_dashboard():
         galletas=galletas,
         user=user,
         ventas=ventas,
+        inversion=inversion,
+        recomendada=recomendada,
     )
 
 
@@ -497,23 +500,31 @@ def historico_dashboard():
     user = session.get("user")
     if user[4] not in ["cliente"]:
         return render_template("pages/error404.html"), 404
-    idCliente = user[0]
-    # Obtener el nombre del cliente de la tabla de clientes
+    
+    idUsuario = user[0]
+    # Obtener el id del cliente y nombre de la tabla clientes
     cur = mysql.connection.cursor()
     cur.execute(
         """
-    SELECT idUsuario, c.nombreCliente
+    SELECT c.idCliente, c.nombreCliente
     FROM clientes c
     INNER JOIN usuarios u
     ON c.idCliente = u.idClienteFK
     WHERE idUsuario = %s;
     """,
-        (idCliente,),
+        (idUsuario,),
     )
     resultado_cliente = cur.fetchone()
-    nombreCliente = resultado_cliente[1] if resultado_cliente else "Cliente"
+    
+    if resultado_cliente:
+        idCliente = resultado_cliente[0]  # Ahora usamos el idCliente de la tabla clientes
+        nombreCliente = resultado_cliente[1]
+    else:
+        return render_template("pages/error404.html"), 404  # Si no hay cliente asociado
+    
     # Consulta para histórico de compras
-    cur.execute("SELECT * FROM v_historicoCompras WHERE idCliente = %s", (idCliente,))
+    cur.execute("SELECT * FROM v_historicoCompras where idCliente = %s", (idCliente,))
+    print("ID del cliente:", idCliente)
     column_names = [column[0] for column in cur.description]
     historico_compras = []
     for row in cur.fetchall():
@@ -524,7 +535,6 @@ def historico_dashboard():
     cur.close()
     # Verificar si hay compras
     historico = len(historico_compras) > 0
-
     return render_template(
         "/client/Historico.html",
         is_base_template=False,
