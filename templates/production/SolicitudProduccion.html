@@ -1,6 +1,10 @@
 {% extends '/production/baseProduccion/baseProduccion.html' %}
 {% block title %}Solicitudes de producciones{% endblock %}
 {% block content %}
+<!-- Estilos para las alertas -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <link rel="stylesheet" href="/static/css/stylesProduccion/styleSolicitudProducciones.css">
 
 <h1 class="title-solicitud-produccion">Solicitudes de producción</h1>
@@ -12,7 +16,7 @@
             <img src="/{{ galleta[4] }}" alt="{{ galleta[0] }}">
             <div class="solicitud-produccion-dails">
                 <h6>{{ galleta[1] }}</h6>
-                <button class="btn custom-botonProducir" data-product="{{ galleta[1] }}">Producir</button>
+                <button class="btn custom-botonProducir" data-product-id="{{ galleta[0] }}" data-product-name="{{ galleta[1] }}">Producir</button>
             </div>
         </div>
     </div>
@@ -26,19 +30,32 @@
         <span class="close-modal">&times;</span>
         <h2 class="title-modal-soli">Generar nueva orden</h2>
         <div class="modal-body">
-            <h3 class="subtitle-modal-soli ">Receta</h3>
+            <h3 class="subtitle-modal-soli text-center">Galleta: <span id="modal-galleta-name"></span></h3>
+            
+            <div class="inventory-info text-center">
+                <p class="mb-3">Inventario disponible: <span id="total-inventario" class="badge bg-success">0</span> unidades</p>
+            </div>
+            
+            <h3 class="subtitle-modal-soli">Receta</h3>
             <div class="form-group">
-                <select class="form-control">
-                    <option value="">Seleccionar</option>
+                <select id="receta-select" class="form-control">
+                    <option value="">Seleccionar receta</option>
                     <!-- Populate dynamically from backend -->
                 </select>
             </div>
-            <div class="form-group">
-                <label class="text-solicitud-produccion">Cantidad:</label>
-                <input type="number" class="form-control" value="750" min="1">
+            
+            <div class="receta-info text-center mt-3" id="receta-info" style="display: none;">
+                <p class="mb-0">Esta receta produce: <span id="cantidad-horneada" class="badge bg-success">0</span> unidades por lote</p>
             </div>
-            <button class="btn btnAgregarSolicitud">+ AGREGAR</button>
+            
+            <div class="d-grid gap-2 mt-4">
+                <button class="btn btnAgregarSolicitud">+ AGREGAR ORDEN DE PRODUCCIÓN</button>
+            </div>
         </div>
     </div>
 </div>
+
+
+<!--Scripts de las alertas -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}

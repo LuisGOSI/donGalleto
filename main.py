@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, session
-from database.production import insumosCRUD, gestionRecetas
+from database.production import insumosCRUD, gestionRecetas, solicitudProduccion
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
 from database.production import inventarioDeGalletas, inventarioDeInsumos
