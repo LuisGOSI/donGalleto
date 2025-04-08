@@ -58,13 +58,13 @@ def registrar_venta():
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
                 if isinstance(peso_galleta, dict) and "error" in peso_galleta:
                     return peso_galleta, 400
-                cantidad_galletas = round(1000 / peso_galleta)
+                cantidad_galletas = round(1000 / peso_galleta) * cantidad
                 cantidadVendida = cantidad_galletas
             elif tipo == "paquete 700gr":
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
                 if isinstance(peso_galleta, dict) and "error" in peso_galleta:
                     return peso_galleta, 400
-                cantidad_galletas = round(700 / peso_galleta)
+                cantidad_galletas = round(700 / peso_galleta) * cantidad
                 cantidadVendida = cantidad_galletas
             elif tipo == "gramaje":
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
@@ -78,7 +78,7 @@ def registrar_venta():
                 INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido, cantidad_galletas)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """,
-                (idVenta, idGalleta, cantidad, tipo, precio, cantidad_galletas),
+                (idVenta, idGalleta, cantidad, tipo, precio, cantidadVendida),
             )
 
             # 3. Actualizar inventario de galletas
@@ -291,25 +291,39 @@ def confirmar_venta_online(idVenta):
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
                 if isinstance(peso_galleta, dict) and "error" in peso_galleta:
                     return peso_galleta, 400
-                cantidadVendida = round(cantidad * 1000 / peso_galleta)
+                cantidadVendida = round((1000 / peso_galleta) * cantidad) 
             elif tipo == "paquete 700gr":
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
                 if isinstance(peso_galleta, dict) and "error" in peso_galleta:
                     return peso_galleta, 400
-                cantidadVendida = round(cantidad * 700 / peso_galleta)
+                cantidadVendida = round((700 / peso_galleta) * cantidad)  
 
             cursor.execute(
                 """
                 UPDATE inventariogalletas 
                 SET cantidadGalletas = cantidadGalletas - %s
-                WHERE idProduccionFK = (SELECT idProduccion FROM produccion WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s) LIMIT 1)
-                AND cantidadGalletas >= %s
-                AND estadoLote = 'Disponible'
-                ORDER BY fechaCaducidad ASC
-                LIMIT 1
+                WHERE idProduccionFK = (
+                    SELECT idProduccion 
+                    FROM (
+                        SELECT p.idProduccion 
+                        FROM produccion p
+                        INNER JOIN recetas r ON p.idRecetaFK = r.idReceta
+                        INNER JOIN inventariogalletas ig ON p.idProduccion = ig.idProduccionFK
+                        WHERE r.idGalletaFK = %s
+                        AND ig.cantidadGalletas >= %s 
+                        AND ig.estadoLote = 'Disponible'
+                        ORDER BY ig.fechaCaducidad ASC  # Priorizar lotes próximos a caducar
+                        LIMIT 1
+                    ) AS subquery
+                )
+                AND cantidadGalletas >= %s  # Validación adicional
                 """,
-                (cantidadVendida, idGalleta, cantidadVendida),
+                (cantidadVendida, idGalleta, cantidadVendida, cantidadVendida),
             )
+
+            # Verificar si se actualizó el inventario
+            if cursor.rowcount == 0:
+                raise Exception(f"No hay suficiente stock para la galleta ID {idGalleta}")
 
         # Actualizar estado de la venta a confirmada
         cursor.execute(
