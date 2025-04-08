@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const buttonReceta = document.querySelectorAll('.custom-buttonReceta');
     const modalContainer = document.createElement('div');
+    const barraSolicitudes = document.getElementById('ordenesProduccion')
     modalContainer.id = 'recipeModal';
     modalContainer.innerHTML = `
         <div class="modal-content">
@@ -728,3 +729,6 @@ function toggleDropdown(event) {
 }
 
 // ---------------------------------------------------- Funciones para modal de despliegue de ordenes ----------------------------------------------------
+// Cargar solicitudes al abrir el panel
+
+

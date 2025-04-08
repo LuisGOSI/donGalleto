@@ -10,6 +10,8 @@ def registrar_venta():
     cursor = mysql.connection.cursor()
     data = request.get_json()
     idEmpleado = session.get("user")[5]
+    print(idEmpleado)
+    print(session.get("user"))
     if not idEmpleado:
         return (
             jsonify({"error": "No se encontró el ID del empleado en la sesión."}),
@@ -50,24 +52,33 @@ def registrar_venta():
             idGalleta = galleta[0]
 
             cantidadVendida = cantidad
-            match tipo:
-                case "paquete 1kg":
-                    peso_galleta = revisar_gramaje_por_id(idGalleta)
-                    if isinstance(peso_galleta, dict) and "error" in peso_galleta:
-                        return peso_galleta, 400
-                    cantidadVendida = round(cantidad * 1000 / peso_galleta)
-                case "paquete 700gr":
-                    peso_galleta = revisar_gramaje_por_id(idGalleta)
-                    if isinstance(peso_galleta, dict) and "error" in peso_galleta:
-                        return peso_galleta, 400
-                    cantidadVendida = round(cantidad * 700 / peso_galleta)
-            # Insertar en detalleventas
+            cantidad_galletas = 1  # Valor por defecto
+            
+            if tipo == "paquete 1kg":
+                peso_galleta = revisar_gramaje_por_id(idGalleta)
+                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
+                    return peso_galleta, 400
+                cantidad_galletas = round(1000 / peso_galleta)
+                cantidadVendida = cantidad_galletas
+            elif tipo == "paquete 700gr":
+                peso_galleta = revisar_gramaje_por_id(idGalleta)
+                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
+                    return peso_galleta, 400
+                cantidad_galletas = round(700 / peso_galleta)
+                cantidadVendida = cantidad_galletas
+            elif tipo == "gramaje":
+                peso_galleta = revisar_gramaje_por_id(idGalleta)
+                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
+                    return peso_galleta, 400
+                cantidad_galletas = round(cantidad / peso_galleta)
+                cantidadVendida = cantidad_galletas
+
             cursor.execute(
                 """
                 INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido, cantidad_galletas)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """,
-                (idVenta, idGalleta, cantidad, tipo, precio, cantidadVendida),
+                (idVenta, idGalleta, cantidad, tipo, precio, cantidad_galletas),
             )
 
             # 3. Actualizar inventario de galletas
@@ -76,26 +87,21 @@ def registrar_venta():
                     """
                     UPDATE inventariogalletas 
                     SET cantidadGalletas = cantidadGalletas - %s
-                    WHERE idProduccionFK IN (
-                        SELECT idProduccion FROM (
-                            SELECT idProduccion 
-                            FROM produccion 
-                            WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s LIMIT 1)
-                            AND idProduccion IN (
-                                SELECT idProduccionFK 
-                                FROM inventariogalletas 
-                                WHERE cantidadGalletas >= %s 
-                                AND estadoLote = 'Disponible'
-                            )
-                            ORDER BY (
-                                SELECT fechaCaducidad 
-                                FROM inventariogalletas 
-                                WHERE idProduccionFK = produccion.idProduccion
-                            ) ASC
-                            LIMIT 1
-                        ) AS temp
+                    WHERE idProduccionFK = (
+                        SELECT idProduccion 
+                        FROM (
+                            SELECT p.idProduccion 
+                            FROM produccion p
+                            INNER JOIN recetas r ON p.idRecetaFK = r.idReceta
+                            INNER JOIN inventariogalletas ig ON p.idProduccion = ig.idProduccionFK
+                            WHERE r.idGalletaFK = %s
+                            AND ig.cantidadGalletas >= %s 
+                            AND ig.estadoLote = 'Disponible'
+                            ORDER BY ig.fechaCaducidad ASC  # Prioriza lotes próximos a caducar
+                            LIMIT 1  # Selecciona el lote más antiguo con stock suficiente
+                        ) AS subquery
                     )
-                """,
+                    """,
                     (cantidadVendida, idGalleta, cantidadVendida),
                 )
 
@@ -212,6 +218,34 @@ def revisar_gramaje_por_nombre_700gr():
             ),
             200,
         )
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+@app.route("/revisarGramajePorNombre", methods=["POST"])
+def revisar_gramaje_por_nombre():
+    cursor = mysql.connection.cursor()
+    data = request.get_json()
+    nombreGalleta = data.get("name")
+    try:
+        if not nombreGalleta:
+            return (jsonify({"error": "Falta el nombre de la galleta"}), 400)
+
+        cursor.execute(
+            "SELECT gramaje FROM galletas WHERE nombreGalleta = %s", (nombreGalleta,)
+        )
+        galleta = cursor.fetchone()
+        if not galleta:
+            return jsonify({"error": "Galleta no encontrada"}), 404
+
+        peso_galleta = galleta[0]
+
+        if peso_galleta <= 0:
+            return jsonify({"error": "El peso de la galleta no es válido"}), 400
+
+        return jsonify({"pesoGalleta": peso_galleta}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
