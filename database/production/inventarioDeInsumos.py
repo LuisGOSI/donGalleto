@@ -172,7 +172,6 @@ def registrarCompraInsumos():
     try:
         cur = mysql.connection.cursor()
         id_empleado = session.get("user")[5]  # Asegúrate de que "user" está en la sesión
-        print("ID de empleado:", id_empleado)  # Verifica que el ID de empleado se obtiene correctamente
         id_proveedor = request.form.get("proveedor-select")
         insumos_data = []
         index = 0

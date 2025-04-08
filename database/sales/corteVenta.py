@@ -2,19 +2,22 @@ from dotenv import load_dotenv
 from db import mysql,app
 from flask import render_template, session, redirect,url_for
 
+
 load_dotenv()
 
 
 @app.route("/corteVentas")
 def corteVentas():
     if session.get("user") is None:
+        app.logger.error('Usuario desconocido intento acceder a corte de venta, acceso denegado')
         return redirect(url_for("login"))
     user = session.get("user")
     if user[4] != "ventas":
+        app.logger.warning(f'El usuario con correo "{user[2]}" intento acceder a corte de venta, acceso denegado')
         return render_template("pages/error404.html"), 404
     datos = getTotalGeneral()
     ventas = getDesgloseVenta()
-    user = session.get("user")
+    app.logger.debug(f'rol verificado, el usuario con correo "{user[2] }" accedio correctamente a la vista corte de venta')
     return render_template("/sales/corteVenta.html", datos=datos, user=user, ventas=ventas)
 
 def getDesgloseVenta():

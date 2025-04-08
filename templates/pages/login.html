@@ -31,8 +31,17 @@
 			<label class="registrarse" for="chk" aria-hidden="true">Registrarse</label>
 			<input type="text" name="name" placeholder="Nombre" required />
 			<input type="email" name="email" placeholder="Email" required />
-			<input type="tel" name="phone" pattern="\d{10}" title="El número debe tener exactamente 10 dígitos" placeholder="Telefono" required />
-			<input type="password" name="password" minlength="8" placeholder="Contraseña" required />
+
+			<div class="input-group">
+				<input type="tel" id="phone" name="phone" pattern="\d{10}" title="El número debe tener exactamente 10 dígitos" placeholder="Telefono" required />
+				<small id="phone-error" class="error-msg">Solo se permiten 10 dígitos numéricos</small>
+			</div>
+
+			<div class="input-group">
+				<input type="password" id="password" name="password" placeholder="Contraseña" required />
+				<small id="error-password" class="error-msg">Contraseña inválida</small>
+				<small id="invalid-char-msg" class="error-msg">Carácter no permitido</small>
+			</div>
 			<div class="captcha-container">
 				{{ captcha_html(captcha)|safe }}
 			</div>
@@ -91,6 +100,92 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+const passwordInput = document.getElementById("password");
+const errorMsg = document.getElementById("error-password");
+const signupForm = document.querySelector(".signup form");
+//* Validación de contraseña con expresiones regulares */
+function validarPassword(password) {
+    const errores = [];
+
+    if (password.length < 8) {
+        errores.push("mínimo 8 caracteres");
+    }
+    if (!/[A-Z]/.test(password)) {
+        errores.push("al menos 1 mayúscula");
+    }
+    if (!/[a-z]/.test(password)) {
+        errores.push("al menos 1 minúscula");
+    }
+    if (!/\d/.test(password)) {
+        errores.push("al menos 1 número");
+    }
+    if (!/[@$!%*?&._\-]/.test(password)) {
+        errores.push("al menos 1 carácter especial");
+    }
+
+    return errores;
+}
+
+
+// Validación en tiempo real en el campo contraseña
+passwordInput.addEventListener("input", function () {
+    const errores = validarPassword(passwordInput.value);
+    if (errores.length > 0) {
+        errorMsg.style.display = "block";
+        errorMsg.textContent = "La contraseña debe tener: " + errores.join(", ");
+        passwordInput.style.border = "2px solid red";
+    } else {
+        errorMsg.style.display = "none";
+        passwordInput.style.border = "2px solid green";
+    }
+});
+
+// Validación al enviar
+signupForm.addEventListener("submit", function (e) {
+    const errores = validarPassword(passwordInput.value);
+    if (errores.length > 0) {
+        e.preventDefault();
+        errorMsg.style.display = "block";
+        errorMsg.textContent = "La contraseña debe tener: " + errores.join(", ");
+        passwordInput.focus();
+        passwordInput.style.border = "2px solid red";
+    }
+});
+
+//* Validación de caracteres permitidos al escribir en el campo de contraseña */
+document.getElementById("password").addEventListener("keypress", function (e) {
+    const permitido = /^[a-zA-Z0-9@$!%*?&._-]$/; // solo letras, números y algunos caracteres especiales
+
+    if (!permitido.test(e.key)) {
+        e.preventDefault();
+        const msg = document.getElementById("invalid-char-msg");
+        msg.style.display = "inline";
+        setTimeout(() => msg.style.display = "none", 2000);
+    }
+});
+
+//* Eliminar caracteres no permitidos al escribir en el campo de contraseña */
+document.getElementById("password").addEventListener("input", function () {
+    this.value = this.value.replace(/[^a-zA-Z0-9@$!%*?&._-]/g, '');
+});
+
+
+const phoneInput = document.getElementById("phone");
+const phoneError = document.getElementById("phone-error");
+//* Validación de número de teléfono */
+phoneInput.addEventListener("input", function () {
+    // Elimina todo lo que no sea dígito
+    this.value = this.value.replace(/\D/g, '');
+
+    // Oculta o muestra el mensaje de error si se excede de 10
+    if (this.value.length > 10) {
+        phoneError.style.display = "block";
+        this.value = this.value.slice(0, 10); // recorta a 10 dígitos
+    } else {
+        phoneError.style.display = "none";
+    }
+});
+
 </script>
 
 {% endblock %}

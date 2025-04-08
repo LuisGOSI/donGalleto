@@ -9,9 +9,11 @@ load_dotenv()
 @app.route("/getInveGalletas")   
 def getInveGalletas():
     if session.get("user") is None:
+        app.logger.error('Usuario desconocido intento acceder a inventario de galletas, acceso denegado')
         return redirect(url_for("login"))
     user = session.get("user")
     if user[4] != "produccion":
+        app.logger.warning(f'El usuario con correo "{user[2]}" intento acceder a inventario de galletas, acceso denegado')
         return render_template("pages/error404.html"), 404
     hoy = datetime.today().date()
     lotesResumen = []
@@ -41,11 +43,13 @@ def getInveGalletas():
     cur.close()
     galletasTabla = getGalletasTabla()
     galletasResumen = getGalletasResumen()
+    app.logger.debug(f'rol verificado, el usuario con correo "{user[2] }" accedio correctamente a la vista inventario de galletas')
     return render_template("/production/InveGalletas.html", galletasTabla=galletasTabla, galletasResumen=galletasResumen, lotesResumen=lotesResumen, hoy=hoy, user=user)
 
 
 @app.route("/registrarMermaGalleta", methods=["POST"])
 def registrarMermaGalleta():
+    user=session.get("user")
     if request.method == "POST":
         idInventarioGalletaFK = request.form["idInventarioGalletaFK"]
         tipoMerma = request.form["tipoMerma"]
@@ -76,9 +80,11 @@ def registrarMermaGalleta():
                 )
                 flash("Lote vacío", "success")
             mysql.connection.commit()
+            app.logger.debug(f'el usuario con correo "{user[2] }" registro mermas en inventario de galletas en el lote No. "{idInventarioGalletaFK}"')
             flash("Merma Registrada", "success")
         except Exception as e:
             mysql.connection.rollback()
+            app.logger.error(f'el usuario con correo "{user[2] }" tuvo problemas en registrar mermas en inventario de galletas en el lote No. "{idInventarioGalletaFK}"')
             flash("Error al procesar la merma.", "danger")
         finally:
             cur.close()
@@ -124,9 +130,9 @@ def getGalletasResumen():
 
 @app.route("/enviarMerma", methods=["POST"])
 def enviarMerma():
+    user=session.get("user")
     if request.method == "POST":
         idInventarioGalletaFK = request.form["idInventarioGalletaFK"]
-        print(idInventarioGalletaFK)
         tipoMerma = "Galletas caducas"
         observaciones = "No se vendieron antes de su fecha"
         cur = mysql.connection.cursor()
@@ -141,10 +147,12 @@ def enviarMerma():
                 "UPDATE inventarioGalletas SET cantidadGalletas = 0 WHERE idInvGalleta = %s;",
                 (idInventarioGalletaFK,),
             )
+            app.logger.debug(f'el usuario con correo "{user[2] }" mando las galletas caducadas del lote No. "{idInventarioGalletaFK}" a merma')
             flash("Merma Registrada", "success")
             mysql.connection.commit()
         except Exception as e:
             mysql.connection.rollback()
+            app.logger.error(f'el usuario con correo "{user[2] }" tuvo problemas en mandar las galletas caducadas del lote No. "{idInventarioGalletaFK}" a merma')
             flash("Error al procesar la merma.", "danger")
         finally:
             cur.close()
