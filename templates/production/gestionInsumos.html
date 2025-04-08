@@ -182,36 +182,38 @@
                     ></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/register_insumos" method="POST">
+                    <form action="/register_insumos" method="POST" id="registroInsumoForm" novalidate>
                         <!-- Sección: Insumo -->
                         <div class="mb-4">
                             <h6 class="fw-bold">Insumo</h6>
                             <div class="mb-3">
-                                <label for="nombreInsumo" class="form-label"
-                                    >Nombre del Insumo</label
-                                >
+                                <label for="nombreInsumo" class="form-label">Nombre del Insumo</label>
                                 <input
                                     type="text"
                                     class="form-control"
                                     id="nombreInsumo"
                                     name="nombreInsumo"
                                     required
+                                    pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]{2,50}$"
+                                    title="Solo letras, números, espacios y algunos símbolos permitidos (2-50 caracteres)"
+                                    maxlength="50"
                                 />
+                                <div class="invalid-feedback">Por favor ingresa un nombre de insumo válido.</div>
                             </div>
                             <div class="mb-3">
-                                <label for="unidadMedida" class="form-label"
-                                    >Unidad de Medida</label
-                                >
+                                <label for="unidadMedida" class="form-label">Unidad de Medida</label>
                                 <select
                                     class="form-select"
                                     id="unidadMedida"
                                     name="unidadMedida"
                                     required
                                 >
+                                    <option value="" disabled selected>Seleccione una unidad</option>
                                     <option value="gramo">Gramo (gr)</option>
                                     <option value="mililitro">Mililitro (ml)</option>
                                     <option value="pieza">Pieza</option>
                                 </select>
+                                <div class="invalid-feedback">Por favor selecciona una unidad de medida.</div>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -231,7 +233,6 @@
     </div>
 
     <!-- Modal para asignar proveedor y presentacion -->
-
     <div
         class="modal fade"
         id="asignarProveedorModal"
@@ -254,7 +255,7 @@
                     ></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/asignar_proveedor_presentacion" method="POST">
+                    <form action="/asignar_proveedor_presentacion" method="POST" id="asignarProveedorForm" novalidate>
                         <input type="hidden" id="idInsumo" name="idInsumo" />
                         <div class="mb-3">
                             <label for="idProveedorFK" class="form-label">Proveedor</label>
@@ -269,11 +270,10 @@
                                 <option value="{{ proveedor[0] }}">{{ proveedor[1] }}</option>
                                 {% endfor %}
                             </select>
+                            <div class="invalid-feedback">Por favor selecciona un proveedor.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="unidadMedidaAsignar" class="form-label"
-                                >Unidad de medida</label
-                            >
+                            <label for="unidadMedidaAsignar" class="form-label">Unidad de medida</label>
                             <input
                                 type="text"
                                 class="form-control"
@@ -283,46 +283,52 @@
                             />
                         </div>
                         <div class="mb-3">
-                            <label for="nombrePresentacion" class="form-label"
-                                >Nombre de la presentación</label
-                            >
+                            <label for="nombrePresentacion" class="form-label">Nombre de la presentación</label>
                             <input
                                 type="text"
                                 class="form-control"
                                 id="nombrePresentacion"
                                 name="nombrePresentacion"
                                 required
+                                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]{2,50}$"
+                                title="Solo letras, números, espacios y algunos símbolos permitidos (2-50 caracteres)"
+                                maxlength="50"
                             />
+                            <div class="invalid-feedback">Por favor ingresa un nombre de presentación válido.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="precioProveedor" class="form-label"
-                                >Precio del proveedor</label
-                            >
+                            <label for="precioProveedor" class="form-label">Precio del proveedor</label>
                             <input
                                 type="number"
                                 step="0.01"
+                                min="0.01"
                                 class="form-control"
                                 id="precioProveedor"
                                 name="precioProveedor"
                                 required
                             />
+                            <div class="invalid-feedback">Por favor ingresa un precio válido mayor que cero.</div>
                         </div>
                         <div class="mb-3">
                             <label for="cantidad" class="form-label">Contenido presentacion</label>
                             <input
                                 type="number"
                                 step="0.01"
+                                min="0.01"
                                 class="form-control"
                                 id="cantidad"
                                 name="cantidad"
                                 required
                             />
+                            <div class="invalid-feedback">Por favor ingresa una cantidad válida mayor que cero.</div>
                         </div>
                         <div class="mb-3">
                             <label for="formato" class="form-label">Formato</label>
                             <select class="form-select" id="formato" name="formato" required>
+                                <option value="" disabled selected>Seleccione un formato</option>
                                 <!-- Carga dinamica de las opciones -->
                             </select>
+                            <div class="invalid-feedback">Por favor selecciona un formato.</div>
                         </div>
                         <div class="mb-3">
                             <label for="cantidadBase" class="form-label">Cantidad Base</label>
@@ -359,19 +365,31 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/editarInsumo" method="POST">
+                    <form action="/editarInsumo" method="POST" id="editarInsumoForm" novalidate>
                         <input type="hidden" id="idInsumoEditar" name="idInsumoEditar" />
                         <div class="mb-3">
                             <label for="nombreInsumoEditar" class="form-label">Nombre del Insumo</label>
-                            <input type="text" class="form-control" id="nombreInsumoEditar" name="nombreInsumoEditar" required />
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="nombreInsumoEditar" 
+                                name="nombreInsumoEditar" 
+                                required 
+                                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]{2,50}$"
+                                title="Solo letras, números, espacios y algunos símbolos permitidos (2-50 caracteres)"
+                                maxlength="50"
+                            />
+                            <div class="invalid-feedback">Por favor ingresa un nombre de insumo válido.</div>
                         </div>
                         <div class="mb-3">
                             <label for="unidadMedidaEditar" class="form-label">Unidad de Medida</label>
                             <select class="form-select" id="unidadMedidaEditar" name="unidadMedidaEditar" required>
+                                <option value="" disabled>Seleccione una unidad</option>
                                 <option value="gramo">Gramo (gr)</option>
                                 <option value="mililitro">Mililitro (ml)</option>
                                 <option value="pieza">Pieza</option>
                             </select>
+                            <div class="invalid-feedback">Por favor selecciona una unidad de medida.</div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -392,7 +410,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/eliminarInsumo" method="POST">
+                    <form action="/eliminarInsumo" method="POST" id="eliminarInsumoForm" novalidate>
                         <input type="hidden" id="idInsumoEliminar" name="idInsumoEliminar" />
                         <p>¿Está seguro que deseas eliminar este insumo?</p>
                         <div class="modal-footer">
@@ -414,28 +432,58 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/editarPresentacionProveedor" method="POST">
+                    <form action="/editarPresentacionProveedor" method="POST" id="editarPresentacionForm" novalidate>
                         <input type="hidden" id="idPresentacionEditar" name="idPresentacionEditar" />
-                        <input type="hidden" id="idInsumoEditar" name="idInsumoEditar" />
+                        <input type="hidden" id="idInsumoEditarPresentacion" name="idInsumoEditar" />
                         <div class="mb-3">
                             <label for="nombrePresentacionEditar" class="form-label">Nombre de la Presentación</label>
-                            <input type="text" class="form-control" id="nombrePresentacionEditar" name="nombrePresentacionEditar" required />
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="nombrePresentacionEditar" 
+                                name="nombrePresentacionEditar" 
+                                required 
+                                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]{2,50}$"
+                                title="Solo letras, números, espacios y algunos símbolos permitidos (2-50 caracteres)"
+                                maxlength="50"
+                            />
+                            <div class="invalid-feedback">Por favor ingresa un nombre de presentación válido.</div>
                         </div>
                         <div class="mb-3">
                             <label for="cantidadBaseEditar" class="form-label">Cantidad Base</label>
-                            <input type="number" step="0.01" class="form-control" id="cantidadBaseEditar" name="cantidadBaseEditar" required />
+                            <input 
+                                type="number" 
+                                step="0.01" 
+                                min="0.01"
+                                class="form-control" 
+                                id="cantidadBaseEditar" 
+                                name="cantidadBaseEditar" 
+                                required 
+                            />
+                            <div class="invalid-feedback">Por favor ingresa una cantidad válida mayor que cero.</div>
                         </div>
                         <div class="mb-3">
                             <label for="proveedorEditar" class="form-label">Proveedor</label>
                             <select class="form-select" id="proveedorEditar" name="proveedorEditar" required>
+                                <option value="" disabled>Seleccione un proveedor</option>
                                 {% for proveedor in proveedores %}
                                 <option value="{{ proveedor[0] }}">{{ proveedor[1] }}</option>
                                 {% endfor %}
                             </select>
+                            <div class="invalid-feedback">Por favor selecciona un proveedor.</div>
                         </div>
                         <div class="mb-3">
                             <label for="precioProveedorEditar" class="form-label">Precio del Proveedor</label>
-                            <input type="number" step="0.01" class="form-control" id="precioProveedorEditar" name="precioProveedorEditar" required />
+                            <input 
+                                type="number" 
+                                step="0.01" 
+                                min="0.01"
+                                class="form-control" 
+                                id="precioProveedorEditar" 
+                                name="precioProveedorEditar" 
+                                required 
+                            />
+                            <div class="invalid-feedback">Por favor ingresa un precio válido mayor que cero.</div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -456,7 +504,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/eliminarPresentacion" method="POST">
+                    <form action="/eliminarPresentacion" method="POST" id="eliminarPresentacionForm" novalidate>
                         <input type="hidden" id="idPresentacionEliminar" name="idPresentacionEliminar" />
                         <p>¿Está seguro que deseas eliminar esta presentación?</p>
                         <div class="modal-footer">
@@ -468,6 +516,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Modal Asignar formato para recetas -->
     <div class="modal fade" id="asignarFormatoRecetaModal" name="asignarFormatoRecetaModal" tabindex="-1" aria-labelledby="asignarFormatoRecetaModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -479,17 +528,38 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/registrar_formato_receta" method="POST">
+                    <form action="/registrar_formato_receta" method="POST" id="asignarFormatoRecetaForm" novalidate>
                         <input type="hidden" id="idInsumoFormato" name="idInsumoFormato" />
                         
                         <div class="mb-3">
                             <label for="nombreFormato" class="form-label">Nombre del Formato</label>
-                            <input type="text" class="form-control" id="nombreFormato" name="nombreFormato" required placeholder="Ej: Taza, Cucharada, Vaso">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="nombreFormato" 
+                                name="nombreFormato" 
+                                required 
+                                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]{2,50}$"
+                                title="Solo letras, números, espacios y algunos símbolos permitidos (2-50 caracteres)"
+                                maxlength="50"
+                                placeholder="Ej: Taza, Cucharada, Vaso"
+                            />
+                            <div class="invalid-feedback">Por favor ingresa un nombre de formato válido.</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="cantidadConvertida" class="form-label">Equivalencia en la unidad base</label>
-                            <input type="number" step="0.01" class="form-control" id="cantidadConvertida" name="cantidadConvertida" required placeholder="Ej: 1 taza = 250 gramos (ingresar 250)">
+                            <input 
+                                type="number" 
+                                step="0.01" 
+                                min="0.01"
+                                class="form-control" 
+                                id="cantidadConvertida" 
+                                name="cantidadConvertida" 
+                                required 
+                                placeholder="Ej: 1 taza = 250 gramos (ingresar 250)"
+                            />
+                            <div class="invalid-feedback">Por favor ingresa una cantidad válida mayor que cero.</div>
                             <div class="form-text">Ingrese cuánto representa este formato en la unidad de medida base del insumo (gr,ml,pz)</div>
                         </div>
                         
@@ -514,18 +584,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/editarFormatoReceta" method="POST">
+                <form action="/editarFormatoReceta" method="POST" id="editarFormatoRecetaForm" novalidate>
                     <input type="hidden" id="idFormatoEditar" name="idFormatoEditar" />
                     <input type="hidden" id="idInsumoFormatoEditar" name="idInsumoFormatoEditar" />
                     
                     <div class="mb-3">
                         <label for="nombreFormatoEditar" class="form-label">Nombre del Formato</label>
-                        <input type="text" class="form-control" id="nombreFormatoEditar" name="nombreFormatoEditar" required>
+                        <input type="text" class="form-control" id="nombreFormatoEditar" name="nombreFormatoEditar" required
+                               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]{2,50}$" 
+                               title="Solo letras, números, espacios y algunos símbolos (-_.) permitidos (2-50 caracteres)" 
+                               maxlength="50">
+                        <div class="invalid-feedback">Por favor ingresa un nombre de formato válido.</div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="cantidadConvertidaEditar" class="form-label">Equivalencia en la unidad base</label>
-                        <input type="number" step="0.01" class="form-control" id="cantidadConvertidaEditar" name="cantidadConvertidaEditar" required>
+                        <input type="number" step="0.01" min="0.01" class="form-control" id="cantidadConvertidaEditar" name="cantidadConvertidaEditar" required>
+                        <div class="invalid-feedback">Por favor ingresa una cantidad positiva mayor a cero.</div>
                         <div class="form-text" id="unidadBaseText">Cantidad en [unidad] que equivale a 1 unidad de este formato</div>
                     </div>
                     

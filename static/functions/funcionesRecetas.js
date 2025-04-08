@@ -66,7 +66,7 @@ function crearNuevoDetalle(index) {
             </div>
             <div class="col-md-1 d-flex align-items-end">
                 <button type="button" class="btn btn-danger btn-eliminar-detalle">
-                    <i class="bi bi-trash"></i>
+                    <i class="fas fa-trash"></i>
                 </button>
             </div>
         </div>
@@ -344,7 +344,7 @@ function setupEditRecipeModal() {
                             </div>
                             <div class="col-md-1 d-flex align-items-end">
                                 <button type="button" class="btn btn-danger btn-eliminar-detalle">
-                                    <i class="bi bi-trash"></i>
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
@@ -461,7 +461,7 @@ function setupEditModalEvents() {
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
                     <button type="button" class="btn btn-danger btn-eliminar-detalle">
-                        <i class="bi bi-trash"></i>
+                        <i class="fas fa-trash"></i>
                     </button>
                 </div>
             </div>

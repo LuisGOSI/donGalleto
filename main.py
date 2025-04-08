@@ -729,7 +729,7 @@ def get_empleados():
 def enviar_correo():
     msg = Message('¡Hola desde Flask!',
                   sender='contacto.soydongalleto@gmail.com',
-                  recipients=['johan.antonio25@gmail.com'])
+                  recipients=['alberto.rt@outlook.com'])
     msg.body = 'Este es un mensaje enviado desde una app Flask.'
     mail.send(msg)
     return 'Correo enviado'

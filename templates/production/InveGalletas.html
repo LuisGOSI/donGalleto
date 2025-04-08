@@ -172,7 +172,12 @@
             <div class="mb-3">
               <label for="observaciones" class="form-label">Observaciones</label>
               <textarea class="form-control" id="observaciones" name="observaciones" rows="3" maxlength="500"></textarea>
-              <div class="invalid-feedback">Las observaciones no deben exceder los 500 caracteres.</div>
+              <small class="recommendation-feedback" id="observacionesAdvertencia" style="display: none;">
+                Se recomienda ingresar una observación.
+              </small>
+              <div class="invalid-feedback">
+                Las observaciones no deben exceder los 500 caracteres ni contener caracteres especiales.
+              </div>
             </div>
   
             <div class="modal-footer">
