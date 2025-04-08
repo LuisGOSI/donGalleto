@@ -31,8 +31,8 @@
 			<label class="registrarse" for="chk" aria-hidden="true">Registrarse</label>
 			<input type="text" name="name" placeholder="Nombre" required />
 			<input type="email" name="email" placeholder="Email" required />
-			<input type="number" name="phone" placeholder="Telefono" required />
-			<input type="password" name="password" placeholder="Contraseña" required />
+			<input type="tel" name="phone" pattern="\d{10}" title="El número debe tener exactamente 10 dígitos" placeholder="Telefono" required />
+			<input type="password" name="password" minlength="8" placeholder="Contraseña" required />
 			<div class="captcha-container">
 				{{ captcha_html(captcha)|safe }}
 			</div>

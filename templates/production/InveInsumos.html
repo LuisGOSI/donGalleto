@@ -109,7 +109,7 @@
                                 <th>Lote</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
-                                <th>Presentación</th>
+                                <th>Unidad de medida</th>
                                 <th>Fecha De Caducidad</th>
                                 <th>Mermas</th>
                                 <th>Acciones</th>
@@ -148,7 +148,7 @@
                                 <th>Lote</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
-                                <th>Presentación</th>
+                                <th>Unidad de medida</th>
                                 <th>Fecha De Caducidad</th>
                                 <th>Mermas</th>
                                 <th>Acciones</th>
@@ -156,7 +156,7 @@
                         </thead>
                         <tbody>
                             {% for insumo in insumos %}
-                                {% if insumo[6] == 'Caducado' %}
+                                {% if insumo[6] == 'Caducado' and insumo[3]>0 %}
                                 <tr>
                                     <td>{{insumo[0]}}</td>
                                     <td>{{insumo[1]}}</td>

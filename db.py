@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from flask_simple_captcha import CAPTCHA
 from dotenv import load_dotenv
 import os
+from flask_mail import Mail, Message
 
 load_dotenv()
 
@@ -22,6 +23,14 @@ CAPTCHA_CONFIG = {
     'CAPTCHA_IMG_FORMAT': 'JPEG',
     'ROUTE': '/simple-captcha-image/<key>'
 }
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'contacto.soydongalleto@gmail.com'
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+
+
 mysql = MySQL(app)
 captcha = CAPTCHA(config=CAPTCHA_CONFIG)
 captcha.init_app(app)
+mail = Mail(app)
