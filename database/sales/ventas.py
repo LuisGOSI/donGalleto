@@ -64,10 +64,10 @@ def registrar_venta():
             # Insertar en detalleventas
             cursor.execute(
                 """
-                INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido, cantidad_galletas)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """,
-                (idVenta, idGalleta, cantidad, tipo, precio),
+                (idVenta, idGalleta, cantidad, tipo, precio, cantidadVendida),
             )
 
             # 3. Actualizar inventario de galletas
@@ -76,11 +76,25 @@ def registrar_venta():
                     """
                     UPDATE inventariogalletas 
                     SET cantidadGalletas = cantidadGalletas - %s
-                    WHERE idProduccionFK = (SELECT idProduccion FROM produccion WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s) LIMIT 1)
-                    AND cantidadGalletas >= %s
-                    AND estadoLote = 'Disponible'
-                    ORDER BY fechaCaducidad ASC
-                    LIMIT 1
+                    WHERE idProduccionFK IN (
+                        SELECT idProduccion FROM (
+                            SELECT idProduccion 
+                            FROM produccion 
+                            WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s LIMIT 1)
+                            AND idProduccion IN (
+                                SELECT idProduccionFK 
+                                FROM inventariogalletas 
+                                WHERE cantidadGalletas >= %s 
+                                AND estadoLote = 'Disponible'
+                            )
+                            ORDER BY (
+                                SELECT fechaCaducidad 
+                                FROM inventariogalletas 
+                                WHERE idProduccionFK = produccion.idProduccion
+                            ) ASC
+                            LIMIT 1
+                        ) AS temp
+                    )
                 """,
                     (cantidadVendida, idGalleta, cantidadVendida),
                 )
