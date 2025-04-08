@@ -25,13 +25,13 @@
                         <div class="d-flex justify-content-center text-white small gap-3">
                             <div>
                                 <i class="fas fa-box-open"></i> 
-                                {{ recomendada[0]['total_existencias'] | int }} unidades
+                                {{ recomendada[0]['total_existencias'] | int }} unidades restantes
                             </div>
                         </div>
                     {% else %}
                         <img src="{{ url_for('static', filename='img/thisIsFine.png') }}" 
-                             alt="Galleta recomendada" 
-                             class="img-fluid mx-auto mb-2" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #E3C7A1;">
+                            alt="Galleta recomendada" 
+                            class="img-fluid mx-auto mb-2" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #E3C7A1;">
                         
                         <h5 class="text-white mb-2" style="font-weight: 700;">
                             No hay recomendación disponible
@@ -52,7 +52,7 @@
                 <div class="row g-0 h-50 align-items-center" style="background: #3a2a1f; border-radius: 10px 10px 0 0; padding: 15px;">
                     <div class="col-8">
                         <h5 class="text-white fw-bold mb-0">
-                            <i class="fas fa-coins me-2"></i>Inversión Total
+                            <i class="fas fa-coins me-2"></i>Inversión Total en Inventario de Galletas
                         </h5>
                     </div>
                     <div class="col-4 text-end">
@@ -110,16 +110,18 @@
     </div>
 </div>
 <br>
-<div class="charts-section" style="display: flex; justify-content: center; gap: 20px; align-items: flex-start;">
+<div class="charts-section" style="display: flex; flex-wrap: nowrap; justify-content: center; gap: 20px; align-items: flex-start; width: 100%; overflow-x: auto; padding: 10px; box-sizing: border-box;">
 
-    <div class="chart-card" style="background: #4E3629; color: black; padding: 10px; border-radius: 8px; width: 30%; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <div class="chart-card" style="background: #4E3629; color: white; padding: 10px; border-radius: 8px; width: 30%; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex-shrink: 0;">
         <h3 style="color: white; font-weight: bold; margin-top: 0; text-align: center; font-size: 28px;">Ganancias por tipo de venta</h3>
         <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 150px; display: block; padding: 10px;"></canvas>
     </div>
 
-    <div class="chart-card" style="background: #D7B89D; padding: 15px; border-radius: 8px;width: 55%; height:485px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-        <h3 style="color: black; font-weight: bold; margin-top: 0; text-align: center;">Ganancias de  los últimos 5 días de la semana</h3>
-        <canvas id="gananciasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%;  display: block;"></canvas>
+    <div class="chart-card" style="background: #D7B89D; color: white; padding: 10px; border-radius: 8px; width: 55%; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex-shrink: 0;">
+        <h3 style="color: black; font-weight: bold; margin-top: 0; text-align: center; flex-shrink: 0;">Ganancias de los últimos 5 días de la semana</h3>
+        <div style="flex-grow: 1; min-height: 0; overflow: hidden;">
+            <canvas id="gananciasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 428px; display: block;"></canvas>
+        </div>
     </div>
 </div>
     
