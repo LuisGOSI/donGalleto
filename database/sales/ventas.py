@@ -296,7 +296,13 @@ def confirmar_venta_online(idVenta):
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
                 if isinstance(peso_galleta, dict) and "error" in peso_galleta:
                     return peso_galleta, 400
-                cantidadVendida = round((700 / peso_galleta) * cantidad)  
+                cantidadVendida = round((700 / peso_galleta) * cantidad)
+            elif tipo == "gramaje":
+                peso_galleta = revisar_gramaje_por_id(idGalleta)
+                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
+                    return peso_galleta, 400
+                cantidad_galletas = round(cantidad / peso_galleta)
+                cantidadVendida = cantidad_galletas
 
             cursor.execute(
                 """
