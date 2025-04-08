@@ -14,7 +14,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentOnlineOrder = null;
 
     function PAQUETE_CANTIDAD(item) {
+        // Guardar el precio base original si no está definido
+        if (!item.basePrice) {
+            item.basePrice = item.price;
+        }
+        // Resetear al precio base antes de aplicar cualquier cálculo
+        item.price = item.basePrice;
         switch (item.type) {
+            case "Unidad":
+                item.unidades = item.quantity;
+                break;
             case "Paquete 1kg":
                 fetch("/revisarGramajePorNombre1kg", {
                     method: "POST",
@@ -23,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        item.price = (data.cantidadPara1kg * item.price) * 0.93;
+                        item.unidades = data.cantidadPara1kg;
+                        item.price = (item.unidades * item.basePrice) * 0.93;
                         renderCart();
                     })
                     .catch(error => console.error("Error:", error));
@@ -36,13 +46,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        item.price = (data.cantidadPara700gr * item.price) * 0.93;
+                        item.unidades = data.cantidadPara700gr;
+                        item.price = (item.unidades * item.basePrice) * 0.93;
                         renderCart();
                     })
                     .catch(error => console.error("Error:", error));
                 break;
-            default:
-                item.price = item.price; // No change for Unidad
+            case "Gramaje":
+                fetch("/revisarGramajePorNombre", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(item)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const gramosPorUnidad = data.pesoGalleta;
+                        item.unidades = Math.round(item.quantity / gramosPorUnidad);
+                        item.price = item.basePrice * item.unidades;
+                        renderCart();
+                    })
+                    .catch(error => console.error("Error:", error));
                 break;
         }
     }
@@ -59,6 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function addToCart(item) {
+        item.basePrice = item.price; // Guardar el precio base original
+        item.unidades = 1; // Inicializar unidades
         cart.push(item);
         renderCart();
     }
@@ -74,12 +99,16 @@ document.addEventListener("DOMContentLoaded", () => {
                         <option value="Unidad" ${item.type === "Unidad" ? "selected" : ""}>Unidad</option>
                         <option value="Paquete 1kg" ${item.type === "Paquete 1kg" ? "selected" : ""}>Paquete 1kg</option>
                         <option value="Paquete 700gr" ${item.type === "Paquete 700gr" ? "selected" : ""}>Paquete 700gr</option>
+                        <option value="Gramaje" ${item.type === "Gramaje" ? "selected" : ""}>Gramaje</option>
                     </select>
+                    ${item.type === "Gramaje" ? `<div class="small-text">(${item.unidades} unidades)</div>` : ''}
                 </td>
                 <td>
-                    <input type="number" class="quantity-input" data-index="${index}" value="${item.quantity}" min="1">
+                    ${item.type === "Gramaje" ? 
+                        `<input type="number" class="quantity-input" data-index="${index}" value="${item.quantity}" min="1" step="1">` : 
+                        `<input type="number" class="quantity-input" data-index="${index}" value="${item.quantity}" min="1">`}
                 </td>
-                <td class="price-column">$${(item.price * item.quantity).toFixed(2)}</td>
+                <td class="price-column">$${item.type === "Gramaje" ? item.price.toFixed(2) : (item.price * item.quantity).toFixed(2)}</td>
                 <td><button class="remove-btn" data-index="${index}">❌</button></td>
             `;
             cartTableBody.appendChild(row);
@@ -91,10 +120,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const index = event.target.dataset.index;
         if (event.target.classList.contains("quantity-input")) {
             cart[index].quantity = parseInt(event.target.value) || 1;
+            // Si es gramaje, recalcular el precio
+            if (cart[index].type === "Gramaje") {
+                PAQUETE_CANTIDAD(cart[index]);
+            }
         } else if (event.target.classList.contains("type-select")) {
             cart[index].type = event.target.value;
+            // Resetear cantidad a 1 si cambia de gramaje a otro tipo o viceversa
+            if ((event.target.value === "Gramaje" && cart[index].quantity === 1) || 
+                (event.target.value !== "Gramaje" && cart[index].type === "Gramaje")) {
+                cart[index].quantity = 1;
+            }
             PAQUETE_CANTIDAD(cart[index]);
-
         }
         renderCart();
     });
@@ -108,7 +145,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function updateTotals() {
-        let subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        let subtotal = cart.reduce((acc, item) => {
+            if (item.type === "Gramaje") {
+                return acc + item.price; // Ya está calculado el precio total para gramaje
+            } else {
+                return acc + (item.price * item.quantity);
+            }
+        }, 0);
         subtotalInput.value = subtotal.toFixed(2);
         let descuento = parseFloat(descuentoInput.value) || 0;
         let descuentoAplicado = (subtotal * descuento) / 100;
