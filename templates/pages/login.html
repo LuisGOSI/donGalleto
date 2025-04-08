@@ -44,18 +44,53 @@
 </div>
 
 <script>
-	document.querySelector('.registrarse').addEventListener('click', function() {
-    const signup = document.querySelector('.signup');
+document.addEventListener('DOMContentLoaded', function() {
+    const signupInputs = document.querySelector('.signup form').querySelectorAll('input, button');
     
-    // Alterna entre mostrar y ocultar el scroll al hacer clic en "Registrarse"
-    if (signup.style.overflowY === 'auto') {
-        signup.style.overflowY = 'hidden'; // Oculta el scroll
-    } else {
-        signup.style.overflowY = 'auto'; // Muestra el scroll
+    signupInputs.forEach(input => {
+        input.setAttribute('tabindex', '-1');
+    });
+    document.querySelector('.registrarse').addEventListener('click', function() {
+        const signup = document.querySelector('.signup');
+        const loginInputs = document.querySelector('.login form').querySelectorAll('input, button');
+        
+        // Toggle overflow property
+        if (signup.style.overflowY === 'auto') {
+            signup.style.overflowY = 'hidden';
+            
+            signupInputs.forEach(input => {
+                input.setAttribute('tabindex', '-1');
+            });
+            
+            loginInputs.forEach(input => {
+                input.removeAttribute('tabindex');
+            });
+        } else {
+            signup.style.overflowY = 'auto';
+            
+            // Make signup inputs tabbable
+            signupInputs.forEach(input => {
+                input.removeAttribute('tabindex');
+            });
+            
+            loginInputs.forEach(input => {
+                input.setAttribute('tabindex', '-1');
+            });
+        }
+        
+        signup.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    const checkbox = document.getElementById('chk');
+    if (checkbox.checked) {
+        signupInputs.forEach(input => {
+            input.removeAttribute('tabindex');
+        });
     }
 });
-
-
 </script>
 
 {% endblock %}

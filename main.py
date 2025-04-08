@@ -208,13 +208,14 @@ def cliente_dashboard():
 
 @app.route("/detalle_producto", methods=["GET", "POST"])
 def detalle_producto():
+    user = session.get("user")
     if session.get("user") is None:
         return render_template("pages/error404.html"), 404
     galleta_json = request.form.get("galleta") or request.args.get("galleta")
     galleta = json.loads(galleta_json) if galleta_json else None
 
     return render_template(
-        "/client/DetalleProducto.html", is_base_template=False, galleta=galleta
+        "/client/DetalleProducto.html", is_base_template=False, galleta=galleta,user=user
     )
 
 
