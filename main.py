@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD, gestionRecetas, solicitudProduccion
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
-from database.production import inventarioDeGalletas, inventarioDeInsumos
+from database.production import inventarioDeGalletas, inventarioDeInsumos, moduloProduccion
 from database.cliente import clientes
 from database.cookies import cookies
 from database.sales import ventas, corteVenta
@@ -10,7 +10,7 @@ from datetime import datetime
 from db import app, mysql, mail
 from sessions import *
 from pdf_ticket import *
-import json
+import json,logging
 from flask_mail import Message
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,23 +26,24 @@ def home():
 @app.route("/dashboard")
 def admin_dashboard():
     if "user" not in session:
+        app.logger.error('Usuario desconocido intento acceder al dashboard, acceso denegado')
         return render_template("pages/error404.html"), 404
     user = session.get("user")
     if user[4] not in ["administrador"]:
+        app.logger.warning(f'El usuario con correo "{user[2]}" intento acceder al dashboard, acceso denegado')
         return render_template("pages/error404.html"), 404
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
-    ventas = dashboard.getVentasPorDia()
     inversion=dashboard.getInversionGalletas()
     recomendada=dashboard.getGalletaRecomendad()
+    app.logger.debug(f'rol verificado, el usuario con correo "{user[2] }" accedio correctamente al dashboard')
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
         ganancias=ganancias,
         galletas=galletas,
         user=user,
-        ventas=ventas,
         inversion=inversion,
         recomendada=recomendada,
     )
@@ -194,7 +195,14 @@ def moduloProduccion():
     )
 
 
-# Rutas para el modulo de clientes / Sistema de carrito
+# Rutas para el modulo de clientes / Sistema de carrito /Cambio de contraseña
+@app.route("/cambiar_contrasena", methods=["GET", "POST"])
+def cambiar_contrasena():
+    if session.get("user") is None:
+        return render_template("pages/error404.html"), 404
+    user=session.get("user")
+    return render_template("/client/cambiarPassword.html", is_base_template=False, )
+
 @app.route("/gestionClientes")
 def cliente_dashboard():
     if session.get("user") is None:
@@ -734,3 +742,6 @@ def enviar_correo():
     return 'Correo enviado'
 
 
+
+LOG_FILENAME = 'temp\logs.log'
+logging.basicConfig(filename=LOG_FILENAME,level=logging.INFO)

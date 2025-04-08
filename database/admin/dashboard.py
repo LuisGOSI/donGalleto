@@ -9,7 +9,7 @@ def getPresentaciones():
     cur.execute("""
 SELECT 
     dv.tipoVenta,
-    SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido * (1 - v.descuento/100)) AS dinero_ganado_real
+    SUM(dv.cantidad_galletas * dv.PrecioUnitarioVendido * (1 - v.descuento/100)) AS dinero_ganado_real
 FROM detalleventas dv
 JOIN ventas v ON dv.idVentaFK = v.idVenta
 GROUP BY dv.tipoVenta
@@ -25,7 +25,7 @@ def getGanancias():
     cur.execute("""
         SELECT 
         DATE(v.fechaVenta) AS fecha,
-        SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido * (1 - v.descuento/100)) AS ingresos_totales_diarios
+        SUM(dv.cantidad_galletas * dv.PrecioUnitarioVendido * (1 - v.descuento/100)) AS ingresos_totales_diarios
         FROM ventas v
         JOIN detalleventas dv ON v.idVenta = dv.idVentaFK
         WHERE v.fechaVenta >= CURDATE() - INTERVAL 4 DAY
@@ -45,24 +45,6 @@ def getGalletasTop():
     cur.close()
     return galletas
 
-def getVentasPorDia():
-    cur = mysql.connection.cursor()
-    cur.execute("""
-        SELECT 
-    DATE(fechaVenta) AS fecha,
-    COUNT(*) AS ventas
-FROM 
-    ventas
-WHERE 
-    fechaVenta >= CURDATE() - INTERVAL 9 DAY
-GROUP BY 
-    DATE(fechaVenta)
-ORDER BY 
-    fecha asc;
-    """)
-    ventas = cur.fetchall()
-    cur.close()
-    return ventas
 
 def getInversionGalletas():
     cur = mysql.connection.cursor()
