@@ -194,7 +194,14 @@ def moduloProduccion():
     )
 
 
-# Rutas para el modulo de clientes / Sistema de carrito
+# Rutas para el modulo de clientes / Sistema de carrito /Cambio de contraseña
+@app.route("/cambiar_contrasena", methods=["GET", "POST"])
+def cambiar_contrasena():
+    if session.get("user") is None:
+        return render_template("pages/error404.html"), 404
+    user=session.get("user")
+    return render_template("/client/cambiarPassword.html", is_base_template=False, )
+
 @app.route("/gestionClientes")
 def cliente_dashboard():
     if session.get("user") is None:
