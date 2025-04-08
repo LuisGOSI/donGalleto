@@ -39,7 +39,6 @@ def get_recetas_galleta(id_galleta):
         """
         cur.execute(query, (id_galleta,))
         recetas = cur.fetchall()
-        
         return ({
             "success": True,
             "recetas": [{

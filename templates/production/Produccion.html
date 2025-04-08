@@ -1,53 +1,125 @@
-{% extends '/production/baseProduccion/baseProduccion.html' %}
-{% block title %}Producción{% endblock %}
-{% block content %}
-<link rel="stylesheet" href="/static/css/stylesProduccion/styleProduccion.css">
+{% extends '/production/baseProduccion/baseProduccion.html' %} {% block title
+%}Producción{% endblock %} {% block content %}
+<link
+	rel="stylesheet"
+	href="/static/css/stylesProduccion/styleProduccion.css"
+/>
 <h1 class="title-produccion">Producción</h1>
 <div class="icono-ordenes-container">
+	<img
+		src="/static/img/iconOrdenesProduccion.webp"
+		alt="icono-ordenes"
+		class="icono-ordenes"
+		data-bs-toggle="offcanvas"
+		data-bs-target="#ordenesProduccion"
+		aria-controls="offcanvasRight"
+		style="cursor: pointer"
+	/>
+	<span
+		id="nav-cart-count"
+		aria-hidden="true"
+		class="nav-cart-count nav-cart-0 nav-progressive-attribute nav-progressive-content"
+		>0</span
+	>
 
-    <img src="/static/img/iconOrdenesProduccion.webp" alt="icono-ordenes" class="icono-ordenes"
-        data-bs-toggle="offcanvas" data-bs-target="#ordenesProduccion" aria-controls="offcanvasRight"
-        style="cursor: pointer;">
-    <span id="nav-cart-count" aria-hidden="true"
-        class="nav-cart-count nav-cart-0 nav-progressive-attribute nav-progressive-content">0</span>
-
-    <!-- Panel Lateral Bootstrap -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="ordenesProduccion" aria-labelledby="offcanvasRightLabel">
-        <div class="offcanvas-header">
-            <h5 class="title-panel-lateral">Solicitudes de ordenes de galletas</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            Tu canasta de ordenes de galletas esta vacia
-        </div>
-    </div>
+	<!-- Panel Lateral Bootstrap -->
+	<div
+		class="offcanvas offcanvas-end"
+		tabindex="-1"
+		id="ordenesProduccion"
+		aria-labelledby="offcanvasRightLabel"
+	>
+		<div class="offcanvas-header">
+			<h5 class="title-panel-lateral">Solicitudes de ordenes de galletas</h5>
+			<button
+				type="button"
+				class="btn-close text-reset"
+				data-bs-dismiss="offcanvas"
+				aria-label="Close"
+			></button>
+		</div>
+		<div class="offcanvas-body">
+			Tu canasta de ordenes de galletas esta vacia
+		</div>
+	</div>
 </div>
-
-<div id="estado-produccion" class="swiper-container">
-    <div class="swiper-wrapper">
-        <div id="estado-produccion" style="display: none;"></div>
-    </div>
+<div class="containerCardsProduccion">
+	<div id="estado-produccion" class="swiper-container">
+		<div class="swiper-wrapper">
+			<div id="estado-produccion" style="display: none"></div>
+		</div>
+	</div>
 </div>
 
 <div class="product-grid">
-    {% for galleta in galletas %}
-    <div class="product-card">
-        <div class="product-container">
-            <img src="/{{ galleta[4] }}" alt="{{ galleta[1] }}">
-            <div class="product-details">
-                <h6>{{ galleta[1] }}</h6>
-                <div class="product-actions">
-                    <button class="btn custom-buttonReceta" 
-                            onclick="buscarRecetas({{ galleta[0] }})">Receta de galleta</button>
-                    <button class="btn custom-buttonProducir">Producir</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
+	{% for galleta in galletas %}
+	<div
+		class="product-card"
+		data-galleta-id="{{ galleta[0] }}"
+		data-galleta-nombre="{{galleta[1]}}"
+	>
+		<div class="product-container">
+			<img src="/{{ galleta[4] }}" alt="{{ galleta[1] }}" />
+			<div class="product-details">
+				<h6>{{ galleta[1] }}</h6>
+				<div class="product-actions">
+					<button
+						class="btn custom-buttonReceta"
+						data-galleta-id="{{galleta[0]}}"
+					>
+						Receta de galleta
+					</button>
+					<button class="btn custom-buttonProducir">Producir</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
 </div>
 
+<div class="modal" id="nuevaProduccionModal">
+	<div class="modal-content-produccion">
+		<span class="close-modal">&times;</span>
+		<h2 class="title-modal-soli">Producir nuevo lote</h2>
+		<div class="modal-body">
+			<h3 class="subtitle-modal-soli text-center">
+				Galleta: <span id="modal-galleta-name"></span>
+			</h3>
 
+			<div class="inventory-info text-center">
+				<p class="mb-3">
+					Inventario disponible:
+					<span id="total-inventario" class="badge bg-success">0</span> unidades
+				</p>
+			</div>
+
+			<h3 class="subtitle-modal-soli">Receta</h3>
+			<div class="form-group">
+				<select id="receta-select" class="form-control">
+					<option value="">Seleccionar receta</option>
+					<!-- Populate dynamically from backend -->
+				</select>
+			</div>
+
+			<div
+				class="receta-info text-center mt-3"
+				id="receta-info"
+				style="display: none"
+			>
+				<p class="mb-0">
+					Esta receta produce:
+					<span id="cantidad-horneada" class="badge bg-success">0</span>
+					unidades por lote
+				</p>
+			</div>
+
+			<div class="d-grid gap-2 mt-4">
+				<button class="btn btnAgregarSolicitud">
+					+ MANDAR ORDEN DE PRODUCCIÓN
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 {% endblock %}

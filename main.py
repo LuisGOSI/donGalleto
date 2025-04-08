@@ -185,42 +185,12 @@ def moduloProduccion():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM galletas")
     galletas = cur.fetchall()
-    recetas_data = {}
-    cur.execute("""
-        SELECT r.idReceta, r.nombreReceta, r.idGalletaFK, 
-        dr.idDetalleReceta, dr.cantidadFormato,
-        i.nombreInsumo, fr.nombreFormato
-        FROM recetas r
-        JOIN detallereceta dr ON r.idReceta = dr.idRecetaFK
-        JOIN insumos i ON dr.idInsumoFK = i.idInsumo
-        JOIN formatosrecetas fr ON dr.idFormatoFK = fr.idFormato
-        ORDER BY r.idReceta
-    """)
-    recetas_detalles = cur.fetchall()
-    for detalle in recetas_detalles:
-        id_receta = detalle[0]
-        if id_receta not in recetas_data:
-            recetas_data[id_receta] = {
-                "idReceta": id_receta,
-                "nombreReceta": detalle[1],
-                "idGalletaFK": detalle[2],
-                "detalles": [],
-            }
-        recetas_data[id_receta]["detalles"].append(
-            {
-                "idDetalleReceta": detalle[3],
-                "cantidadFormato": detalle[4],
-                "nombreInsumo": detalle[5],
-                "nombreFormato": detalle[6],
-            }
-        )
     cur.close()
     return render_template(
         "/production/Produccion.html",
         is_base_template=False,
         user=user,
         galletas=galletas,
-        recetas=list(recetas_data.values()),
     )
 
 
