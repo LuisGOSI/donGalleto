@@ -3,6 +3,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from db import app, mysql, captcha, mail
 from flask_mail import  Message
+import re
 
 #! ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #! /////////////////////////////////////////////////////////////////////// Logica de sesiones de la app ///////////////////////////////////////////////////////////////////////
@@ -153,3 +154,58 @@ def checkSession():
         return jsonify({user})
     else:
         return redirect(url_for("login"))
+    
+#CAMBIAR LA CONTRASENIA#
+
+def validar_contrasena(password):
+    pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
+    return re.match(pattern, password)
+
+@app.route('/peticion-contrasena', methods=['GET', 'POST'])
+def peticion_contrasena_cambiar():
+    if "user" not in session:
+        return jsonify({"status": "error", "msg": "Debes iniciar sesión para cambiar tu contraseña."}), 401
+
+    user = session["user"]
+    id_usuario = user[0]
+
+    actual = request.form["currentPassword"]
+    nueva = request.form["newPassword"]
+    confirmar = request.form["confirmPassword"]
+
+    print("actual: ", actual)
+    print("nueva: ", nueva)
+    print("confirmar: ", confirmar)
+
+    if not actual or not nueva or not confirmar:
+        return jsonify({"status": "error", "msg": "Por favor, completa todos los campos."}), 400
+
+    if nueva != confirmar:
+        return jsonify({"status": "error", "msg": "Las nuevas contraseñas no coinciden."}), 400
+
+    if not check_password_hash(user[3], actual):
+        return jsonify({"status": "error", "msg": "La contraseña actual es incorrecta."}), 400
+
+    if actual == nueva:
+        return jsonify({"status": "error", "msg": "La nueva contraseña no puede ser igual a la actual."}), 400
+
+    # Reglas de seguridad de contraseña
+    regex = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._\-])[A-Za-z\d@$!%*?&._\-]{8,}$")
+    if not regex.match(nueva):
+        return jsonify({"status": "error", "msg": "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo."}), 400
+
+    nueva_hash = generate_password_hash(nueva)
+
+    # Actualizar en la base de datos
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE usuarios SET password = %s WHERE idUsuario = %s", (nueva_hash, id_usuario))
+    mysql.connection.commit()
+    cur.close()
+
+    # Actualizar contraseña en la sesión
+    user = list(user)
+    user[3] = nueva_hash
+    session["user"] = tuple(user)
+
+    return jsonify({"status": "success", "msg": "Contraseña actualizada correctamente."}), 200
+
