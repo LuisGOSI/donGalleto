@@ -155,7 +155,7 @@ def checkSession():
     else:
         return redirect(url_for("login"))
     
-#CAMBIAR LA CONTRASENIA#
+#CAMBIAR LA CONTRASENIA w#
 
 def validar_contrasena(password):
     pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
