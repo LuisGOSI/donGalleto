@@ -33,7 +33,6 @@ def admin_dashboard():
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
-    ventas = dashboard.getVentasPorDia()
     inversion=dashboard.getInversionGalletas()
     recomendada=dashboard.getGalletaRecomendad()
     return render_template(
@@ -42,7 +41,6 @@ def admin_dashboard():
         ganancias=ganancias,
         galletas=galletas,
         user=user,
-        ventas=ventas,
         inversion=inversion,
         recomendada=recomendada,
     )
