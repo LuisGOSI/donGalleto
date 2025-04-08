@@ -58,13 +58,13 @@ def registrar_venta():
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
                 if isinstance(peso_galleta, dict) and "error" in peso_galleta:
                     return peso_galleta, 400
-                cantidad_galletas = round(1000 / peso_galleta)
+                cantidad_galletas = round(1000 / peso_galleta) * cantidad
                 cantidadVendida = cantidad_galletas
             elif tipo == "paquete 700gr":
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
                 if isinstance(peso_galleta, dict) and "error" in peso_galleta:
                     return peso_galleta, 400
-                cantidad_galletas = round(700 / peso_galleta)
+                cantidad_galletas = round(700 / peso_galleta) * cantidad
                 cantidadVendida = cantidad_galletas
             elif tipo == "gramaje":
                 peso_galleta = revisar_gramaje_por_id(idGalleta)
