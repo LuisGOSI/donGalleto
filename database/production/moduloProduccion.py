@@ -393,3 +393,76 @@ def agregar_lote_por_produccion(id_produccion):
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
+
+
+
+@app.route("/producciones-solicitud")
+def obtener_producciones_solicitud():
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT p.idProduccion, g.nombreGalleta, r.nombreReceta, p.fechaProduccion, r.cantidadHorneadas 
+            FROM produccion p
+            JOIN recetas r ON p.idRecetaFK = r.idReceta
+            JOIN galletas g ON r.idGalletaFK = g.idGalleta
+            WHERE p.estadoProduccion = 'Solicitud'
+        """)
+        producciones = cur.fetchall()
+        
+        result = []
+        for prod in producciones:
+            result.append({
+                'idProduccion': prod[0],
+                'nombreGalleta': prod[1],
+                'nombreReceta': prod[2],
+                'fechaProduccion': prod[3].strftime("%Y-%m-%d %H:%M"),
+                'cantidadHorneadas': prod[4]
+            })
+            
+        return jsonify({'success': True, 'producciones': result})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+    finally:
+        cur.close()
+
+@app.route("/confirmar-produccion/<int:id_produccion>", methods=["POST"])
+def confirmar_produccion(id_produccion):
+    try:
+        cur = mysql.connection.cursor()
+        
+        # Actualizar estado de producción
+        cur.execute("""
+            UPDATE produccion 
+            SET estadoProduccion = 'Preparación' 
+            WHERE idProduccion = %s
+        """, (id_produccion,))
+        
+        mysql.connection.commit()
+        return jsonify({'success': True, 'message': 'Producción confirmada'})
+        
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'error': str(e)})
+    finally:
+        cur.close()
+
+@app.route("/cancelar-produccion/<int:id_produccion>", methods=["POST"])
+def cancelar_produccion(id_produccion):
+    try:
+        cur = mysql.connection.cursor()
+        
+        # Eliminar producción
+        cur.execute("""
+            DELETE FROM produccion 
+            WHERE idProduccion = %s
+        """, (id_produccion,))
+        
+        mysql.connection.commit()
+        return jsonify({'success': True, 'message': 'Producción cancelada'})
+        
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'error': str(e)})
+    finally:
+        cur.close()

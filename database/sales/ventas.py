@@ -87,26 +87,21 @@ def registrar_venta():
                     """
                     UPDATE inventariogalletas 
                     SET cantidadGalletas = cantidadGalletas - %s
-                    WHERE idProduccionFK IN (
-                        SELECT idProduccion FROM (
-                            SELECT idProduccion 
-                            FROM produccion 
-                            WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s LIMIT 1)
-                            AND idProduccion IN (
-                                SELECT idProduccionFK 
-                                FROM inventariogalletas 
-                                WHERE cantidadGalletas >= %s 
-                                AND estadoLote = 'Disponible'
-                            )
-                            ORDER BY (
-                                SELECT fechaCaducidad 
-                                FROM inventariogalletas 
-                                WHERE idProduccionFK = produccion.idProduccion
-                            ) ASC
-                            LIMIT 1
-                        ) AS temp
+                    WHERE idProduccionFK = (
+                        SELECT idProduccion 
+                        FROM (
+                            SELECT p.idProduccion 
+                            FROM produccion p
+                            INNER JOIN recetas r ON p.idRecetaFK = r.idReceta
+                            INNER JOIN inventariogalletas ig ON p.idProduccion = ig.idProduccionFK
+                            WHERE r.idGalletaFK = %s
+                            AND ig.cantidadGalletas >= %s 
+                            AND ig.estadoLote = 'Disponible'
+                            ORDER BY ig.fechaCaducidad ASC  # Prioriza lotes próximos a caducar
+                            LIMIT 1  # Selecciona el lote más antiguo con stock suficiente
+                        ) AS subquery
                     )
-                """,
+                    """,
                     (cantidadVendida, idGalleta, cantidadVendida),
                 )
 
