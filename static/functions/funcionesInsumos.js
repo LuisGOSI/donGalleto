@@ -202,3 +202,258 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }, 4000);
   });
+
+/////////////// Sanitizacion ////////////////
+// Función de sanitización general para los modales de insumos
+(function() {
+    'use strict';
+    
+    // Función para sanitizar inputs
+    function sanitizeInput(input) {
+        if (input.value) {
+            if (input.type !== 'password' && input.type !== 'hidden' && input.type !== 'number') {
+                input.value = input.value
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+        }
+    }
+    
+    // Función para validar campos
+    function validateField(input) {
+        const isValid = input.checkValidity();
+        
+        if (input.type === 'hidden') return true;
+        
+        if (isValid) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+        
+        return isValid;
+    }
+    
+    // Mostrar mensajes temporales
+    function showTemporaryMessage(element, message) {
+        let msgElement = element.nextElementSibling;
+        if (!msgElement || !msgElement.classList.contains('temp-message')) {
+            msgElement = document.createElement('div');
+            msgElement.className = 'temp-message text-danger small mt-1';
+            element.parentNode.insertBefore(msgElement, element.nextElementSibling);
+        }
+        
+        msgElement.textContent = message;
+        setTimeout(() => {
+            if (msgElement.parentNode) {
+                msgElement.parentNode.removeChild(msgElement);
+            }
+        }, 3000);
+    }
+    
+    // Función para aplicar validación y sanitización a un formulario
+    function setupFormValidation(formId, customValidators = {}) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        
+        const inputs = form.querySelectorAll('input, select');
+        
+        // Aplicar eventos a todos los inputs
+        inputs.forEach(input => {
+            // Evento input para validación en tiempo real
+            input.addEventListener('input', function() {
+                if (this.type === 'hidden') return;
+                
+                clearTimeout(this.debounceTimer);
+                this.debounceTimer = setTimeout(() => {
+                    validateField(this);
+                    
+                    // Ejecutar validadores personalizados si existen
+                    if (customValidators[this.id]) {
+                        customValidators[this.id](this);
+                    }
+                }, 500);
+            });
+            
+            // Evento blur para sanitización
+            input.addEventListener('blur', function() {
+                if (this.type === 'hidden') return;
+                
+                sanitizeInput(this);
+                validateField(this);
+            });
+        });
+        
+        // Evento submit del formulario
+        form.addEventListener('submit', function(event) {
+            let isFormValid = true;
+            
+            inputs.forEach(input => {
+                sanitizeInput(input);
+                if (!validateField(input)) {
+                    isFormValid = false;
+                }
+            });
+            
+            if (!isFormValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                const firstInvalidField = form.querySelector('.is-invalid');
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+                
+                const errorAlertId = `${formId}ErrorAlert`;
+                const errorAlert = document.getElementById(errorAlertId);
+                if (!errorAlert) {
+                    const alert = document.createElement('div');
+                    alert.id = errorAlertId;
+                    alert.className = 'alert alert-danger mt-3';
+                    alert.role = 'alert';
+                    alert.innerHTML = 'Por favor, corrige los errores marcados en el formulario.';
+                    form.prepend(alert);
+                    
+                    setTimeout(() => {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, 5000);
+                }
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    }
+    
+    // Configuración específica para cada modal
+    
+    // 1. Modal Registrar Insumo
+    setupFormValidation('registrarInsumoModal', {
+        nombreInsumo: (input) => {
+            const invalidChars = /[^A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]/g;
+            if (invalidChars.test(input.value)) {
+                input.classList.add('is-invalid');
+                input.value = input.value.replace(invalidChars, '');
+                showTemporaryMessage(input, 'Caracteres no válidos eliminados');
+            }
+        }
+    });
+    
+    // 2. Modal Asignar Proveedor y Presentación
+    setupFormValidation('asignarProveedorModal', {
+        nombrePresentacion: (input) => {
+            const invalidChars = /[^A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]/g;
+            if (invalidChars.test(input.value)) {
+                input.classList.add('is-invalid');
+                input.value = input.value.replace(invalidChars, '');
+                showTemporaryMessage(input, 'Caracteres no válidos eliminados');
+            }
+        },
+        precioProveedor: (input) => {
+            const precio = parseFloat(input.value);
+            if (isNaN(precio) || precio <= 0) {
+                input.classList.add('is-invalid');
+                showTemporaryMessage(input, 'El precio debe ser un número positivo');
+            }
+        },
+        cantidad: (input) => {
+            const cantidad = parseFloat(input.value);
+            if (isNaN(cantidad) || cantidad <= 0) {
+                input.classList.add('is-invalid');
+                showTemporaryMessage(input, 'La cantidad debe ser un número positivo');
+            }
+        }
+    });
+    
+    // 3. Modal Editar Insumo
+    setupFormValidation('editarInsumoModal', {
+        nombreInsumoEditar: (input) => {
+            const invalidChars = /[^A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]/g;
+            if (invalidChars.test(input.value)) {
+                input.classList.add('is-invalid');
+                input.value = input.value.replace(invalidChars, '');
+                showTemporaryMessage(input, 'Caracteres no válidos eliminados');
+            }
+        }
+    });
+    
+    // 4. Modal Eliminar Insumo
+    setupFormValidation('eliminarInsumoModal');
+    
+    // 5. Modal Editar Presentación
+    setupFormValidation('editarPresentacionModal', {
+        nombrePresentacionEditar: (input) => {
+            const invalidChars = /[^A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]/g;
+            if (invalidChars.test(input.value)) {
+                input.classList.add('is-invalid');
+                input.value = input.value.replace(invalidChars, '');
+                showTemporaryMessage(input, 'Caracteres no válidos eliminados');
+            }
+        },
+        cantidadBaseEditar: (input) => {
+            const cantidad = parseFloat(input.value);
+            if (isNaN(cantidad) || cantidad <= 0) {
+                input.classList.add('is-invalid');
+                showTemporaryMessage(input, 'La cantidad debe ser un número positivo');
+            }
+        },
+        precioProveedorEditar: (input) => {
+            const precio = parseFloat(input.value);
+            if (isNaN(precio) || precio <= 0) {
+                input.classList.add('is-invalid');
+                showTemporaryMessage(input, 'El precio debe ser un número positivo');
+            }
+        }
+    });
+    
+    // 6. Modal Eliminar Presentación
+    setupFormValidation('eliminarPresentacionModal');
+    
+    // 7. Modal Asignar Formato Receta
+    setupFormValidation('asignarFormatoRecetaModal', {
+        nombreFormato: (input) => {
+            const invalidChars = /[^A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]/g;
+            if (invalidChars.test(input.value)) {
+                input.classList.add('is-invalid');
+                input.value = input.value.replace(invalidChars, '');
+                showTemporaryMessage(input, 'Caracteres no válidos eliminados');
+            }
+        },
+        cantidadConvertida: (input) => {
+            const cantidad = parseFloat(input.value);
+            if (isNaN(cantidad) || cantidad <= 0) {
+                input.classList.add('is-invalid');
+                showTemporaryMessage(input, 'La cantidad debe ser un número positivo');
+            }
+        }
+    });
+    
+    // 8. Modal Editar Formato Receta
+    setupFormValidation('editarFormatoRecetaModal', {
+        nombreFormatoEditar: (input) => {
+            const invalidChars = /[^A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\_\.]/g;
+            if (invalidChars.test(input.value)) {
+                input.classList.add('is-invalid');
+                input.value = input.value.replace(invalidChars, '');
+                showTemporaryMessage(input, 'Caracteres no válidos eliminados');
+            }
+        },
+        cantidadConvertidaEditar: (input) => {
+            const cantidad = parseFloat(input.value);
+            if (isNaN(cantidad) || cantidad <= 0) {
+                input.classList.add('is-invalid');
+                showTemporaryMessage(input, 'La cantidad debe ser un número positivo');
+            }
+        }
+    });
+    
+    // 9. Modal Eliminar Formato Receta
+    setupFormValidation('eliminarFormatoRecetaModal');
+    
+})();

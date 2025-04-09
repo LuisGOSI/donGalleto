@@ -210,3 +210,16 @@ td {
     background-position: right calc(0.375em + 0.1875rem) center;
     background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
+
+.recommendation-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 80%;
+    color: #ffc107; /* Amarillo tipo advertencia */
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 0.5rem;
+    border-radius: 4px;
+    animation: fadeIn 0.3s ease-in-out;
+}

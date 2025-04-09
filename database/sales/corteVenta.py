@@ -47,8 +47,8 @@ def getTotalGeneral():
     for fila in datos:
         total_ganancias += fila['GananciasTotales']
         total_ventas += fila['VentasRealizadas']
-        total_descuentos += fila['DescuentoAplicado']
-        total_ganancias_netas += fila['GananciasNetas']
+        total_descuentos += fila['DescuentoAplicado'] or 0
+        total_ganancias_netas += fila['GananciasNetas'] or 0
     totales = {
         'GananciasTotales': total_ganancias,
         'VentasRealizadas': total_ventas,

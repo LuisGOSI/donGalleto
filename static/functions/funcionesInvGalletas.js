@@ -1,5 +1,5 @@
 
-document.addEventListener("DOMContentLoaded", function () { 
+document.addEventListener("DOMContentLoaded", function () {
     var modalCafe = document.getElementById('alertaGalletasCafe');
     var modalAmarillo = document.getElementById('alertaGalletasAmarilla');
     var modalRojo = document.getElementById('alertaGalletasRoja');
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-document.addEventListener("DOMContentLoaded", function () { 
+document.addEventListener("DOMContentLoaded", function () {
     function asignarEventosMermas() {
         document.querySelectorAll(".mermas-btn, .enviMerma-btn").forEach(button => {
             button.addEventListener("click", function () {
@@ -87,22 +87,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function actualizarTabla(data, estado) {
         const tbody = document.querySelector("tbody");
-        tbody.innerHTML = ""; 
+        tbody.innerHTML = "";
 
         data.forEach(galleta => {
             // Convierte la fecha a un objeto Date
             let fechaCaducidad = new Date(galleta.fechaCaducidad);
-            
+
             // Suma un día a la fecha
             fechaCaducidad.setDate(fechaCaducidad.getDate() + 1);
-            
+
             // Formatea la fecha en 'DD/MM/YYYY'
             const fechaFormateada = fechaCaducidad.toLocaleDateString("es-MX", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric"
             });
-            
+
 
             const esCaducado = estado === "Caducado";
             const claseBoton = esCaducado ? "enviMerma-btn" : "mermas-btn";
@@ -151,18 +151,51 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función de sanitización
     function sanitizeInput(input) {
         if (input.value && input.type !== 'password') {
-            input.value = input.value
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+            if (input.id === 'observaciones') {
+                // Permitir solo letras, números, espacios, comas, puntos y guiones
+                input.value = input.value.replace(/[^a-zA-Z0-9\s.,-]/g, '');
+            } else {
+                // Escape de caracteres para otros inputs
+                input.value = input.value
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
         }
     }
 
-    // Función de validación
     function validateField(input) {
-        const isValid = input.checkValidity();
+        let isValid = input.checkValidity();
+
+        // Validación personalizada para "observaciones"
+        if (input.id === 'observaciones') {
+            const warning = document.getElementById('observacionesAdvertencia');
+            const allowedRegex = /^[a-zA-Z0-9\s.,-]*$/;
+
+            if (input.value.trim() === '') {
+                // Mostrar solo advertencia si está vacío
+                input.classList.remove('is-invalid', 'is-valid');
+                warning.style.display = 'block';
+                input.setCustomValidity('');
+                return true;
+            } else if (!allowedRegex.test(input.value)) {
+                // Error si tiene caracteres especiales
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+                warning.style.display = 'none';
+                input.setCustomValidity('Las observaciones no deben contener caracteres especiales.');
+                return false;
+            } else {
+                // Válido
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+                warning.style.display = 'none';
+                input.setCustomValidity('');
+                return true;
+            }
+        }
 
         if (isValid) {
             input.classList.remove('is-invalid');
@@ -175,7 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return isValid;
     }
 
-    // Detectar todos los campos de entrada
     function applyValidationListeners(container) {
         const inputs = container.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
@@ -199,9 +231,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    applyValidationListeners(form); // Aplicar en los elementos iniciales
+    applyValidationListeners(form);
 
-    // Formulario completo al enviar
     form.addEventListener('submit', function (event) {
         const allInputs = form.querySelectorAll('input, select, textarea');
         let isFormValid = true;

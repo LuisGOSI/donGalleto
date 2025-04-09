@@ -2,7 +2,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const buttonReceta = document.querySelectorAll('.custom-buttonReceta');
     const modalContainer = document.createElement('div');
-    const barraSolicitudes = document.getElementById('ordenesProduccion')
     modalContainer.id = 'recipeModal';
     modalContainer.innerHTML = `
         <div class="modal-content">
@@ -125,8 +124,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const totalInventarioSpan = document.getElementById("total-inventario");
     const btnAgregarSolicitud = document.querySelector(".btnAgregarSolicitud");
 
+
+
     let currentRecetaId = null;
     let currentCantidad = 0;
+
+
 
     botonesProducir.forEach(boton => {
         boton.addEventListener("click", async function () {
@@ -255,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({data}),
+                        body: JSON.stringify({ data, idProduccion: null }),
                     });
                     const solicitudData = await solicitudResponse.json();
 
@@ -353,6 +356,9 @@ function actualizarControlesSwiper() {
 
 async function cargarProduccionesIniciales() {
     const producciones = await traerTodasLasProducciones()
+    const solicitudesProduccion = producciones.filter(prod =>
+        prod.estadoProduccion === 'Solicitud'
+    )
     const produccionesAMostrar = producciones.filter(prod =>
         prod.estadoProduccion !== 'Solicitud' && prod.estadoProduccion !== 'Listo'
     );
@@ -381,6 +387,186 @@ async function cargarProduccionesIniciales() {
         });
 
         inicializarSwiper();
+    }
+
+    if (solicitudesProduccion.length === 0) {
+        const panelBody = document.querySelector('#ordenesProduccion .offcanvas-body');
+        panelBody.innerHTML = '<p>Tu canasta de ordenes de galletas esta vacia</p>';
+        return;
+    }
+
+    if (solicitudesProduccion.length > 0) {
+        const barraSolicitudes = document.getElementById('ordenesProduccion')
+        const solicitudesCounter = document.getElementById('solicitudes-count')
+        const panelBody = document.querySelector('#ordenesProduccion .offcanvas-body');
+
+        solicitudesCounter.textContent = solicitudesProduccion.length;
+        panelBody.innerHTML = ''; // Limpiar antes de agregar
+        panelBody.innerHTML = solicitudesProduccion.map(prod => `
+            <div class="solicitud-card mb-3 p-3 border rounded" data-id="${prod.idProduccion}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6>${prod.nombreGalleta}</h6>
+                        <small class="text-muted">Receta: ${prod.nombreReceta}</small><br>
+                    </div>
+                    <div>
+                        <button class="btn btn-success btn-sm confirmar-btn me-2">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm cancelar-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        panelBody.querySelectorAll('.confirmar-btn').forEach(button => {
+            button.addEventListener('click', async function () {
+                const card = this.closest('.solicitud-card');
+                const idProduccion = card.getAttribute('data-id');
+                let idReceta = null;
+                try {
+                    const response = await fetch(`/revisarDisponibilidadPorProduccion/${idProduccion}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ idProduccion })
+                    });
+                    const data = await response.json();
+                    if (data.error) {
+                        console.error(data.error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error,
+                            confirmButtonColor: '#009E0F',
+                            background: '#fff'
+                        });
+                        return;
+                    }
+                    idReceta = data.idReceta;
+                    const todosDisponibles = data.ingredientes.every(ing => ing.estado === "Suficiente");
+
+                    if (todosDisponibles) {
+                        const result = await Swal.fire({
+                            icon: 'success',
+                            title: 'Ingredientes disponibles',
+                            text: 'Todos los ingredientes están disponibles. ¿Quieres continuar con la producción?',
+                            confirmButtonColor: '#009E0F',
+                            cancelButtonColor: '#d33',
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            cancelButtonText: 'Cancelar',
+                            confirmButtonText: 'Continuar',
+                            background: '#fff'
+                        });
+
+                        if (result.isConfirmed) {
+                            try {
+                                await fetch(`/agregarProduccionPorReceta/${idReceta}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ data, idProduccion })
+                                });
+                            } catch (error) {
+                                console.error('Error al agregar producción:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'No se pudo agregar la producción.',
+                                    confirmButtonColor: '#009E0F',
+                                    background: '#fff'
+                                });
+                                return;
+                            }
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Éxito',
+                                text: 'Producción confirmada con éxito.',
+                                confirmButtonColor: '#009E0F',
+                                background: '#fff'
+                            });
+                            window.location.reload(); // Recargar la página para mostrar la nueva producción
+                        }
+                    } else {
+                        const faltantes = data.ingredientes
+                            .filter(ing => ing.estado !== "Suficiente")
+                            .map(ing => `- ${ing.nombreInsumo}: necesitas ${ing.cantidadNecesaria} ${ing.unidadMedida}s, tienes ${ing.totalDisponible}`)
+                            .join('\n');
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Ingredientes insuficientes',
+                            html: `<p>No hay suficiente stock para algunos ingredientes:</p><pre style="text-align:left;">${faltantes}</pre>`,
+                            confirmButtonColor: '#009E0F',
+                            background: '#fff'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error al confirmar producción:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ocurrió un error al confirmar la producción.',
+                        confirmButtonColor: '#009E0F',
+                        background: '#fff'
+                    });
+                }
+            });
+        });
+
+        panelBody.querySelectorAll('.cancelar-btn').forEach(button => {
+            button.addEventListener('click', async function () {
+            const card = this.closest('.solicitud-card');
+            const idProduccion = card.getAttribute('data-id');
+            
+            const result = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'Esta acción cancelará la solicitud de producción.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#009E0F',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'No, mantener',
+                background: '#fff'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                await fetch(`/cancelar-produccion/${idProduccion}`, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ idProduccion })
+                });
+                card.remove(); // Eliminar la tarjeta de la interfaz
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Solicitud cancelada con éxito.',
+                    confirmButtonColor: '#009E0F',
+                    background: '#fff'
+                });
+                window.location.reload(); // Recargar la página para mostrar la nueva producción
+                } catch (error) {
+                console.error('Error al cancelar solicitud:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo cancelar la solicitud.',
+                    confirmButtonColor: '#009E0F',
+                    background: '#fff'
+                });
+                }
+            }
+            });
+        });
     }
 }
 
@@ -544,18 +730,18 @@ function manejarCambioEstado(boton, imagenEstado, idProduccion) {
             buttonsStyling: false
         }).then(result => {
             if (result.isConfirmed) {
-                    imagenEstado.src = "/static/img/listas.webp";
-                    imagenEstado.alt = "Listas";
-                    boton.textContent = "Listas";
-                    boton.style.backgroundColor = "#00FF00";
-                    boton.disabled = true;
-                
-                    // Ocultar después de un tiempo
-                    setTimeout(() => {
-                        const card = boton.closest('.swiper-slide');
-                        card.style.display = 'none';
-                        verificarProduccionesVisibles();
-                    }, 2000);
+                imagenEstado.src = "/static/img/listas.webp";
+                imagenEstado.alt = "Listas";
+                boton.textContent = "Listas";
+                boton.style.backgroundColor = "#00FF00";
+                boton.disabled = true;
+
+                // Ocultar después de un tiempo
+                setTimeout(() => {
+                    const card = boton.closest('.swiper-slide');
+                    card.style.display = 'none';
+                    verificarProduccionesVisibles();
+                }, 2000);
                 fetch(`/agregarLotePorProduccion/${idProduccion}`, {
                     method: 'POST',
                     headers: {
@@ -649,7 +835,7 @@ function actualizarEstadoEnBackend(idProduccion, nuevoEstado, callback) {
 
 // Función para inicializar Swiper
 function inicializarSwiper() {
-    if (!window.mySwiper) { 
+    if (!window.mySwiper) {
         window.mySwiper = new Swiper('.swiper-container', {
             loop: false,
             initialSlide: 0,
