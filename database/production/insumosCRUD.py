@@ -124,6 +124,26 @@ def eliminar_insumo():
     cur = mysql.connection.cursor()
     
     try:
+        #######Verificaciones para eliminar insumo###########
+        # Verificar si el insumo está siendo usado en alguna receta
+        cur.execute("SELECT COUNT(*) FROM detallereceta WHERE idInsumoFK = %s", (idInsumo,))
+        if cur.fetchone()[0] > 0:
+            flash("No se puede eliminar el insumo porque está siendo utilizado en una o más recetas", "insumo_error")
+            return redirect(url_for("gestion_insumos"))
+        
+        # Verificar si el insumo tiene inventario
+        cur.execute("SELECT COUNT(*) FROM inventarioinsumos WHERE idInsumoFK = %s", (idInsumo,))
+        if cur.fetchone()[0] > 0:
+            flash("No se puede eliminar el insumo porque tiene existencias en inventario", "insumo_error")
+            return redirect(url_for("gestion_insumos"))
+        
+        # Verificar si el insumo está en alguna merma
+        cur.execute("SELECT COUNT(*) FROM mermas WHERE idInventarioInsumoFK IN (SELECT idInventarioInsumo FROM inventarioinsumos WHERE idInsumoFK = %s)", (idInsumo,))
+        if cur.fetchone()[0] > 0:
+            flash("No se puede eliminar el insumo porque está registrado en mermas", "insumo_error")
+            return redirect(url_for("gestion_insumos"))
+
+        #######Continuar con la eliminacion###########
         #obtener formatos vinculados
         cur.execute("""
             SELECT idFormatoFK FROM insumoFormatos 
@@ -247,6 +267,17 @@ def eliminar_presentacion():
         idPresentacion = request.form["idPresentacionEliminar"]
         cur = mysql.connection.cursor()
         try:
+
+            #######Verificaciones para eliminar Presentacion###########
+
+            # Verificar si la presentación está en compras
+            cur.execute("SELECT COUNT(*) FROM detallecompra WHERE idPresentacionFK = %s", (idPresentacion,))
+            if cur.fetchone()[0] > 0:
+                flash("No se puede eliminar la presentación porque está registrada en compras", "presentacion_error")
+                return redirect(url_for("gestion_insumos"))
+
+            #######Continuar con la eliminacion###########
+
             # Eliminar la relación con el proveedor
             cur.execute("DELETE FROM proveedoresinsumos WHERE idPresentacionFK = %s", (idPresentacion,))
             # Eliminar la presentación
@@ -351,6 +382,14 @@ def eliminar_formato_receta():
         
         cur = mysql.connection.cursor()
         try:
+            #######Verificaciones para eliminar Formato###########
+            # Verificar si el formato está siendo usado en recetas
+            cur.execute("SELECT COUNT(*) FROM detallereceta WHERE idFormatoFK = %s", (id_formato,))
+            if cur.fetchone()[0] > 0:
+                flash("No se puede eliminar el formato porque está siendo utilizado en una o más recetas", "formato_error")
+                return redirect(url_for("gestion_insumos"))
+            #######Continuar con la eliminacion###########
+
             #eliminar la relacion insumo-formato
             cur.execute(
                 "DELETE FROM insumoFormatos WHERE idFormatoFK = %s",
