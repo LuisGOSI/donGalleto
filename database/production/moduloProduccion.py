@@ -174,7 +174,6 @@ def producciones_en_curso():
 def actualizar_estado_por_id(id_produccion):
     cur = mysql.connection.cursor()
     data = request.get_json()
-    print(data)
     if not data or "nuevoEstado" not in data:
         return jsonify({"error": "Estado de producción no proporcionado"}), 400
     match data["nuevoEstado"]:
@@ -202,14 +201,20 @@ def actualizar_estado_por_id(id_produccion):
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({"error": str(e)}), 500
-    finally:
-        cur.close()
+
 
 
 @app.route("/revisarDisponibilidadRecetaPorId/<int:id_receta>", methods=["POST"])
 def revisar_disponibilidad_receta_por_id(id_receta):
+    try:
+        ingredientes = obtener_disponibilidad_receta(id_receta)
+        return jsonify({"success": True, "ingredientes": ingredientes})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+def obtener_disponibilidad_receta(id_receta):
     cur = mysql.connection.cursor()
-    data = request.get_json()
     try:
         cur.execute(
             """
@@ -241,7 +246,7 @@ def revisar_disponibilidad_receta_por_id(id_receta):
             SELECT 
                 r.InsumoID,
                 i.nombreInsumo,
-                i.unidadMedida AS CantidadBase,  -- Se añade la unidad de medida base
+                i.unidadMedida,
                 r.CantidadNecesaria,
                 COALESCE(MAX(io.SumaAcumulada), 0) AS TotalDisponible,
                 CASE 
@@ -252,37 +257,64 @@ def revisar_disponibilidad_receta_por_id(id_receta):
             JOIN insumos i ON r.InsumoID = i.idInsumo
             LEFT JOIN InventarioOrdenado io 
                 ON r.InsumoID = io.idInsumoFK
-            GROUP BY r.InsumoID, i.nombreInsumo, i.unidadMedida, r.CantidadNecesaria;  -- Se agrega al GROUP BY
+            GROUP BY r.InsumoID, i.nombreInsumo, i.unidadMedida, r.CantidadNecesaria;
             """,
-            (id_receta,),
+            (id_receta,)
         )
-        return jsonify(
+        ingredientes = [
             {
-                "success": True,
-                "ingredientes": [
-                    {
-                        "idInsumo": row[0],
-                        "nombreInsumo": row[1],
-                        "unidadMedida": row[2],	
-                        "cantidadNecesaria": row[3],
-                        "totalDisponible": row[4],
-                        "estado": row[5],
-                    }
-                    for row in cur.fetchall()
-                ],
+                "idInsumo": row[0],
+                "nombreInsumo": row[1],
+                "unidadMedida": row[2],
+                "cantidadNecesaria": row[3],
+                "totalDisponible": row[4],
+                "estado": row[5],
             }
-        )
+            for row in cur.fetchall()
+        ]
+        return ingredientes
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        raise e
     finally:
         cur.close()
+
+
+@app.route("/revisarDisponibilidadPorProduccion/<int:id_produccion>", methods=["POST"])
+def revisar_disponibilidad_por_produccion(id_produccion):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            """
+            SELECT r.idReceta
+            FROM produccion p
+            JOIN recetas r ON p.idRecetaFK = r.idReceta
+            WHERE p.idProduccion = %s
+        """,
+            (id_produccion,)
+        )
+        receta_id = cur.fetchone()
+        cur.close()
+
+        if not receta_id:
+            return jsonify({"error": "Producción no encontrada"}), 404
+
+        ingredientes = obtener_disponibilidad_receta(receta_id[0])
+        return jsonify({"success": True, "ingredientes": ingredientes, "idReceta": receta_id[0]})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
 
 @app.route("/agregarProduccionPorReceta/<int:id_receta>", methods=["POST"])
 def agregar_produccion(id_receta):
     conexion = mysql.connection
+    data = request.get_json()
+    ingredientes = data['data']['ingredientes']
+    idProduccion = data['idProduccion']
     try:
-        data = request.get_json()
-        ingredientes = data['data']['ingredientes']
+
         
         # Verificar que todos los ingredientes están disponibles
         if any(ing['estado'] == 'Insuficiente' for ing in ingredientes):
@@ -346,10 +378,17 @@ def agregar_produccion(id_receta):
                         "message": f"Insumo ID {id_insumo} insuficiente después de procesar todos los lotes"
                     }), 400
 
-            cursor.execute("""
-                INSERT INTO produccion (idRecetaFK, fechaProduccion, estadoProduccion) 
-                VALUES (%s, NOW(), 'Preparación')
-            """, (id_receta,))
+                if idProduccion is None:
+                    cursor.execute("""
+                        INSERT INTO produccion (idRecetaFK, fechaProduccion, estadoProduccion) 
+                        VALUES (%s, NOW(), 'Preparación')
+                    """, (id_receta,))
+                else:
+                    cursor.execute("""
+                        UPDATE produccion 
+                        SET estadoProduccion = 'Preparación' 
+                        WHERE idProduccion = %s
+                    """, (idProduccion,))
 
             # Confirmar transacción si todo está bien
             conexion.commit()
@@ -361,6 +400,8 @@ def agregar_produccion(id_receta):
     except Exception as e:
         conexion.rollback()
         return jsonify({"success": False, "message": str(e)}), 500
+
+
 
 
 @app.route("/agregarLotePorProduccion/<int:id_produccion>", methods=["POST"])
@@ -391,61 +432,8 @@ def agregar_lote_por_produccion(id_produccion):
         return jsonify({"success": True, "message": "Lote agregado correctamente"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    finally:
-        cur.close()
 
 
-
-@app.route("/producciones-solicitud")
-def obtener_producciones_solicitud():
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute("""
-            SELECT p.idProduccion, g.nombreGalleta, r.nombreReceta, p.fechaProduccion, r.cantidadHorneadas 
-            FROM produccion p
-            JOIN recetas r ON p.idRecetaFK = r.idReceta
-            JOIN galletas g ON r.idGalletaFK = g.idGalleta
-            WHERE p.estadoProduccion = 'Solicitud'
-        """)
-        producciones = cur.fetchall()
-        
-        result = []
-        for prod in producciones:
-            result.append({
-                'idProduccion': prod[0],
-                'nombreGalleta': prod[1],
-                'nombreReceta': prod[2],
-                'fechaProduccion': prod[3].strftime("%Y-%m-%d %H:%M"),
-                'cantidadHorneadas': prod[4]
-            })
-            
-        return jsonify({'success': True, 'producciones': result})
-        
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
-    finally:
-        cur.close()
-
-@app.route("/confirmar-produccion/<int:id_produccion>", methods=["POST"])
-def confirmar_produccion(id_produccion):
-    try:
-        cur = mysql.connection.cursor()
-        
-        # Actualizar estado de producción
-        cur.execute("""
-            UPDATE produccion 
-            SET estadoProduccion = 'Preparación' 
-            WHERE idProduccion = %s
-        """, (id_produccion,))
-        
-        mysql.connection.commit()
-        return jsonify({'success': True, 'message': 'Producción confirmada'})
-        
-    except Exception as e:
-        mysql.connection.rollback()
-        return jsonify({'success': False, 'error': str(e)})
-    finally:
-        cur.close()
 
 @app.route("/cancelar-produccion/<int:id_produccion>", methods=["POST"])
 def cancelar_produccion(id_produccion):
