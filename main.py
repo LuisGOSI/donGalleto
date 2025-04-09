@@ -221,7 +221,6 @@ def detalle_producto():
         return render_template("pages/error404.html"), 404
     galleta_json = request.form.get("galleta") or request.args.get("galleta")
     galleta = json.loads(galleta_json) if galleta_json else None
-
     return render_template(
         "/client/DetalleProducto.html", is_base_template=False, galleta=galleta,user=user
     )
@@ -229,13 +228,19 @@ def detalle_producto():
 
 @app.route("/agregar_carrito/<int:id>", methods=["POST"])
 def agregar_al_carrito(id):
-    # Se obtiene la cantidad del formulario
     cantidad = int(request.form.get("cantidad", 1))
-    tipo_venta = request.form.get(
-        "saleType", "unidad"
-    )  # Obtener el tipo de venta del formulario
-    # Se obtienen las galletas del catalago
+    tipo_venta = request.form.get("saleType", "unidad")
+    precio_venta = 0
     data = cookies.getCookies()
+    
+    if tipo_venta == "paquete 1kg":
+        precio_venta = (data[id-1][2] * round(1000 / data[id-1][3])) * 0.93
+    elif tipo_venta == "paquete 700gr":
+        precio_venta = (data[id-1][2] * round(700 / data[id-1][3])) * 0.93
+    elif tipo_venta == "gramaje":
+        precio_venta = (data[id-1][2] *( round(cantidad / data[id-1][3]))) 
+    else:
+        precio_venta = data[id-1][2]
 
     producto = next((item for item in data if item[0] == id), None)
     if not producto:
@@ -258,12 +263,11 @@ def agregar_al_carrito(id):
         carrito[clave_carrito] = {
             "id": producto[0],
             "nombre": producto[1],
-            "precio": producto[2],
+            "precio": precio_venta,
             "cantidad": cantidad,
             "tipo_venta": tipo_venta,
         }
 
-    print("Carrito actualizado:", carrito)
 
     session.modified = True
     flash("✅ Producto agregado al carrito", "success")
