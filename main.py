@@ -611,60 +611,87 @@ def listadoVentas():
     cur = mysql.connection.cursor()
     
     try:
-        # Consulta base
-        query = """
+        # Consulta base modificada para calcular correctamente el subtotal
+        base_query = """
             SELECT 
                 v.idVenta,
                 v.fechaVenta,
                 v.descuento,
-                SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido) AS subtotal,
-                SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido) * (1 - v.descuento/100) AS totalVenta,
-                GROUP_CONCAT(CONCAT_WS('||', g.nombreGalleta, dv.tipoVenta, dv.cantidadVendida, dv.PrecioUnitarioVendido) SEPARATOR ';;') AS productos
+                SUM(
+                    CASE 
+                        WHEN dv.tipoVenta = 'gramaje' THEN dv.PrecioUnitarioVendido * dv.cantidad_galletas
+                        ELSE dv.PrecioUnitarioVendido * dv.cantidadVendida
+                    END
+                ) AS subtotal,
+                SUM(
+                    CASE 
+                        WHEN dv.tipoVenta = 'gramaje' THEN dv.PrecioUnitarioVendido * dv.cantidad_galletas
+                        ELSE dv.PrecioUnitarioVendido * dv.cantidadVendida
+                    END
+                ) * (1 - v.descuento/100) AS totalVenta,
+                GROUP_CONCAT(
+                    CONCAT_WS(
+                        '||', 
+                        g.nombreGalleta, 
+                        dv.tipoVenta, 
+                        dv.cantidadVendida,
+                        dv.PrecioUnitarioVendido,
+                        CASE 
+                            WHEN dv.tipoVenta = 'gramaje' THEN dv.PrecioUnitarioVendido * dv.cantidad_galletas
+                            ELSE dv.PrecioUnitarioVendido * dv.cantidadVendida
+                        END
+                    ) SEPARATOR ';;'
+                ) AS productos
             FROM ventas v
             JOIN detalleventas dv ON v.idVenta = dv.idVentaFK
             JOIN galletas g ON dv.idGalletaFK = g.idGalleta
             {where_clause}
+            AND v.estadoVenta = 'confirmada'
             GROUP BY v.idVenta
             ORDER BY v.fechaVenta DESC
             LIMIT 100
         """
+
         
         # Obtener parámetros de filtro
         filter_type = request.args.get('filter_type')
         filter_value = request.args.get('filter_value')
         
-        where_clause = ""
+        where_clause = "WHERE 1=1"
         params = []
         
         if filter_type and filter_value:
             if filter_type == 'day':
-                where_clause = "WHERE DATE(v.fechaVenta) = %s"
+                where_clause += " AND DATE(v.fechaVenta) = %s"
                 params.append(filter_value)
             elif filter_type == 'week':
                 year, week = filter_value.split('-W')
-                where_clause = """
-                    WHERE YEAR(v.fechaVenta) = %s 
+                where_clause += """
+                    AND YEAR(v.fechaVenta) = %s 
                     AND WEEK(v.fechaVenta, 3) = %s
                 """
                 params.extend([year, week])
             elif filter_type == 'month':
                 year, month = filter_value.split('-')
-                where_clause = """
-                    WHERE YEAR(v.fechaVenta) = %s 
+                where_clause += """
+                    AND YEAR(v.fechaVenta) = %s 
                     AND MONTH(v.fechaVenta) = %s
                 """
                 params.extend([year, month])
             elif filter_type == 'range':
                 start_date, end_date = filter_value.split('|')
-                where_clause = "WHERE DATE(v.fechaVenta) BETWEEN %s AND %s"
+                where_clause += " AND DATE(v.fechaVenta) BETWEEN %s AND %s"
                 params.extend([start_date, end_date])
         
-        # Ejecutar consulta
-        cur.execute(query.format(where_clause=where_clause), params)
+        # Construir la consulta final
+        final_query = base_query.format(where_clause=where_clause)
+        
+        # Ejecutar consulta con parámetros
+        cur.execute(final_query, params)
         
         ventas = []
         for row in cur.fetchall():
-            # Procesar productos (igual que antes)
+            # Procesar productos
             productos_raw = row[5].split(';;') if row[5] else []
             productos = []
             for prod in productos_raw:
@@ -672,8 +699,9 @@ def listadoVentas():
                 productos.append({
                     'nombre': partes[0],
                     'tipoVenta': partes[1],
-                    'cantidad': int(partes[2]),
-                    'precio': float(partes[3])
+                    'cantidad': int(partes[2]),  # cantidadVendida
+                    'precio': float(partes[3]),    # precio unitario
+                    'total_producto': float(partes[4])  # calculado según tipo
                 })
             
             ventas.append({
