@@ -72,7 +72,7 @@ def registerProveedor():
         nombreProveedor = request.form["nombreProveedor"]
         contacto = request.form["contacto"]
         telefono = request.form["telefono"]
-        direccion = request.form["direccion"]
+        direccion = request.form["Direccion"]
         cur = mysql.connection.cursor()
         cur.execute(
             "INSERT INTO proveedores (nombreProveedor, contacto, telefono, direccion) VALUES (%s, %s, %s, %s)",

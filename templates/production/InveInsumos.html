@@ -6,30 +6,32 @@
 <div class="container">
     <section class="intro-container">
         <h1 class="titleInsumos">Inventario Insumos</h1>
-        
+
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        let messages = {{ messages | tojson }};
-                        let flashList = document.getElementById("flashMessagesList");
-                        flashList.innerHTML = "";
-                        messages.forEach(([category, message]) => {
-                            let li = document.createElement("li");
-                            li.textContent = message;
-                            li.classList.add("alert", "rounded", "p-2", "mb-2");
-                            if (category === "success" || category === "danger" || category === "warning" || category === "info") {
-                                li.classList.add("fw-bold");
-                            }
-                            flashList.appendChild(li);
-                        });
+        {% if messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let messages = {{ messages | tojson
+            }};
+            let flashList = document.getElementById("flashMessagesList");
+            flashList.innerHTML = "";
+            messages.forEach(([category, message]) => {
+                let li = document.createElement("li");
+                li.textContent = message;
+                li.classList.add("alert", "rounded", "p-2", "mb-2");
+                if (category === "success" || category === "danger" || category === "warning" || category === "info") {
+                    li.classList.add("fw-bold");
+                }
+                flashList.appendChild(li);
+            });
                     });
-                </script>
-            {% endif %}
+        </script>
+        {% endif %}
         {% endwith %}
 
         <!-- Modal de Alerta Amarilla -->
-        <div class="modal fade" id="alertaInsumosAmarilla" tabindex="-1" aria-labelledby="alertaInsumosLabel" aria-hidden="true">
+        <div class="modal fade" id="alertaInsumosAmarilla" tabindex="-1" aria-labelledby="alertaInsumosLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header bg-warning text-dark">
@@ -38,15 +40,17 @@
                     </div>
                     <div class="modal-body">
                         {% for datos in lotesResumen %}
-                            {% if datos['dias_restantes'] is not none and datos['dias_restantes'] <= 3 and datos['dias_restantes'] > 0 %}
-                                <p>
-                                    (No. Lote:<strong>{{ datos.id_lote }}</strong>) 
-                                    Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> {{datos.unidad_medida}}/s de 
-                                    "<strong>{{ datos.nombre }}</strong>" que caducarán en 
-                                    <strong>{{ datos['dias_restantes'] }}</strong> día(s).
-                                </p>
+                        {% if datos['dias_restantes'] is not none and datos['dias_restantes'] <= 3 and
+                            datos['dias_restantes']> 0 %}
+                            <p>
+                                (No. Lote:<strong>{{ datos.id_lote }}</strong>)
+                                Tienes <strong>{{ datos.cantidad_proxima_caducar }}</strong> {{datos.unidad_medida}}/s
+                                de
+                                "<strong>{{ datos.nombre }}</strong>" que caducarán en
+                                <strong>{{ datos['dias_restantes'] }}</strong> día(s).
+                            </p>
                             {% endif %}
-                        {% endfor %}                        
+                            {% endfor %}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
@@ -56,7 +60,8 @@
         </div>
 
         <!-- Modal de Alerta Roja -->
-        <div class="modal fade" id="alertaInsumosRoja" tabindex="-1" aria-labelledby="alertaInsumosLabel" aria-hidden="true">
+        <div class="modal fade" id="alertaInsumosRoja" tabindex="-1" aria-labelledby="alertaInsumosLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header bg-danger text-white">
@@ -89,10 +94,12 @@
                 </label>
                 <span class="switch-label" id="statusLabel">Mostrar Caducados</span>
             </div>
-            
+
             <button class="registrar-btn" type="button" data-bs-toggle="modal" data-bs-target="#registroModal">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
                 </svg>
                 Registrar
             </button>
@@ -117,24 +124,27 @@
                         </thead>
                         <tbody>
                             {% for insumo in insumos %}
-                                {% if insumo[6] != 'Caducado' %}
-                                <tr>
-                                    <td>{{insumo[0]}}</td>
-                                    <td>{{insumo[1]}}</td>
-                                    <td>{{insumo[3]}}</td>
-                                    <td>{{insumo[2]}}s</td>
-                                    <td>{{insumo[4]}}</td>
-                                    <td>{{insumo[7]}}</td>
-                                    <td>
-                                        <button class="mermas-btn" data-bs-target="#registroMermaModal" data-bs-toggle="modal">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
-                                                <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"/>
-                                            </svg>
-                                            Mermas
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endif %}
+                            {% if insumo[6] != 'Caducado' %}
+                            <tr>
+                                <td>{{insumo[0]}}</td>
+                                <td>{{insumo[1]}}</td>
+                                <td>{{insumo[3]}}</td>
+                                <td>{{insumo[2]}}s</td>
+                                <td>{{insumo[4]}}</td>
+                                <td>{{insumo[7]}}</td>
+                                <td>
+                                    <button class="mermas-btn" data-bs-target="#registroMermaModal"
+                                        data-bs-toggle="modal">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z" />
+                                        </svg>
+                                        Mermas
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -156,24 +166,27 @@
                         </thead>
                         <tbody>
                             {% for insumo in insumos %}
-                                {% if insumo[6] == 'Caducado' and insumo[3]>0 %}
-                                <tr>
-                                    <td>{{insumo[0]}}</td>
-                                    <td>{{insumo[1]}}</td>
-                                    <td>{{insumo[3]}}</td>
-                                    <td>{{insumo[2]}}s</td>
-                                    <td>{{insumo[4]}}</td>
-                                    <td>{{insumo[7]}}</td>
-                                    <td>
-                                        <button class="mermas-btn" data-bs-target="#modalMermaLote" data-bs-toggle="modal" data-id-lote="{{ insumo[0] }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
-                                                <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z"/>
-                                            </svg>
-                                            Mermas
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endif %}
+                            {% if insumo[6] == 'Caducado' and insumo[3]>0 and insumo[3]>0 %}
+                            <tr>
+                                <td>{{insumo[0]}}</td>
+                                <td>{{insumo[1]}}</td>
+                                <td>{{insumo[3]}}</td>
+                                <td>{{insumo[2]}}s</td>
+                                <td>{{insumo[4]}}</td>
+                                <td>{{insumo[7]}}</td>
+                                <td>
+                                    <button class="mermas-btn" data-bs-target="#modalMermaLote" data-bs-toggle="modal"
+                                        data-id-lote="{{ insumo[0] }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-graph-down-arrow" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M0 0h1v15h15v1H0V0Zm10 11.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 0-1 0v2.6l-3.613-4.417a.5.5 0 0 0-.74-.037L7.06 8.233 3.404 3.206a.5.5 0 0 0-.808.588l4 5.5a.5.5 0 0 0 .758.06l2.609-2.61L13.445 11H10.5a.5.5 0 0 0-.5.5Z" />
+                                        </svg>
+                                        Mermas
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endif %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -223,218 +236,233 @@
                         </table>
                         {% endif %}
                     {% endfor %}
-                {% else %}
+                    {% else %}
                     <p style="text-align: center; padding: 10px;">No hay insumos próximos a caducar</p>
-                {% endif %}
+                    {% endif %}
             </div>
         </div>
     </section>
     <br><br>
 
-
-        <!-- Modal de Registrar Compra de Insumos -->
-        <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel">Registrar Compra de Insumos</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="/registrarCompraInsumos" method="POST" id="formCompraInsumos">
-                            <div class="col-md-3">
-                                <label class="form-label">Proveedor</label>
-                                <select class="form-select proveedor-select" id="proveedor-select" name="proveedor-select" required>
-                                    <option value="" selected >Seleccione proveedor</option>
-                                </select>
-                                <br>
+    <!-- Modal de Registrar Compra de Insumos -->
+    <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Registrar Compra de Insumos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/registrarCompraInsumos" method="POST" id="formCompraInsumos" novalidate>
+                        <div class="col-md-3">
+                            <label class="form-label">Proveedor</label>
+                            <select class="form-select proveedor-select" id="proveedor-select" name="proveedor-select"
+                                required>
+                                <option value="">Seleccione proveedor</option>
+                            </select>
+                            <div class="invalid-feedback">Por favor seleccione un proveedor.</div>
+                            <br>
+                        </div>
+                        <!-- Sección de detalles de insumos -->
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Insumos Comprados</h5>
+                                <button type="button" class="btn btn-sm btn-success" id="btnAgregarInsumo">
+                                    <i class="bi bi-plus"></i> Añadir Insumo
+                                </button>
                             </div>
-                            <!-- Sección de detalles de insumos -->
-                            <div class="card mb-3">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">Insumos Comprados</h5>
-                                    <button type="button" class="btn btn-sm btn-success" id="btnAgregarInsumo">
-                                        <i class="bi bi-plus"></i> Añadir Insumo
-                                    </button>
-                                </div>
-                                <div class="card-body" id="insumosContainer">
-                                    <!-- Los insumos se agregarán dinámicamente aquí -->
-                                    <div class="insumo-item mb-3 border p-3 rounded">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label class="form-label">Insumo</label>
-                                                <select class="form-select insumo-select" name="insumos[0][idInsumo]" required>
-                                                    <option value="" selected disabled>Seleccione un insumo</option>
-                                                    {% for insumo in insumos %}
-                                                    <option value="{{ insumo[0] }}">{{ insumo[1] }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Presentación</label>
-                                                <select class="form-select presentacion-select" name="insumos[0][idPresentacionFK]" required>
-                                                    <option value="" selected disabled>Seleccione presentación</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Cantidad</label>
-                                                <input type="number" step="0.01" min="0.01" class="form-control" name="insumos[0][cantidadCompra]" required>
+                            <div class="card-body" id="insumosContainer">
+                                <!-- Los insumos se agregarán dinámicamente aquí -->
+                                <div class="insumo-item mb-3 border p-3 rounded">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Insumo</label>
+                                            <select class="form-select insumo-select" name="insumos[0][idInsumo]"
+                                                required>
+                                                <option value="" selected disabled>Seleccione un insumo</option>
+                                                {% for insumo in insumos %}
+                                                <option value="{{ insumo[0] }}">{{ insumo[1] }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="invalid-feedback">Por favor seleccione un insumo.</div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Presentación</label>
+                                            <select class="form-select presentacion-select"
+                                                name="insumos[0][idPresentacionFK]" required>
+                                                <option value="" selected disabled>Seleccione presentación</option>
+                                            </select>
+                                            <div class="invalid-feedback">Por favor seleccione una presentación.</div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Cantidad</label>
+                                            <input type="number" step="0.01" min="0.01" class="form-control"
+                                                name="insumos[0][cantidadCompra]" required>
+                                            <div class="invalid-feedback">Por favor ingrese una cantidad válida mayor a
+                                                cero.</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Fecha Caducidad</label>
+                                            <input type="date" class="form-control" name="insumos[0][fechaCaducidad]"
+                                                required>
+                                            <div class="invalid-feedback">Por favor seleccione una fecha de caducidad.
                                             </div>
                                         </div>
-                                        <div class="row mt-2">
-                                            <div class="col-md-3">
-                                                <label class="form-label">Fecha Caducidad</label>
-                                                <input type="date" class="form-control" name="insumos[0][fechaCaducidad]" required>
-                                            </div>
-                                            <div class="col-md-1 d-flex align-items-end">
-                                                <button type="button" class="btn btn-danger btn-eliminar-insumo" disabled>
-                                                    Eliminar insumo
-                                                </button>
-                                            </div>
+                                        <div class="col-md-1 d-flex align-items-end">
+                                            <button type="button" class="btn btn-danger btn-eliminar-insumo" disabled>
+                                                Eliminar insumo
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary">Registrar Compra</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Registrar Compra</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </section>
-</div>
+    </div>
 
-<!-- Modal de Notificación Café -->
-<div class="modal fade" id="alertaInsumosCafe" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg rounded">
-            <div class="modal-header text-white" style="background-color: #6F4E37;">
-                <h5 class="modal-title text-center w-100" id="flashModalLabel">Notificación</h5>
-                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="background-color: #E0C9A6;">
-                <ul id="flashMessagesList" class="list-unstyled m-0"></ul>
-            </div>
-            <div class="modal-footer" style="background-color: #D2B48C;"> 
-                <button type="button" class="btn text-white" style="background-color: #8B5A2B;" data-bs-dismiss="modal">Cerrar</button>
+    <!-- Modal de Notificación Café -->
+    <div class="modal fade" id="alertaInsumosCafe" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg rounded">
+                <div class="modal-header text-white" style="background-color: #6F4E37;">
+                    <h5 class="modal-title text-center w-100" id="flashModalLabel">Notificación</h5>
+                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: #E0C9A6;">
+                    <ul id="flashMessagesList" class="list-unstyled m-0"></ul>
+                </div>
+                <div class="modal-footer" style="background-color: #D2B48C;">
+                    <button type="button" class="btn text-white" style="background-color: #8B5A2B;"
+                        data-bs-dismiss="modal">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal de Registrar Merma -->
-<div class="modal fade" id="registroMermaModal" tabindex="-1" aria-labelledby="modalMermaLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <form action="/registrarMermaInsumo" method="POST" class="container mt-4 p-4 border rounded bg-light">
-                    <h2 class="text-center mb-4">Registrar Merma</h2>
-                    <input type="hidden" id="idInventarioInsumoFK" name="idInventarioInsumoFK">
-                    <input type="hidden" id="cantidadActual" name="cantidadActual">
-                    <div class="mb-3">
-                        <label for="tipoMerma" class="form-label">Motivo de Merma</label>
-                        <select class="form-control" id="tipoMerma" name="tipoMerma" required>
-                            <option value="Producto dañado">Producto dañado</option>
-                            <option value="Insumo desperdiciado">Insumo desperdiciado</option>
-                            <option value="Insumo caduco">Insumo caduco</option>
-                            <option value="Otros">Otros</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="cantidad" class="form-label">Cantidad</label>
-                        <input type="number" class="form-control" id="cantidad" name="cantidad" required oninput="this.value = this.value.replace(/\./g, '')">
-                    </div>
-                    <div class="mb-3">
-                        <label for="observaciones" class="form-label">Observaciones</label>
-                        <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
+    <!-- Modal de Registrar Merma -->
+    <div class="modal fade" id="registroMermaModal" tabindex="-1" aria-labelledby="modalMermaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form action="/registrarMermaInsumo" method="POST"
+                        class="container mt-4 p-4 border rounded bg-light" id="registroMermaForm" novalidate>
+                        <h2 class="text-center mb-4">Registrar Merma</h2>
+                        <input type="hidden" id="idInventarioInsumoFK" name="idInventarioInsumoFK">
+                        <input type="hidden" id="cantidadActual" name="cantidadActual">
+                        <div class="mb-3">
+                            <label for="tipoMerma" class="form-label">Motivo de Merma</label>
+                            <select class="form-control" id="tipoMerma" name="tipoMerma" required>
+                                <option value="" disabled>Seleccione un motivo</option>
+                                <option value="Producto dañado">Producto dañado</option>
+                                <option value="Insumo desperdiciado">Insumo desperdiciado</option>
+                                <option value="Insumo caduco">Insumo caduco</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                            <div class="invalid-feedback">Por favor seleccione un motivo de merma.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cantidad" class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" required min="0.01"
+                                step="0.01" title="Ingrese una cantidad válida mayor a cero">
+                            <div class="invalid-feedback">Por favor ingrese una cantidad válida mayor a cero.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="observaciones" class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="observaciones" name="observaciones" rows="3"
+                                maxlength="500"></textarea>
+                            <div class="invalid-feedback">Las observaciones no deben exceder los 500 caracteres.</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Registrar Merma</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para mandar a merma todo el lote caduco -->
+    <div class="modal fade" id="modalMermaLote" tabindex="-1" aria-labelledby="modalMermaLoteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalMermaLoteLabel">Registrar Merma de Lote</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/registrarMermaLote" method="POST">
+                    <div class="modal-body">
+                        <p>¿Estás seguro de que deseas registrar la merma de todo el lote?</p>
+                        <input type="hidden" id="idLoteMerma" name="idLoteMerma">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Registrar Merma</button>
+                        <button type="submit" class="btn btn-danger">Registrar Merma</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal para mandar a merma todo el lote caduco -->
-<div class="modal fade" id="modalMermaLote" tabindex="-1" aria-labelledby="modalMermaLoteLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="modalMermaLoteLabel">Registrar Merma de Lote</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="/registrarMermaLote" method="POST">
-                <div class="modal-body">
-                    <p>¿Estás seguro de que deseas registrar la merma de todo el lote?</p>
-                    <input type="hidden" id="idLoteMerma" name="idLoteMerma">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Registrar Merma</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+    <style>
+        /* Estilos para las tablas y contenedores */
 
-<style>
-    /* Estilos para las tablas y contenedores */
+        .tabla-inventario th {
+            color: white;
+            background-color: #4a342e;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid black;
+        }
 
-    .tabla-inventario th {
-        color: white;
-        background-color: #4a342e;
-        text-align: left;
-        font-weight: 600;
-        border-bottom: 2px solid black;
-    }
-    
-    .tabla-inventario td {
-        background: #d2b48c;
-        padding: 10px 15px;
-        border-bottom: 1px solid black;
-        vertical-align: middle;
-    }
-    
+        .tabla-inventario td {
+            background: #d2b48c;
+            padding: 10px 15px;
+            border-bottom: 1px solid black;
+            vertical-align: middle;
+        }
+    </style>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Control del switch para mostrar tablas
+            const switchCaducados = document.getElementById("switchCaducados");
+            const tablaActivos = document.getElementById("tablaActivosContainer");
+            const tablaCaducados = document.getElementById("tablaCaducadosContainer");
+            const statusLabel = document.getElementById("statusLabel");
+            const proximosCaducar = document.getElementById("proximos_caducar");
 
-</style>
+            switchCaducados.addEventListener("change", function () {
+                if (this.checked) {
+                    // Mostrar caducados y ocultar activos
+                    tablaActivos.style.display = "none";
+                    tablaCaducados.style.display = "block";
+                    if (proximosCaducar) proximosCaducar.style.display = "none";
+                    statusLabel.textContent = "Mostrar Disponibles";
+                } else {
+                    // Mostrar activos y ocultar caducados
+                    tablaActivos.style.display = "block";
+                    tablaCaducados.style.display = "none";
+                    if (proximosCaducar) proximosCaducar.style.display = "block";
+                    statusLabel.textContent = "Mostrar Caducados";
+                }
+            });
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Control del switch para mostrar tablas
-    const switchCaducados = document.getElementById("switchCaducados");
-    const tablaActivos = document.getElementById("tablaActivosContainer");
-    const tablaCaducados = document.getElementById("tablaCaducadosContainer");
-    const statusLabel = document.getElementById("statusLabel");
-    const proximosCaducar = document.getElementById("proximos_caducar");
-
-    switchCaducados.addEventListener("change", function() {
-        if (this.checked) {
-            // Mostrar caducados y ocultar activos
-            tablaActivos.style.display = "none";
-            tablaCaducados.style.display = "block";
-            if(proximosCaducar) proximosCaducar.style.display = "none";
-            statusLabel.textContent = "Mostrar Disponibles";
-        } else {
-            // Mostrar activos y ocultar caducados
+            // Configuración inicial
             tablaActivos.style.display = "block";
             tablaCaducados.style.display = "none";
-            if(proximosCaducar) proximosCaducar.style.display = "block";
-            statusLabel.textContent = "Mostrar Caducados";
-        }
-    });
+        });
+    </script>
 
-    // Configuración inicial
-    tablaActivos.style.display = "block";
-    tablaCaducados.style.display = "none";
-});
-</script>
-
-<script src="{{ url_for('static', filename='functions/funcionesInvInsumos.js')}}"></script>
-{% endblock %}
+    <script src="{{ url_for('static', filename='functions/funcionesInvInsumos.js')}}"></script>
+    {% endblock %}
