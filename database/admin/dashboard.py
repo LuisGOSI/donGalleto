@@ -9,7 +9,12 @@ def getPresentaciones():
     cur.execute("""
 SELECT 
     dv.tipoVenta,
-    SUM(dv.cantidad_galletas * dv.PrecioUnitarioVendido * (1 - v.descuento/100)) AS dinero_ganado_real
+    SUM(
+        CASE 
+            WHEN dv.tipoVenta LIKE 'paquete%' THEN dv.cantidadVendida * dv.PrecioUnitarioVendido * (1 - v.descuento / 100)
+            ELSE dv.cantidad_galletas * dv.PrecioUnitarioVendido * (1 - v.descuento / 100)
+        END
+    ) AS dinero_ganado_real
 FROM detalleventas dv
 JOIN ventas v ON dv.idVentaFK = v.idVenta
 GROUP BY dv.tipoVenta
@@ -25,7 +30,12 @@ def getGanancias():
     cur.execute("""
         SELECT 
         DATE(v.fechaVenta) AS fecha,
-        SUM(dv.cantidad_galletas * dv.PrecioUnitarioVendido * (1 - v.descuento/100)) AS ingresos_totales_diarios
+        SUM(
+            CASE 
+            WHEN dv.tipoVenta LIKE 'paquete%' THEN dv.cantidadVendida * dv.PrecioUnitarioVendido * (1 - v.descuento / 100)
+            ELSE dv.cantidad_galletas * dv.PrecioUnitarioVendido * (1 - v.descuento / 100)
+        END
+        ) AS ingresos_totales_diarios
         FROM ventas v
         JOIN detalleventas dv ON v.idVenta = dv.idVentaFK
         WHERE v.fechaVenta >= CURDATE() - INTERVAL 4 DAY
