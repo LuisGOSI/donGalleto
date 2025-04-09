@@ -197,3 +197,284 @@ document.addEventListener("DOMContentLoaded", function () {
         inputIdLoteMerma.value = idLote;
     });
 });
+
+// Funciones de sanitización y validación para modales de merma y compra de insumos
+(function() {
+    'use strict';
+    
+    function sanitizeInput(input) {
+        if (input.value) {
+            if (input.type !== 'password' && input.type !== 'hidden' && input.type !== 'number' && input.type !== 'date') {
+                input.value = input.value
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+        }
+    }
+    
+    function validateField(input) {
+        const isValid = input.checkValidity();
+        
+        if (input.type === 'hidden') return true;
+        
+        if (isValid) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+        
+        return isValid;
+    }
+    
+    function showTemporaryMessage(element, message) {
+        let msgElement = element.nextElementSibling;
+        if (!msgElement || !msgElement.classList.contains('temp-message')) {
+            msgElement = document.createElement('div');
+            msgElement.className = 'temp-message text-danger small mt-1';
+            element.parentNode.insertBefore(msgElement, element.nextElementSibling);
+        }
+        
+        msgElement.textContent = message;
+        setTimeout(() => {
+            if (msgElement.parentNode) {
+                msgElement.parentNode.removeChild(msgElement);
+            }
+        }, 3000);
+    }
+    
+    function setupMermaModal() {
+        const form = document.getElementById('registroMermaForm');
+        if (!form) return;
+        
+        const inputs = form.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.type === 'hidden') return;
+                
+                clearTimeout(this.debounceTimer);
+                this.debounceTimer = setTimeout(() => {
+                    validateField(this);
+                    if (this.id === 'cantidad') {
+                        const cantidad = parseFloat(this.value);
+                        const cantidadActual = parseFloat(document.getElementById('cantidadActual').value || 0);
+                        
+                        if (isNaN(cantidad) || cantidad <= 0) {
+                            this.classList.add('is-invalid');
+                            showTemporaryMessage(this, 'La cantidad debe ser un número positivo');
+                        } else if (cantidad > cantidadActual) {
+                            this.classList.add('is-invalid');
+                            showTemporaryMessage(this, 'La cantidad no puede ser mayor al stock actual');
+                        }
+                    }
+                    
+                    if (this.id === 'observaciones') {
+                        const maxLength = 500;
+                        if (this.value.length > maxLength) {
+                            this.value = this.value.substring(0, maxLength);
+                            showTemporaryMessage(this, `Limitado a ${maxLength} caracteres`);
+                        }
+                    }
+                }, 500);
+            });
+            input.addEventListener('blur', function() {
+                if (this.type === 'hidden') return;
+                
+                sanitizeInput(this);
+                validateField(this);
+            });
+        });
+        
+        form.addEventListener('submit', function(event) {
+            let isFormValid = true;
+            
+            inputs.forEach(input => {
+                sanitizeInput(input);
+                if (!validateField(input)) {
+                    isFormValid = false;
+                }
+            });
+            
+            const cantidad = parseFloat(document.getElementById('cantidad').value);
+            const cantidadActual = parseFloat(document.getElementById('cantidadActual').value || 0);
+            
+            if (cantidad > cantidadActual) {
+                const cantidadInput = document.getElementById('cantidad');
+                cantidadInput.classList.add('is-invalid');
+                showTemporaryMessage(cantidadInput, 'La cantidad no puede ser mayor al stock actual');
+                isFormValid = false;
+            }
+            
+            if (!isFormValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                const firstInvalidField = form.querySelector('.is-invalid');
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+                
+                const errorAlertId = 'registroMermaFormErrorAlert';
+                const errorAlert = document.getElementById(errorAlertId);
+                if (!errorAlert) {
+                    const alert = document.createElement('div');
+                    alert.id = errorAlertId;
+                    alert.className = 'alert alert-danger mt-3';
+                    alert.role = 'alert';
+                    alert.innerHTML = 'Por favor, corrige los errores marcados en el formulario.';
+                    form.prepend(alert);
+                    
+                    setTimeout(() => {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, 5000);
+                }
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    }
+    function setupCompraInsumosModal() {
+        const form = document.getElementById('formCompraInsumos');
+        if (!form) return;
+        
+        function setupInsumoValidation(insumoItem, index) {
+            const inputs = insumoItem.querySelectorAll('input, select');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.type === 'hidden') return;
+                    
+                    clearTimeout(this.debounceTimer);
+                    this.debounceTimer = setTimeout(() => {
+                        validateField(this);
+                        if (this.name.includes('cantidadCompra')) {
+                            const cantidad = parseFloat(this.value);
+                            if (isNaN(cantidad) || cantidad <= 0) {
+                                this.classList.add('is-invalid');
+                                showTemporaryMessage(this, 'La cantidad debe ser un número positivo');
+                            }
+                        }
+                        if (this.name.includes('fechaCaducidad')) {
+                            const fechaSeleccionada = new Date(this.value);
+                            const hoy = new Date();
+                            
+                            if (fechaSeleccionada < hoy) {
+                                this.classList.add('is-invalid');
+                                showTemporaryMessage(this, 'La fecha de caducidad no puede ser anterior a hoy');
+                            }
+                        }
+                    }, 500);
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (this.type === 'hidden') return;
+                    
+                    sanitizeInput(this);
+                    validateField(this);
+                });
+            });
+        }
+        
+        const insumosItems = form.querySelectorAll('.insumo-item');
+        insumosItems.forEach((item, index) => {
+            setupInsumoValidation(item, index);
+        });
+        const btnAgregarInsumo = document.getElementById('btnAgregarInsumo');
+        if (btnAgregarInsumo) {
+            btnAgregarInsumo.addEventListener('click', function() {
+                const insumosContainer = document.getElementById('insumosContainer');
+                
+                const insumoCount = insumosContainer.querySelectorAll('.insumo-item').length;
+                
+                const primerInsumo = insumosContainer.querySelector('.insumo-item');
+                const nuevoInsumo = primerInsumo.cloneNode(true);
+                
+                const inputs = nuevoInsumo.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (input.name) {
+                        input.name = input.name.replace(/\[\d+\]/, `[${insumoCount}]`);
+                    }
+                    
+                    if (input.tagName === 'SELECT') {
+                        input.selectedIndex = 0;
+                    } else {
+                        input.value = '';
+                    }
+                    
+                    input.classList.remove('is-valid', 'is-invalid');
+                });
+                
+                const btnEliminar = nuevoInsumo.querySelector('.btn-eliminar-insumo');
+                if (btnEliminar) {
+                    btnEliminar.disabled = false;
+                    
+                    btnEliminar.addEventListener('click', function() {
+                        insumosContainer.removeChild(nuevoInsumo);
+                    });
+                }
+                
+                insumosContainer.appendChild(nuevoInsumo);
+                setupInsumoValidation(nuevoInsumo, insumoCount);
+            });
+        }
+        
+        form.addEventListener('submit', function(event) {
+            let isFormValid = true;
+            
+            const allInputs = form.querySelectorAll('input, select');
+            allInputs.forEach(input => {
+                sanitizeInput(input);
+                if (!validateField(input)) {
+                    isFormValid = false;
+                }
+            });
+            const insumosItems = form.querySelectorAll('.insumo-item');
+            if (insumosItems.length === 0) {
+                isFormValid = false;
+                
+                const insumosContainer = document.getElementById('insumosContainer');
+                showTemporaryMessage(insumosContainer, 'Debe agregar al menos un insumo');
+            }
+            
+            if (!isFormValid) {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                const firstInvalidField = form.querySelector('.is-invalid');
+                if (firstInvalidField) {
+                    firstInvalidField.focus();
+                }
+                
+                const errorAlertId = 'formCompraInsumosErrorAlert';
+                const errorAlert = document.getElementById(errorAlertId);
+                if (!errorAlert) {
+                    const alert = document.createElement('div');
+                    alert.id = errorAlertId;
+                    alert.className = 'alert alert-danger mt-3';
+                    alert.role = 'alert';
+                    alert.innerHTML = 'Por favor, corrige los errores marcados en el formulario.';
+                    form.prepend(alert);
+                    
+                    setTimeout(() => {
+                        if (alert.parentNode) {
+                            alert.parentNode.removeChild(alert);
+                        }
+                    }, 5000);
+                }
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        setupMermaModal();
+        setupCompraInsumosModal();
+    });
+})();
