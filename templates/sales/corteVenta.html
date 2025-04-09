@@ -71,7 +71,10 @@
                                 <td class="fila-clara-tabla-ventas">{{ producto.get('Producto', 'Producto no especificado') }}</td>
                                 <td class="fila-clara-tabla-ventas">{{ producto.get('Forma de venta', 'N/A') }}</td>
                                 <td class="fila-clara-tabla-ventas">{{ producto.get('Cantidad', 0) | int}}</td>
-                                <td class="fila-clara-tabla-ventas">${{ "%.2f"|format(producto.get('Precio', 0)) }}</td>
+                                <td class="fila-clara-tabla-ventas">
+                                    {% set precio = producto.get('Precio', 0) %}
+                                    {{ "%.2f"|format(precio) if precio is number else precio }}
+                                </td>
                                 <td class="fila-clara-tabla-ventas">${{ "%.2f"|format(producto.get('Total Producto', 0)) }}</td>
                             </tr>
                             {% endfor %}
