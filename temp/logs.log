@@ -5791,3 +5791,10 @@ INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:40:54] "[36mGET /static/css/stylesS
 INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:40:54] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:40:54] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:41:06] "GET /listadoVentas?filter_type=day&filter_value=2025-04-09 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:41:26] "GET /listadoVentas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:41:26] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:41:26] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:41:26] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:41:26] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:41:26] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [09/Apr/2025 13:41:26] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
