@@ -51,7 +51,7 @@
               </div>
             </div>
 
-            <button type="submit" class="add-to-cart-detail">Añadir al carrito</button>
+            <button type="submit" id="addToCartBtn" class="add-to-cart-detail">Añadir al carrito</button>
           </div>
         </form>
       </div>
@@ -78,6 +78,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      const addToCartBtn = document.getElementById('addToCartBtn');
       const saleTypeSelect = document.getElementById('saleType'); 
       const price = {{ galleta[2] }}; // Precio base de la galleta
       const weight = {{ galleta[3] }}; // Peso de la galleta en gramos
@@ -101,7 +102,23 @@
         }
       });
 
-    
+      addToCartBtn.addEventListener('click', function(event) {
+        const quantityInput = document.querySelector('.quantity-input');
+        const saleType = saleTypeSelect.value;
+        const quantity = parseInt(quantityInput.value);
+
+        if (saleType === 'gramaje') {
+          if (quantity < weight) {
+            event.preventDefault(); // Evitar el envío del formulario
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'La cantidad no puede ser menor al peso del producto.',
+              showConfirmButton: true,
+            });
+          }
+        }
+      });
 
       // Script para los botones de cantidad
       document.querySelector('.minus-btn').addEventListener('click', function() {
