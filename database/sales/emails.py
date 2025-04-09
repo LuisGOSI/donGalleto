@@ -8,6 +8,4 @@ def enviar_correo(tipo=None ,usuario = None,contenido = None):
                 recipients=['johan.antonio25@gmail.com'])
         msg.body = 'Este es un mensaje enviado desde una app Flask.'
         mail.send(msg)
-    return 'Correo enviado'
-
-    return 'Correo enviado'
+    return 'Correo enviado' 
