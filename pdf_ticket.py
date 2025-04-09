@@ -24,7 +24,7 @@ def generar_pdf_ticket(idVenta, productos, subtotal, descuento, total):
         title_style = ParagraphStyle(
             'Title',
             parent=styles['Heading1'],
-            alignment=1,  # Centrado
+            alignment=1,
             fontSize=16,
             spaceAfter=20
         )
@@ -41,15 +41,25 @@ def generar_pdf_ticket(idVenta, productos, subtotal, descuento, total):
         for producto in productos:
             nombre = producto['name']
             cantidad = producto['quantity']
-            tipo = producto['type']
+            tipo = producto['type'].lower()
             precio = producto['price']
-            subtotal_producto = cantidad * precio
-            
+
+            if tipo == "unidad":
+                cantidad_display = f"{cantidad} Unidad"
+            elif tipo == "paquete 1kg":
+                cantidad_display = f"{cantidad} paquete 1kg"
+            elif tipo == "paquete 700gr":
+                cantidad_display = f"{cantidad} paquete 700gr"
+            elif tipo == "gramaje":
+                cantidad_display = f"{cantidad} gramos"
+            else:
+                cantidad_display = f"{cantidad} {tipo}"
+
             product_data.append([
                 nombre,
-                f"{cantidad} {tipo}",
+                cantidad_display,
                 f"${precio:.2f}",
-                f"${subtotal_producto:.2f}"
+                f"${producto['subtotal']:.2f}"
             ])
         
         product_table = Table(product_data, colWidths=[3*inch, 1.5*inch, 1.5*inch, 1.5*inch])
@@ -69,9 +79,10 @@ def generar_pdf_ticket(idVenta, productos, subtotal, descuento, total):
         elements.append(Spacer(1, 30))
         
         # Totales
+        descuento_valor = (subtotal * descuento / 100)
         total_data = [
             ['Subtotal:', f"${subtotal:.2f}"],
-            ['Descuento:', f"${descuento:.2f}"],
+            ['Descuento:', f"${descuento_valor:.2f} - ({descuento:.0f}%)"],
             ['Total:', f"${total:.2f}"]
         ]
         
@@ -87,11 +98,18 @@ def generar_pdf_ticket(idVenta, productos, subtotal, descuento, total):
         
         # Pie de página
         elements.append(Spacer(1, 40))
+        elements.append(Paragraph("¡Gracias por su compra!", ParagraphStyle(
+            'Footer',
+            parent=styles['Normal'],
+            alignment=1,
+            fontSize=12,
+            spaceBefore=20
+        )))
         
         # Generar PDF
         doc.build(elements)
         
-        return filepath  # Retorna la ruta del archivo generado
+        return filepath
         
     except Exception as e:
         app.logger.error(f"Error al generar PDF: {str(e)}")
