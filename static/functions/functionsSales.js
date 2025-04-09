@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("Error al registrar la venta: " + (error.error || error.message || "Error desconocido"));
             });
     });
-        // ========== NUEVA FUNCIONALIDAD PARA VENTAS ONLINE ==========
+        // =============== FUNCIONALIDAD PARA VENTAS ONLINE ==========
 
     // Elementos del modal
     const modal = document.getElementById("ventaOnlineModal");
@@ -207,148 +207,277 @@ document.addEventListener("DOMContentLoaded", () => {
     const ventaIdSpan = document.getElementById("ventaId");
     const ventaInfoDiv = document.getElementById("ventaInfo");
 
-    // Buscar venta online
-    buscarVentaBtn.addEventListener("click", async function() {
-        const codigoVenta = codigoVentaInput.value.trim();        
-        
-        if (!codigoVenta) {
-            alert('Por favor ingrese un código de venta');
-            return;
-        }
-
+    // Función para formatear la fecha
+    function formatearFecha(fechaStr) {
+        if (!fechaStr) return '';
         try {
-            buscarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
-            buscarVentaBtn.disabled = true;
-            
-            const response = await fetch(`/obtenerVentaOnline/${codigoVenta}`);
-            const data = await response.json();
-            
-            if (response.ok) {
-                currentOnlineOrder = data;
-                console.log('Venta encontrada:', data);
-                
-                
-                // Mostrar información de la venta en el modal
-                ventaIdSpan.textContent = codigoVenta;
-                ventaInfoDiv.innerHTML = `
-                    <p><strong>Fecha:</strong> ${(data.venta.fechaVenta)}</p>
-                    <p><strong>Estado:</strong> ${data.venta.estadoVenta}</p>
-                    <p><strong>Total:</strong> $${data.venta.totalVenta.toFixed(2)}</p>
-                    <h4>Productos:</h4>
-                    <ul>
-                        ${data.detalles.map(p => `
-                            <li>${p.nombre} - ${p.cantidadVendida} ${p.tipoVenta}/es - $${p.precioUnitarioVendido} - C/U </li>
-                        `).join('')}
-                    </ul>
-                `;
-                
-                // Mostrar u ocultar botones según el estado
-                if (data.venta.estadoVenta === 'pendiente') {
-                    confirmarVentaBtn.style.display = 'block';
-                    cancelarVentaBtn.style.display = 'block';
-                } else {
-                    confirmarVentaBtn.style.display = 'none';
-                    cancelarVentaBtn.style.display = 'none';
-                    ventaInfoDiv.innerHTML += `<p class="alert">Esta venta ya ha sido ${data.venta.estadoVenta}</p>`;
-                }
-                
-                modal.style.display = 'block';
-            } else {
-                alert(data.error || 'Error al buscar la venta');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al conectar con el servidor');
-        } finally {
-            buscarVentaBtn.innerHTML = 'Buscar';
-            buscarVentaBtn.disabled = false;
+            const fecha = new Date(fechaStr);
+            return fecha.toLocaleDateString();
+        } catch (e) {
+            return fechaStr;
         }
-    });
+    }
+
+    // Función para mostrar el modal con animación
+    function showModal() {
+        modal.classList.add('active');
+    }
+
+    // Función para cerrar el modal con animación
+    function closeModalWithAnimation() {
+        modal.classList.add('closing');
+        
+        setTimeout(() => {
+            modal.classList.remove('active');
+            modal.classList.remove('closing');
+        }, 300);
+    }
+
+    // Crear efecto de confeti al confirmar la venta
+    function createConfettiEffect() {
+        const confettiCount = 80;
+        const colors = ['#2ecc71', '#3498db', '#f1c40f', '#e74c3c', '#9b59b6'];
+        
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'absolute';
+            confetti.style.width = `${Math.random() * 10 + 5}px`;
+            confetti.style.height = `${Math.random() * 10 + 5}px`;
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = '50%';
+            confetti.style.left = `${Math.random() * 100}%`;
+            confetti.style.top = `-10px`;
+            confetti.style.opacity = '1';
+            confetti.style.zIndex = '9999';
+            
+            modal.appendChild(confetti);
+            
+            // Animar cada confeti
+            const animation = confetti.animate([
+                { 
+                    transform: `translate(0, 0) rotate(0deg)`, 
+                    opacity: 1 
+                },
+                { 
+                    transform: `translate(${Math.random() * 300 - 150}px, ${Math.random() * 600 + 400}px) rotate(${Math.random() * 360}deg)`, 
+                    opacity: 0 
+                }
+            ], {
+                duration: Math.random() * 1500 + 1500,
+                easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+            });
+            
+            animation.onfinish = () => {
+                confetti.remove();
+            };
+        }
+    }
+
+    // Buscar venta online
+    if (buscarVentaBtn) {
+        buscarVentaBtn.addEventListener("click", async function() {
+            const codigoVenta = codigoVentaInput.value.trim();
+            
+            if (!codigoVenta) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Por favor ingrese un código de venta',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#3085d6'
+                  });
+                return;
+            }
+
+            try {
+                buscarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+                buscarVentaBtn.disabled = true;
+                
+                const response = await fetch(`/obtenerVentaOnline/${codigoVenta}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentOnlineOrder = data;
+                    
+                    // Mostrar información de la venta en el modal
+                    ventaIdSpan.textContent = codigoVenta;
+                    ventaInfoDiv.innerHTML = `
+                        <p><strong>Fecha:</strong> ${formatearFecha(data.venta.fechaVenta)}</p>
+                        <p><strong>Estado:</strong> ${data.venta.estadoVenta}</p>
+                        <p><strong>Total:</strong> $${data.venta.totalVenta.toFixed(2)}</p>
+                        <h4>Productos:</h4>
+                        <ul>
+                            ${data.detalles.map(p => `
+                                <li>${p.nombre} - ${p.cantidadVendida} ${p.tipoVenta}/es - $${p.precioUnitarioVendido.toFixed(2)} - C/U </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                    
+                    // Mostrar u ocultar botones según el estado
+                    if (data.venta.estadoVenta === 'pendiente') {
+                        confirmarVentaBtn.style.display = 'block';
+                        cancelarVentaBtn.style.display = 'block';
+                    } else {
+                        confirmarVentaBtn.style.display = 'none';
+                        cancelarVentaBtn.style.display = 'none';
+                        ventaInfoDiv.innerHTML += `<p class="alert">Esta venta ya ha sido ${data.venta.estadoVenta}</p>`;
+                    }
+                    
+                    showModal();
+                } else {
+                    alert(data.error || 'Error al buscar la venta');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            } finally {
+                buscarVentaBtn.innerHTML = 'Buscar';
+                buscarVentaBtn.disabled = false;
+            }
+        });
+    }
 
     // Cerrar modal
-    closeModal.addEventListener('click', function() {
-        modal.style.display = 'none';
-    });
+    if (closeModal) {
+        closeModal.addEventListener('click', function() {
+            closeModalWithAnimation();
+        });
+    }
 
     // Confirmar venta
-    confirmarVentaBtn.addEventListener('click', async function() {
-        console.log('Confirmar venta:', currentOnlineOrder);
-        
-        if (!currentOnlineOrder) return;
-        
-        confirmarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Confirmando...';
-        confirmarVentaBtn.disabled = true;
-        
-        try {
-            const response = await fetch(`/confirmarVentaOnline/${currentOnlineOrder.venta.idVenta}`, {
-                method: 'POST'
-            });
+    if (confirmarVentaBtn) {
+        confirmarVentaBtn.addEventListener('click', async function() {
+            if (!currentOnlineOrder) return;
             
-            const data = await response.json();
+            confirmarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Confirmando...';
+            confirmarVentaBtn.disabled = true;
             
-            if (response.ok) {
-                alert('Venta confirmada con éxito');
-                modal.style.display = 'none';
-                codigoVentaInput.value = '';
-                currentOnlineOrder = null;
-            } else {
-                alert(data.error || 'Error al confirmar la venta');
+            try {
+                const response = await fetch(`/confirmarVentaOnline/${currentOnlineOrder.venta.idVenta}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Efecto visual de confirmación
+                    createConfettiEffect();
+                    
+                    // Actualizar la interfaz
+                    const estadoElements = ventaInfoDiv.querySelectorAll('p');
+                    estadoElements.forEach(p => {
+                        if (p.innerHTML.includes('<strong>Estado:</strong>')) {
+                            p.innerHTML = '<strong>Estado:</strong> confirmada';
+                            p.style.color = '#2ecc71';
+                            p.style.fontWeight = '700';
+                        }
+                    });
+                    
+                    // Ocultar los botones
+                    confirmarVentaBtn.style.display = 'none';
+                    cancelarVentaBtn.style.display = 'none';
+                    
+                    // Mostrar mensaje de éxito
+                    setTimeout(() => {
+                        closeModalWithAnimation();
+                        codigoVentaInput.value = '';
+                        currentOnlineOrder = null;
+                    }, 2000);
+                } else {
+                    alert(data.error || 'Error al confirmar la venta');
+                    confirmarVentaBtn.innerHTML = 'Confirmar Venta';
+                    confirmarVentaBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+                confirmarVentaBtn.innerHTML = 'Confirmar Venta';
+                confirmarVentaBtn.disabled = false;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al conectar con el servidor');
-        } finally {
-            confirmarVentaBtn.innerHTML = 'Confirmar Venta';
-            confirmarVentaBtn.disabled = false;
-        }
-    });
+        });
+    }
 
     // Cancelar venta
-    cancelarVentaBtn.addEventListener('click', async function() {
-        if (!currentOnlineOrder) return;
-        
-        if (!confirm('¿Estás seguro de que deseas cancelar esta venta?')) {
-            return;
-        }
-        
-        cancelarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelando...';
-        cancelarVentaBtn.disabled = true;
-        
-        try {
-            const response = await fetch(`/cancelarVentaOnline/${currentOnlineOrder.venta.idVenta}`, {
-                method: 'POST'
+    if (cancelarVentaBtn) {
+        cancelarVentaBtn.addEventListener('click', async function () {
+            if (!currentOnlineOrder) return;
+    
+            // Mostrar confirmación con SweetAlert2
+            const result = await Swal.fire({
+                title: '¿Cancelar venta?',
+                text: '¿Estás seguro de que deseas cancelar esta venta?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'No'
             });
-            
-            const data = await response.json();
-            
-            if (response.ok) {
-                alert('Venta cancelada con éxito');
-                modal.style.display = 'none';
-                codigoVentaInput.value = '';
-                currentOnlineOrder = null;
-            } else {
-                alert(data.error || 'Error al cancelar la venta');
+    
+            // Si el usuario cancela
+            if (!result.isConfirmed) return;
+    
+            // Esperar un par de segundos antes de continuar
+            await new Promise(resolve => setTimeout(resolve, 2000));
+    
+            cancelarVentaBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelando...';
+            cancelarVentaBtn.disabled = true;
+    
+            try {
+                const response = await fetch(`/cancelarVentaOnline/${currentOnlineOrder.venta.idVenta}`, {
+                    method: 'POST'
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    const estadoElements = ventaInfoDiv.querySelectorAll('p');
+                    estadoElements.forEach(p => {
+                        if (p.innerHTML.includes('<strong>Estado:</strong>')) {
+                            p.innerHTML = '<strong>Estado:</strong> cancelada';
+                            p.style.color = '#e74c3c';
+                            p.style.fontWeight = '700';
+                        }
+                    });
+    
+                    ventaInfoDiv.style.transition = 'all 0.3s ease';
+                    ventaInfoDiv.style.backgroundColor = '#ffebee';
+                    ventaInfoDiv.style.borderLeft = '4px solid #e74c3c';
+    
+                    confirmarVentaBtn.style.display = 'none';
+                    cancelarVentaBtn.style.display = 'none';
+    
+                    setTimeout(() => {
+                        closeModalWithAnimation();
+                        codigoVentaInput.value = '';
+                        currentOnlineOrder = null;
+                    }, 2000);
+                } else {
+                    Swal.fire('Error', data.error || 'Error al cancelar la venta', 'error');
+                    cancelarVentaBtn.innerHTML = 'Cancelar Venta';
+                    cancelarVentaBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Error al conectar con el servidor', 'error');
+                cancelarVentaBtn.innerHTML = 'Cancelar Venta';
+                cancelarVentaBtn.disabled = false;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al conectar con el servidor');
-        } finally {
-            cancelarVentaBtn.innerHTML = 'Cancelar Venta';
-            cancelarVentaBtn.disabled = false;
-        }
-    });
+        });
+    }
+    
 
     // Cerrar modal al hacer clic fuera
     window.addEventListener('click', function(event) {
         if (event.target === modal) {
-            modal.style.display = 'none';
+            closeModalWithAnimation();
         }
     });
 
     // Validación del input de código
-    codigoVentaInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-    });
+    if (codigoVentaInput) {
+        codigoVentaInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    }
 });
-
-

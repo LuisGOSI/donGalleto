@@ -198,3 +198,354 @@ body {
     background-color: #FF6347;
     color: white;
 }
+
+/* ------------------------ Diseño de modal de ventas online ---------------------- */
+/* Estilos para el modal de venta online */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    position: relative;
+    background-color: white;
+    margin: auto;
+    width: 90%;
+    max-width: 550px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transform: translateY(-30px);
+    animation: slideIn 0.4s forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Barra de diseño superior */
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    z-index: 1;
+}
+
+/* Cabecera del modal */
+.modal-content h2 {
+    margin: 0;
+    padding: 20px 25px;
+    color: #333;
+    font-size: 22px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+/* Añadir ícono de carrito a la cabecera */
+.modal-content h2::before {
+    content: '\f07a';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 10px;
+    color: #3498db;
+    font-size: 20px;
+}
+
+/* Estilo para el ID de venta */
+#ventaId {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 16px;
+    margin-left: 8px;
+    box-shadow: 0 2px 4px rgba(41, 128, 185, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 6px rgba(52, 152, 219, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+    }
+}
+
+/* Botón de cierre */
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.close-modal:hover {
+    background-color: #e74c3c;
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* Área de información */
+#ventaInfo {
+    padding: 20px 25px;
+    background-color: #f8f9fa;
+    margin: 15px 25px;
+    border-radius: 6px;
+    border-left: 4px solid #3498db;
+}
+
+/* Estilo para cada fila de información */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #ddd;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s forwards;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.info-row:nth-child(1) { animation-delay: 0.1s; }
+.info-row:nth-child(2) { animation-delay: 0.2s; }
+.info-row:nth-child(3) { animation-delay: 0.3s; }
+.info-row:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.info-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.info-value {
+    color: #333;
+    font-weight: 500;
+}
+
+.total-row {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2ecc71;
+    text-align: right;
+}
+
+/* Acciones del modal */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 15px 25px 25px;
+}
+
+/* Estilos de botones */
+.modal-actions .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+}
+
+/* Botón de confirmación */
+.btn-success {
+    background-color: #2ecc71;
+    color: white;
+    box-shadow: 0 3px 6px rgba(46, 204, 113, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-success::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
+}
+
+.btn-success:hover::after {
+    left: 100%;
+}
+
+.btn-success:active {
+    transform: translateY(1px);
+}
+
+/* Botón de cancelación */
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+    box-shadow: 0 3px 6px rgba(231, 76, 60, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-danger::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-danger:hover::after {
+    left: 100%;
+}
+
+.btn-danger:active {
+    transform: translateY(1px);
+}
+
+/* Añadir iconos a los botones */
+.btn-success::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 8px;
+}
+
+.btn-danger::before {
+    content: '\f00d';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-right: 8px;
+}
+
+/* Responsividad */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .info-row {
+        flex-direction: column;
+    }
+    
+    .info-value {
+        margin-top: 5px;
+    }
+}
+
+/* Animación de salida */
+.modal.closing {
+    animation: fadeOut 0.3s forwards;
+}
+
+.modal.closing .modal-content {
+    animation: slideOut 0.3s forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slideOut {
+    to {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+}
