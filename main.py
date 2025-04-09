@@ -772,5 +772,5 @@ def enviar_correo():
 
 
 
-LOG_FILENAME = 'temp\logs.log'
+LOG_FILENAME = 'temporales\logs.log'
 logging.basicConfig(filename=LOG_FILENAME,level=logging.INFO)
