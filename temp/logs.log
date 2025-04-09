@@ -246,3 +246,386 @@ INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 16:57:43] "[36mGET /static/css/stylesL
 INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 16:57:44] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 16:57:44] "[36mGET /static/img/arrow-small-left.png HTTP/1.1[0m" 304 -
 INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 16:57:44] "[36mGET /static/img/fondoGalleta.jpeg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:02:59] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "GET /produccion HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[33mGET /static/css/StylesInveGalleta.css HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/css/stylesProduccion/styleInveInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/css/stylesProduccion/stylesInicioProduccion.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/css/stylesProduccion/stylesProveedores.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/css/stylesProduccion/styleInveGalletas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/css/stylesProduccion/styleInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/css/stylesProduccion/styleRecetas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/functions/funcionesProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/functions/funcionesSolicitudProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:00] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:01] "[36mGET /static/img/fondoInicioProduction.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:01] "GET /producciones-en-curso HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "GET /inventario-insumos HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[33mGET /static/css/StylesInveGalleta.css HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/css/stylesProduccion/stylesInicioProduccion.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/css/stylesProduccion/styleInveInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/css/stylesProduccion/styleInveGalletas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/css/stylesProduccion/stylesProveedores.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/css/stylesProduccion/styleInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/css/stylesProduccion/styleRecetas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/functions/funcionesSolicitudProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/functions/funcionesProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:05] "[36mGET /static/functions/funcionesInvInsumos.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:03:06] "GET /producciones-en-curso HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "GET /inventario-insumos HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[33mGET /static/css/StylesInveGalleta.css HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/css/stylesProduccion/stylesInicioProduccion.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/css/stylesProduccion/styleInveInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/css/stylesProduccion/styleInveGalletas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/css/stylesProduccion/stylesProveedores.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/css/stylesProduccion/styleInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/css/stylesProduccion/styleRecetas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/functions/funcionesProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/functions/funcionesSolicitudProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:25] "[36mGET /static/functions/funcionesInvInsumos.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:26] "GET /producciones-en-curso HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:26] "[36mGET /static/img/Don_galleto_icon.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:27] "[32mPOST /logout HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:28] "GET /login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:28] "[36mGET /static/css/stylesLogin.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:28] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:28] "[36mGET /static/img/fondoGalleta.jpeg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:28] "[36mGET /static/img/arrow-small-left.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "GET /ventas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "[36mGET /static/css/stylesSales/sales.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:31] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:32] "[36mGET /static/img/fondoVentas.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:33] "GET /moduloVentas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:33] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:33] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:33] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:33] "[36mGET /static/css/stylesSales/sales.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:33] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:33] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaMermelada.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaVainilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaNuez.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaCajeta.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaAlfajores.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaMantequilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaIntegral.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaBrownie.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:34] "[36mGET /static/imgGalletas/GalletaAvena.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:37] "POST /revisarGramajePorNombre1kg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:39] "POST /registrarVenta HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:07:40] "GET /static/tickets/ticket_117_20250408_170739.pdf HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:52] "GET /moduloVentas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/css/stylesSales/sales.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/imgGalletas/GalletaAlfajores.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/imgGalletas/GalletaMermelada.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/imgGalletas/GalletaVainilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/imgGalletas/GalletaNuez.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/imgGalletas/GalletaCajeta.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:53] "[36mGET /static/imgGalletas/GalletaMantequilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:54] "[36mGET /static/imgGalletas/GalletaBrownie.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:54] "[36mGET /static/imgGalletas/GalletaIntegral.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:54] "[36mGET /static/imgGalletas/GalletaAvena.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:54] "[36mGET /static/img/Don_galleto_icon.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:56] "POST /revisarGramajePorNombre1kg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:08:59] "POST /registrarVenta HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:00] "GET /static/tickets/ticket_118_20250408_170859.pdf HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:18] "POST /revisarGramajePorNombre1kg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:20] "POST /registrarVenta HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:21] "GET /static/tickets/ticket_119_20250408_170920.pdf HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:49] "POST /revisarGramajePorNombre HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:50] "POST /revisarGramajePorNombre HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:50] "POST /revisarGramajePorNombre HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:50] "POST /revisarGramajePorNombre HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:50] "POST /revisarGramajePorNombre HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:54] "POST /revisarGramajePorNombre HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:56] "POST /registrarVenta HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:09:57] "GET /static/tickets/ticket_120_20250408_170956.pdf HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:13] "GET /moduloVentas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:13] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:13] "[36mGET /static/css/stylesSales/sales.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:13] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:13] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:13] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:13] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaVainilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaCajeta.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaAlfajores.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaNuez.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaMermelada.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaBrownie.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaIntegral.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaMantequilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/imgGalletas/GalletaAvena.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:14] "[36mGET /static/img/Don_galleto_icon.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:17] "POST /revisarGramajePorNombre HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:20] "POST /revisarGramajePorNombre HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:21] "POST /registrarVenta HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:23] "GET /static/tickets/ticket_121_20250408_171021.pdf HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:34] "POST /registrarVenta HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:10:36] "GET /static/tickets/ticket_122_20250408_171034.pdf HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:04] "[32mPOST /logout HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:04] "GET /login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:04] "[36mGET /static/css/stylesLogin.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:04] "[36mGET /static/img/fondoGalleta.jpeg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:04] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:04] "[36mGET /static/img/arrow-small-left.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:06] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:06] "GET /gestionClientes HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/css/stylesCliente/stylesCliente.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/css/footer.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/css/stylesCliente/stylesHistorico.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/css/stylesCliente/styleCarrito.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/functions/funcionesClientes.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/imgGalletas/GalletaCajeta.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/img/fondo_Clientes.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/img/usuario.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/img/compra.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/imgGalletas/GalletaVainilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/imgGalletas/GalletaNuez.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/imgGalletas/GalletaAlfajores.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/imgGalletas/GalletaMermelada.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/imgGalletas/GalletaMantequilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:07] "[36mGET /static/imgGalletas/GalletaIntegral.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:08] "[36mGET /static/imgGalletas/GalletaBrownie.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:08] "[36mGET /static/imgGalletas/GalletaAvena.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:09] "POST /detalle_producto HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:09] "[36mGET /static/css/stylesCliente/styleDetalleProducto.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:09] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:11] "[32mPOST /agregar_carrito/1 HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:12] "GET /detalle_producto?galleta=[1,+"Galleta+de+chispas+de+chocolate",+15.0,+50.0,+"static/imgGalletas/GalletaChispasChocolate.webp"] HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:12] "[36mGET /static/css/stylesCliente/styleDetalleProducto.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:12] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:13] "GET /gestionClientes HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/css/stylesCliente/stylesHistorico.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/css/stylesCliente/stylesCliente.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/css/footer.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/css/stylesCliente/styleCarrito.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/functions/funcionesClientes.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/img/compra.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/img/fondo_Clientes.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/img/usuario.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/imgGalletas/GalletaVainilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/imgGalletas/GalletaCajeta.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/imgGalletas/GalletaNuez.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/imgGalletas/GalletaMantequilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/imgGalletas/GalletaMermelada.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/imgGalletas/GalletaIntegral.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:14] "[36mGET /static/imgGalletas/GalletaAlfajores.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/imgGalletas/GalletaBrownie.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "GET /carrito HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/css/stylesCliente/stylesCliente.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/css/footer.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/css/stylesCliente/stylesHistorico.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/css/stylesCliente/styleCarrito.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/img/usuario.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/functions/funcionesClientes.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/img/compra.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:15] "[36mGET /static/imgGalletas/GalletaAvena.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[32mPOST /finalizar_compra HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "GET /carrito HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/css/stylesCliente/stylesHistorico.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/css/stylesCliente/stylesCliente.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/css/footer.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/css/stylesCliente/styleCarrito.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/img/usuario.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/img/compra.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:19] "[36mGET /static/functions/funcionesClientes.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:23] "[32mPOST /logout HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:23] "GET /login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:23] "[36mGET /static/css/stylesLogin.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:23] "[36mGET /static/img/fondoGalleta.jpeg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:23] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:23] "[36mGET /static/img/arrow-small-left.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:26] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:26] "GET /ventas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:26] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:26] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:26] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:26] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:26] "[36mGET /static/css/stylesSales/sales.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:26] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:27] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:27] "[36mGET /static/img/fondoVentas.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:28] "GET /moduloVentas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/css/stylesSales/sales.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaCajeta.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaNuez.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaVainilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaMantequilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaMermelada.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaIntegral.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaAlfajores.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaBrownie.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:29] "[36mGET /static/imgGalletas/GalletaAvena.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:52] "GET /obtenerVentaOnline/123 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:15:55] "[35m[1mPOST /confirmarVentaOnline/123 HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "GET /moduloVentas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/css/stylesSales/sales.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/imgGalletas/GalletaMermelada.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/imgGalletas/GalletaNuez.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/imgGalletas/GalletaVainilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/imgGalletas/GalletaCajeta.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:58] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:59] "[36mGET /static/imgGalletas/GalletaAlfajores.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:59] "[36mGET /static/imgGalletas/GalletaMantequilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:59] "[36mGET /static/imgGalletas/GalletaIntegral.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:59] "[36mGET /static/imgGalletas/GalletaBrownie.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:59] "[36mGET /static/imgGalletas/GalletaAvena.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:21:59] "[36mGET /static/img/Don_galleto_icon.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:03] "GET /moduloVentas HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/css/stylesSales/stylesListadoVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/css/stylesSales/stylesModuloVentas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/css/stylesSales/stylesCorteVenta.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/css/stylesSales/sales.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/functions/functionsSales.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaMermelada.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaChispasChocolate.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaVainilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaNuez.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaCajeta.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaAlfajores.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaMantequilla.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaAvena.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaBrownie.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:04] "[36mGET /static/imgGalletas/GalletaIntegral.webp HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:05] "[36mGET /static/img/Don_galleto_icon.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:20] "GET /obtenerVentaOnline/123 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [08/Apr/2025 17:22:40] "POST /confirmarVentaOnline/123 HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug: * Detected change in 'C:\\Proyectos\\donGalleto\\database\\sales\\ventas.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
