@@ -10,19 +10,17 @@ def registrar_venta():
     cursor = mysql.connection.cursor()
     data = request.get_json()
     idEmpleado = session.get("user")[5]
-    print(idEmpleado)
-    print(session.get("user"))
     if not idEmpleado:
         return (
             jsonify({"error": "No se encontró el ID del empleado en la sesión."}),
             401,
         )
+    
+    # Preprocesar productos para calcular correctamente los valores para el PDF
     productos = data.get("productos", [])
-    subtotal = data.get("subtotal", 0)
-    descuento = data.get("descuento", 0)
-    total = data.get("total", 0)
-    tipo_venta = data.get("tipoVenta", "local")  # Nuevo campo: 'local' o 'online'
-
+    subtotal = 0
+    productos_para_pdf = []
+    
     try:
         # Registrar la venta en la tabla 'ventas'
         cursor.execute(
@@ -31,58 +29,67 @@ def registrar_venta():
             VALUES (%s, NULL, %s, %s, %s,
                     CASE WHEN %s = 'online' THEN 'pendiente' ELSE 'confirmada' END)
         """,
-            (idEmpleado, datetime.now(), descuento, tipo_venta, tipo_venta),
+            (idEmpleado, datetime.now(), data.get("descuento", 0), data.get("tipoVenta", "local"), data.get("tipoVenta", "local")),
         )
 
         idVenta = cursor.lastrowid
-        # Registrar cada producto en 'detalleventas' y actualizar inventario
+        
         for producto in productos:
             nombre = producto["name"]
             cantidad = producto["quantity"]
             tipo = producto["type"].lower()
-            precio = producto["price"]
-
+            precio_base = producto.get("basePrice", producto["price"])  # Usamos basePrice si existe
+            
             # Obtener el ID de la galleta
             cursor.execute(
-                "SELECT idGalleta FROM galletas WHERE nombreGalleta = %s", (nombre,)
+                "SELECT idGalleta, gramaje FROM galletas WHERE nombreGalleta = %s", (nombre,)
             )
             galleta = cursor.fetchone()
             if not galleta:
                 return jsonify({"error": f"Galleta '{nombre}' no encontrada"}), 400
-            idGalleta = galleta[0]
-
-            cantidadVendida = cantidad
-            cantidad_galletas = 1  # Valor por defecto
+                
+            idGalleta, peso_galleta = galleta
+            
+            # Preparar datos para PDF y DB
+            precio_unitario = precio_base
+            cantidad_galletas = cantidad
+            cantidad_vendida = cantidad
             
             if tipo == "paquete 1kg":
-                peso_galleta = revisar_gramaje_por_id(idGalleta)
-                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
-                    return peso_galleta, 400
-                cantidad_galletas = round(1000 / peso_galleta) * cantidad
-                cantidadVendida = cantidad_galletas
+                cantidad_galletas = round(1000 / peso_galleta)
+                precio_unitario = (cantidad_galletas * precio_base) * 0.93
+                cantidad_vendida = cantidad_galletas * cantidad
             elif tipo == "paquete 700gr":
-                peso_galleta = revisar_gramaje_por_id(idGalleta)
-                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
-                    return peso_galleta, 400
-                cantidad_galletas = round(700 / peso_galleta) * cantidad
-                cantidadVendida = cantidad_galletas
+                cantidad_galletas = round(700 / peso_galleta)
+                precio_unitario = (cantidad_galletas * precio_base) * 0.93
+                cantidad_vendida = cantidad_galletas * cantidad
             elif tipo == "gramaje":
-                peso_galleta = revisar_gramaje_por_id(idGalleta)
-                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
-                    return peso_galleta, 400
                 cantidad_galletas = round(cantidad / peso_galleta)
-                cantidadVendida = cantidad_galletas
-
+                precio_unitario = precio_base  # Precio por unidad
+                cantidad_vendida = cantidad_galletas
+            
+            # Guardar producto para PDF (con valores correctos)
+            productos_para_pdf.append({
+                "name": nombre,
+                "quantity": cantidad,  # Siempre guardamos la cantidad ingresada (en gramos si es gramaje)
+                "type": producto["type"],
+                "price": precio_unitario if tipo != "gramaje" else precio_base,
+                "subtotal": precio_unitario * cantidad if tipo != "gramaje" else precio_base * cantidad_galletas
+            })
+            
+            subtotal += productos_para_pdf[-1]["subtotal"]
+            
+            # Insertar en detalleventas
             cursor.execute(
                 """
                 INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido, cantidad_galletas)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """,
-                (idVenta, idGalleta, cantidad, tipo, precio, cantidadVendida),
+                (idVenta, idGalleta, cantidad, tipo, precio_unitario, cantidad_vendida),
             )
 
-            # 3. Actualizar inventario de galletas
-            if tipo_venta == "local":
+            # Actualizar inventario
+            if data.get("tipoVenta", "local") == "local":
                 cursor.execute(
                     """
                     UPDATE inventariogalletas 
@@ -97,48 +104,44 @@ def registrar_venta():
                             WHERE r.idGalletaFK = %s
                             AND ig.cantidadGalletas >= %s 
                             AND ig.estadoLote = 'Disponible'
-                            ORDER BY ig.fechaCaducidad ASC  # Prioriza lotes próximos a caducar
-                            LIMIT 1  # Selecciona el lote más antiguo con stock suficiente
+                            ORDER BY ig.fechaCaducidad ASC
+                            LIMIT 1
                         ) AS subquery
                     )
                     """,
-                    (cantidadVendida, idGalleta, cantidadVendida),
+                    (cantidad_vendida, idGalleta, cantidad_vendida),
                 )
 
         mysql.connection.commit()
-
-        # Generar PDF en lugar de enviar correo
-        pdf_path = generar_pdf_ticket(idVenta, productos, subtotal, descuento, total)
+        
+        # Recalcular total con el subtotal correcto
+        descuento = data.get("descuento", 0)
+        descuento_aplicado = (subtotal * descuento) / 100
+        total = subtotal - descuento_aplicado
+        
+        # Generar PDF con los datos corregidos
+        pdf_path = generar_pdf_ticket(idVenta, productos_para_pdf, subtotal, descuento, total)
 
         if pdf_path:
-            # Obtener solo el nombre del archivo para la respuesta
             pdf_filename = os.path.basename(pdf_path)
             return (
-                jsonify(
-                    {
-                        "mensaje": "Venta registrada con éxito",
-                        "pdf_ticket": pdf_filename,
-                        "pdf_url": f"/static/tickets/{pdf_filename}",
-                        "tipo_venta": tipo_venta,
-                        "estado_venta": (
-                            "pendiente" if tipo_venta == "online" else "confirmada"
-                        ),
-                    }
-                ),
+                jsonify({
+                    "mensaje": "Venta registrada con éxito",
+                    "pdf_ticket": pdf_filename,
+                    "pdf_url": f"/static/tickets/{pdf_filename}",
+                    "tipo_venta": data.get("tipoVenta", "local"),
+                    "estado_venta": "pendiente" if data.get("tipoVenta", "local") == "online" else "confirmada",
+                }),
                 200,
             )
         else:
             return (
-                jsonify(
-                    {
-                        "mensaje": "Venta registrada pero falló la generación del PDF",
-                        "pdf_ticket": None,
-                        "tipo_venta": tipo_venta,
-                        "estado_venta": (
-                            "pendiente" if tipo_venta == "online" else "confirmada"
-                        ),
-                    }
-                ),
+                jsonify({
+                    "mensaje": "Venta registrada pero falló la generación del PDF",
+                    "pdf_ticket": None,
+                    "tipo_venta": data.get("tipoVenta", "local"),
+                    "estado_venta": "pendiente" if data.get("tipoVenta", "local") == "online" else "confirmada",
+                }),
                 200,
             )
 
