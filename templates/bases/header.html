@@ -36,8 +36,15 @@
 			<a href="{{url_for('corteVentas')}}" class="sales-header-nav-item">Corte de Ventas</a>
 			<a href="{{url_for('solicitudProduccion_dashboard')}}" class="sales-header-nav-item">Solicitudes de producción</a>
 			<form method="POST" action="/logout">
-				<button type="submit" class="sales-header-logout-btn">Cerrar sesion</button>
-			</form>
+				<button type="submit" class="logout-btn-admin">
+				  <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+					<polyline points="16 17 21 12 16 7"></polyline>
+					<line x1="21" y1="12" x2="9" y2="12"></line>
+				  </svg>
+				  Cerrar sesión
+				</button>
+			  </form>
 		</div>
 	</div>
 	
@@ -61,8 +68,15 @@
 				<a href="{{url_for('gestion_insumos')}}" class="produccion-header-nav-item">Gestion de insumos</a>
 				<a href="{{url_for('insumos_inventory')}}" class="produccion-header-nav-item">Inventario de Insumos</a>
 				<form method="POST" action="/logout">
-					<button type="submit" class="produccion-header-logout-btn">Cerrar sesion</button>
-				</form>
+					<button type="submit" class="logout-btn-admin">
+					  <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+						<polyline points="16 17 21 12 16 7"></polyline>
+						<line x1="21" y1="12" x2="9" y2="12"></line>
+					  </svg>
+					  Cerrar sesión
+					</button>
+				  </form>
 		</div>
 	</div>
 
@@ -75,8 +89,15 @@
 			<a href="{{url_for('admin_dashboard')}}" class="admin-header-nav-item">Dashboard</a>
 			<a href="{{url_for('clientes')}}" class="admin-header-nav-item">Clientes</a>
 			<form method="POST" action="/logout">
-				<button type="submit" class="logout-btn-admin">Cerrar sesion</button>
-			</form>
+				<button type="submit" class="logout-btn-admin">
+				  <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+					<polyline points="16 17 21 12 16 7"></polyline>
+					<line x1="21" y1="12" x2="9" y2="12"></line>
+				  </svg>
+				  Cerrar sesión
+				</button>
+			  </form>
 		</div>
 	</div>
 	{% endif %}
