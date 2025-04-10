@@ -173,30 +173,96 @@ document.addEventListener("DOMContentLoaded", () => {
             total: parseFloat(totalInput.value),
             tipoVenta: "local"
         };
-
-        fetch("/registrarVenta", {
+    
+        // Mostrar loading al iniciar
+        Swal.fire({
+            title: 'Procesando venta',
+            html: 'Verificando disponibilidad de productos...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    
+        // Primero verificar stock
+        fetch("/verificarStockVenta", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(ventaData)
         })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => Promise.reject(err));
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert("Venta registrada exitosamente: " + data.mensaje);
-                cart = [];
-                renderCart();
-                if (data.pdf_url) {
-                    window.open(data.pdf_url, '_blank');
-                }
-            })
-            .catch(error => {
-                alert("Error al registrar la venta: " + (error.error || error.message || "Error desconocido"));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error al verificar stock");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.stock_suficiente) {
+                Swal.close();
+                // Crear mensaje detallado para SweetAlert
+                let mensajeHtml = '<div style="text-align: left;"><p>No hay suficiente stock para:</p><ul style="margin-left: 20px;">';
+                data.productos_sin_stock.forEach(item => {
+                    mensajeHtml += `<li><strong>${item.nombre}</strong>: Disponible ${item.stock_disponible}, Necesario ${item.stock_requerido}</li>`;
+                });
+                mensajeHtml += '</ul></div>';
+                
+                Swal.fire({
+                    title: 'Stock insuficiente',
+                    html: mensajeHtml,
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#3085d6'
+                });
+                return Promise.reject("Stock insuficiente"); // Esto evitará que continúe con el then
+            }
+            
+            // Si hay stock, proceder con la venta
+            return fetch("/registrarVenta", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(ventaData)
             });
+        })
+        .then(response => {
+            if (!response) return; // Si no hay response es porque no pasó la verificación de stock
+            
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                title: '¡Venta exitosa!',
+                text: 'La venta se ha registrado correctamente',
+                icon: 'success',
+                showConfirmButton: true,
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#28a745',
+                willClose: () => {
+                    cart = [];
+                    renderCart();
+                    if (data.pdf_url) {
+                        window.open(data.pdf_url, '_blank');
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            // Solo mostrar error si no es por stock insuficiente
+            if (error !== "Stock insuficiente") {
+                Swal.fire({
+                    title: 'Error',
+                    text: error.error || error.message || "Ocurrió un error al registrar la venta",
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#d33'
+                });
+            }
+        });
     });
+
+
         // =============== FUNCIONALIDAD PARA VENTAS ONLINE ==========
 
     // Elementos del modal
