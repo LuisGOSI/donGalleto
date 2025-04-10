@@ -1,118 +1,141 @@
 {% extends '/client/baseCliente/baseCliente.html' %}
 {% block content %}
 
-  <title>Detalle de Producto</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="/static/css/stylesCliente/styleDetalleProducto.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<title>Detalle de Producto</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="/static/css/stylesCliente/styleDetalleProducto.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
-    <nav class="breadcrumb">
-        <a href="{{url_for('home')}}">INICIO</a>
-        <span class="separator"><i class="fas fa-chevron-right"></i></span>
-        <a href="{{url_for('cliente_dashboard')}}">PRODUCTOS</a>
-        <span class="separator"><i class="fas fa-chevron-right"></i></span>
-        <a href="#">{{ galleta[1] }}</a> <!-- Nombre de la galleta -->
-    </nav>
+  <nav class="breadcrumb">
+    <a href="{{url_for('home')}}">INICIO</a>
+    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+    <a href="{{url_for('cliente_dashboard')}}">PRODUCTOS</a>
+    <span class="separator"><i class="fas fa-chevron-right"></i></span>
+    <a href="#">{{ galleta[1] }}</a> <!-- Nombre de la galleta -->
+  </nav>
 
-    <h1 class="title-client">Detalle del Producto</h1>
-    <h6 class="subtitle-client">{{galleta[1]}}</h6> <!-- Nombre de la galleta -->
+  <h1 class="title-client">Detalle del Producto</h1>
+  <h6 class="subtitle-client">{{galleta[1]}}</h6> <!-- Nombre de la galleta -->
 
-    <div class="product-detail-container">
-        <div class="product-detail-card">
-            <div class="product-detail-image">
-                <img src="/{{galleta[4]}}" alt="Galleta de Chocolate">
-            </div>
-            <div class="product-detail-info">
-                <h2 class="product-detail-title">{{galleta[1]}}</h2> <!-- Nombre de la galleta -->
-                <p class="product-detail-description">Deliciosa galleta de chocolate con trozos de chocolate semiamargo. Horneada diariamente con ingredientes frescos y de la mejor calidad.</p> <!-- Descripción de la galleta -->
-                <p id="productPrice" class="product-detail-price"> $ {{galleta[2]}} C/U</p> <!-- Precio -->
+  <div class="product-detail-container">
+    <div class="product-detail-card">
+      <div class="product-detail-image">
+        <img src="/{{galleta[4]}}" alt="Galleta de Chocolate">
+      </div>
+      <div class="product-detail-info">
+        <h2 class="product-detail-title">{{galleta[1]}}</h2> <!-- Nombre de la galleta -->
+        <p class="product-detail-description">Deliciosa galleta de chocolate con trozos de chocolate semiamargo. Horneada diariamente con ingredientes frescos y de la mejor calidad.</p> <!-- Descripción de la galleta -->
+        <p id="productPrice" class="product-detail-price"> $ {{galleta[2]}} C/U</p> <!-- Precio -->
 
-        <form action="{{ url_for('agregar_al_carrito', id=galleta[0]) }}" method="POST">
-            <div class="product-detail-actions">
+        <form action="/agregar_carrito/{{galleta[0]}}" method="POST">
+          <div class="product-detail-actions">
             <div class="quantity-control">
-                <span class="quantity-label">Cantidad:</span>
-                <div class="quantity-selector">
-                    <button type="button" class="quantity-btn minus-btn">-</button>
-                    <input type="number" name="cantidad" class="quantity-input" value="1" min="1">
-                    <button type="button" class="quantity-btn plus-btn">+</button>
-                </div>
+              <span class="quantity-label">Cantidad:</span>
+              <div class="quantity-selector">
+                <button type="button" class="quantity-btn minus-btn">-</button>
+                <input type="number" name="cantidad" class="quantity-input" value="1" min="1">
+                <button type="button" class="quantity-btn plus-btn">+</button>
+              </div>
             </div>
             <div class="sale-type-selector">
-                <span class="sale-type-label">Método de venta:</span>
-                <div class="select-wrapper">
-                  <select name="saleType" id="saleType" class="sale-type-select">
-                    <option value="unidad">UNIDAD</option>
-                    <option value="paquete 1kg">PAQUETE 1KG</option>
-                    <option value="paquete 700gr">PAQUETE 700GR</option>
-                    <option value="gramaje">GRAMOS</option>
+              <span class="sale-type-label">Método de venta:</span>
+              <div class="select-wrapper">
+                <select name="saleType" id="saleType" class="sale-type-select">
+                  <option value="unidad">UNIDAD</option>
+                  <option value="paquete 1kg">PAQUETE 1KG</option>
+                  <option value="paquete 700gr">PAQUETE 700GR</option>
+                  <option value="gramaje">GRAMOS</option>
                 </select>
-                </div>
+              </div>
             </div>
 
-            <button type="submit" class="add-to-cart-detail">Añadir al carrito</button>
-            </div>
+            <button type="submit" id="addToCartBtn" class="add-to-cart-detail">Añadir al carrito</button>
+          </div>
         </form>
-        </div>
+      </div>
     </div>
-    </div>
+  </div>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                let messages = {{ messages | tojson }};
-                messages.forEach(([category, message]) => {
-                    Swal.fire({
-                        icon: category === "success" ? "success" : "error",
-                        title: message,
-                        showConfirmButton: false,
-                        timer: 2500
-                    });
-                });
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          let messages = {{ messages | tojson }};
+          messages.forEach(([category, message]) => {
+            Swal.fire({
+              icon: category === "success" ? "success" : "error",
+              title: message,
+              showConfirmButton: false,
+              timer: 2500
             });
-        </script>
+          });
+        });
+      </script>
     {% endif %}
-{% endwith %}
-
+  {% endwith %}
 
   <script>
-    document.getElementById('saleType').addEventListener('change', function() {
-      const unitBadge = document.getElementById('unitBadge');
-      const productPrice = document.getElementById('productPrice');
-      const price = 850;
-      
-      switch(this.value) {
-        case 'unidad':
-          unitBadge.textContent = 'Unidad';
-          productPrice.textContent = `${price} ₡/U`;
-          break;
-        case 'paquete':
-          unitBadge.textContent = 'Paquete';
-          productPrice.textContent = `${price * 6} ₡/Paq`;
-          break;
-        case 'gramos':
-          unitBadge.textContent = 'Gramos';
-          productPrice.textContent = `${Math.round(price / 40)} ₡/g`;
-          break;
-      }
-    });
-    
-    // Script para los botones de cantidad
-    document.querySelector('.minus-btn').addEventListener('click', function() {
-      const input = this.parentNode.querySelector('.quantity-input');
-      const value = parseInt(input.value);
-      if (value > 1) {
-        input.value = value - 1;
-      }
-    });
-    
-    document.querySelector('.plus-btn').addEventListener('click', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      const addToCartBtn = document.getElementById('addToCartBtn');
+      const saleTypeSelect = document.getElementById('saleType'); 
+      const price = {{ galleta[2] }}; // Precio base de la galleta
+      const weight = {{ galleta[3] }}; // Peso de la galleta en gramos
+
+      // Cambiar el precio según el tipo de venta seleccionado
+      saleTypeSelect.addEventListener('change', function() {
+        const productPrice = document.getElementById('productPrice');
+        switch (this.value) {
+          case 'unidad':
+            productPrice.textContent = `$ ${price} C/U`;
+            break;
+          case 'paquete 1kg':
+            productPrice.textContent = `$ ${Math.round( price * (1000 / weight )) * 0.93} C/U`;
+            break;
+          case 'paquete 700gr':
+            productPrice.textContent = `$ ${Math.round( price * (700 / weight )) * 0.93} C/U`;
+            break;
+          case 'gramaje':
+            productPrice.textContent = `$ ${price} C/U`;
+            break;
+        }
+      });
+
+      addToCartBtn.addEventListener('click', function(event) {
+        const quantityInput = document.querySelector('.quantity-input');
+        const saleType = saleTypeSelect.value;
+        const quantity = parseInt(quantityInput.value);
+
+        if (saleType === 'gramaje') {
+          if (quantity < weight) {
+            event.preventDefault(); // Evitar el envío del formulario
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'La cantidad no puede ser menor al peso del producto.',
+              showConfirmButton: true,
+            });
+          }
+        }
+      });
+
+      // Script para los botones de cantidad
+      document.querySelector('.minus-btn').addEventListener('click', function() {
+        const input = this.parentNode.querySelector('.quantity-input');
+        const value = parseInt(input.value);
+        if (value > 1) {
+          input.value = value - 1;
+        }
+      });
+
+      document.querySelector('.plus-btn').addEventListener('click', function() {
         const input = this.parentNode.querySelector('.quantity-input');
         input.value = parseInt(input.value) + 1;
+      });
     });
-    </script>
+  </script>
+
 </body>
 
 {% endblock %}

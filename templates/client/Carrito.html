@@ -1,87 +1,93 @@
-{% extends '/client/baseCliente/baseCliente.html' %}
-{% block content %}
+{% extends '/client/baseCliente/baseCliente.html' %} {% block content %}
 <nav class="breadcrumb">
-    <a href="{{url_for('home')}}">INICIO</a>
-    <span class="separator"><i class="fas fa-chevron-right"></i></span>
-    <a href="{{url_for('cliente_dashboard')}}">PRODUCTOS</a>
-    <span class="separator"><i class="fas fa-chevron-right"></i></span>
-    <a href="{{url_for('carrito_dashboard')}}">CARRITO DE COMPRAS</a>
+	<a href="{{url_for('home')}}">INICIO</a>
+	<span class="separator"><i class="fas fa-chevron-right"></i></span>
+	<a href="{{url_for('cliente_dashboard')}}">PRODUCTOS</a>
+	<span class="separator"><i class="fas fa-chevron-right"></i></span>
+	<a href="{{url_for('carrito_dashboard')}}">CARRITO DE COMPRAS</a>
 </nav>
 
 <h1 class="title-client">Carrito de compras</h1>
-    
+
 <div class="order-container">
-    <div class="order-table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
-                    <th>Total</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if carrito %}
-                    {% for key, item in carrito.items() %}
-                    <tr>
-                        <td>{{ item["nombre"] }}</td>
-                        <td>$ {{ "%.2f"|format(item["precio"]) }}</td>
-                        <td>{{ item["cantidad"] }} {{ item.get("tipo_venta", "N/A") }}</td>
-                        <td>$ {{ "%.2f"|format(item["precio"] * item["cantidad"]) }}</td>
-                        <td>
-                            <form action="{{ url_for('eliminar_del_carrito', id=key.split('_')[0], tipo_venta=key.split('_')[1]) }}" method="post">
-                                <button class="delete-btn" type="submit">🗑️</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="5">Tu carrito está vacío.</td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="summary">
-        <div class="summary-row">
-            <div>{{ total_items }} artículo(s)</div>
-            <div>$ {{ "%.2f"|format(total_precio) }}</div>
-        </div>
-        <hr>
-        <div class="summary-row">
-            <div><strong>Total</strong></div>
-            <div><strong>$ {{ "%.2f"|format(total_precio) }}</strong></div>
-        </div>
-        <form action="/finalizar_compra" method="POST">
-            <input type="hidden" id="tipo_venta" name="tipo_venta_input" value="online">
-            <button class="finalizar-btn" type="submit">Finalizar pedido</button>
-        </form>
-    </div>
+	<div class="order-table">
+		<table>
+			<thead>
+				<tr>
+					<th>Producto</th>
+					<th>Precio</th>
+					<th>Cantidad</th>
+					<th>Total</th>
+					<th>Acción</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% if carrito %} {% for key, item in carrito.items() %}
+				<tr>
+					<td>{{ item["nombre"] }}</td>
+					<td>$ {{ "%.2f"|format(item["precio"]) }}</td>
+					<td>
+						{% if item.tipo_venta == 'gramaje' %} {{ (item.cantidad //
+						item.peso_galleta) }} unidades ({{ item.cantidad }}g) {% else %} {{
+						item.cantidad }} {{ item.tipo_venta }} {% endif %}
+					</td>
+					<td>
+						$ {{ "%.2f"|format(item.precio * (item.cantidad // item.peso_galleta
+						if item.tipo_venta == 'gramaje' else item.cantidad)) }}
+					</td>
+					<td>
+						<form
+							action="{{ url_for('eliminar_del_carrito', id=item.id, tipo_venta=item.tipo_venta) }}"
+							method="post"
+						>
+							<button class="delete-btn" type="submit">🗑️</button>
+						</form>
+					</td>
+				</tr>
+				{% endfor %} {% else %}
+				<tr>
+					<td colspan="5" class="empty-cart">Tu carrito está vacío.</td>
+				</tr>
+				{% endif %}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="summary">
+		<div class="summary-row">
+			<div>{{ total_items }} artículo(s)</div>
+			<div>$ {{ "%.2f"|format(total_precio) }}</div>
+		</div>
+		<hr />
+		<div class="summary-row">
+			<div><strong>Total</strong></div>
+			<div><strong>$ {{ "%.2f"|format(total_precio) }}</strong></div>
+		</div>
+		<form action="/finalizar_compra" method="POST">
+			<input
+				type="hidden"
+				id="tipo_venta"
+				name="tipo_venta_input"
+				value="online"
+			/>
+			<button class="finalizar-btn" type="submit">Finalizar pedido</button>
+		</form>
+	</div>
 </div>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                let messages = {{ messages | tojson }};
-                messages.forEach(([category, message]) => {
-                    Swal.fire({
-                        icon: category === "success" ? "success" : "error",
-                        title: message,
-                        showConfirmButton: false,
-                        timer: 5000
-                    });
-                });
-            });
-        </script>
-    {% endif %}
-{% endwith %}
-
-
-{% endblock %}
-
-
+{% with messages = get_flashed_messages(with_categories=true) %} {% if messages
+%}
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+	    let messages = {{ messages | tojson }};
+	    messages.forEach(([category, message]) => {
+	        Swal.fire({
+	            icon: category === "success" ? "success" : "error",
+	            title: message,
+	            showConfirmButton: false,
+	            timer: 5000
+	        });
+	    });
+	});
+</script>
+{% endif %} {% endwith %} {% endblock %}

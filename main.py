@@ -2,7 +2,11 @@ from flask import render_template, request, redirect, url_for, session
 from database.production import insumosCRUD, gestionRecetas, solicitudProduccion
 from database.admin import proveedorCRUD, clientesCRUD, dashboard
 from database.usuario import usuariosCRUD
-from database.production import inventarioDeGalletas, inventarioDeInsumos, moduloProduccion
+from database.production import (
+    inventarioDeGalletas,
+    inventarioDeInsumos,
+    moduloProduccion,
+)
 from database.cliente import clientes
 from database.cookies import cookies
 from database.sales import ventas, corteVenta
@@ -10,7 +14,7 @@ from datetime import datetime
 from db import app, mysql, mail
 from sessions import *
 from pdf_ticket import *
-import json,logging
+import json, logging
 from flask_mail import Message
 
 #! ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,18 +30,24 @@ def home():
 @app.route("/dashboard")
 def admin_dashboard():
     if "user" not in session:
-        app.logger.error('Usuario desconocido intento acceder al dashboard, acceso denegado')
+        app.logger.error(
+            "Usuario desconocido intento acceder al dashboard, acceso denegado"
+        )
         return render_template("pages/error404.html"), 404
     user = session.get("user")
     if user[4] not in ["administrador"]:
-        app.logger.warning(f'El usuario con correo "{user[2]}" intento acceder al dashboard, acceso denegado')
+        app.logger.warning(
+            f'El usuario con correo "{user[2]}" intento acceder al dashboard, acceso denegado'
+        )
         return render_template("pages/error404.html"), 404
     presentaciones = dashboard.getPresentaciones()
     ganancias = dashboard.getGanancias()
     galletas = dashboard.getGalletasTop()
-    inversion=dashboard.getInversionGalletas()
-    recomendada=dashboard.getGalletaRecomendad()
-    app.logger.debug(f'rol verificado, el usuario con correo "{user[2] }" accedio correctamente al dashboard')
+    inversion = dashboard.getInversionGalletas()
+    recomendada = dashboard.getGalletaRecomendad()
+    app.logger.debug(
+        f'rol verificado, el usuario con correo "{user[2] }" accedio correctamente al dashboard'
+    )
     return render_template(
         "/admin/admin_dashboard.html",
         presentaciones=presentaciones,
@@ -200,8 +210,12 @@ def moduloProduccion():
 def cambiar_contrasena():
     if session.get("user") is None:
         return render_template("pages/error404.html"), 404
-    user=session.get("user")
-    return render_template("/client/cambiarPassword.html", is_base_template=False, )
+    user = session.get("user")
+    return render_template(
+        "/client/cambiarPassword.html",
+        is_base_template=False,
+    )
+
 
 @app.route("/gestionClientes")
 def cliente_dashboard():
@@ -221,50 +235,75 @@ def detalle_producto():
         return render_template("pages/error404.html"), 404
     galleta_json = request.form.get("galleta") or request.args.get("galleta")
     galleta = json.loads(galleta_json) if galleta_json else None
-
     return render_template(
-        "/client/DetalleProducto.html", is_base_template=False, galleta=galleta,user=user
+        "/client/DetalleProducto.html",
+        is_base_template=False,
+        galleta=galleta,
+        user=user,
     )
 
 
 @app.route("/agregar_carrito/<int:id>", methods=["POST"])
 def agregar_al_carrito(id):
-    # Se obtiene la cantidad del formulario
     cantidad = int(request.form.get("cantidad", 1))
-    tipo_venta = request.form.get(
-        "saleType", "unidad"
-    )  # Obtener el tipo de venta del formulario
-    # Se obtienen las galletas del catalago
+    tipo_venta = request.form.get("saleType", "unidad")
     data = cookies.getCookies()
-
     producto = next((item for item in data if item[0] == id), None)
+
     if not producto:
         flash("Error: Producto no encontrado", "error")
         return redirect(url_for("cliente_dashboard"))
 
-    if "carrito" not in session:
-        session["carrito"] = {}
+    # Calcular precio según tipo de venta
+    precio_base = producto[2]
+    gramaje = producto[3]
 
-    carrito = session["carrito"]
+    if tipo_venta == "paquete 1kg":
+        unidades = 1000 // gramaje
+        precio_venta = (precio_base * unidades) * 0.93
+    elif tipo_venta == "paquete 700gr":
+        unidades = 700 // gramaje
+        precio_venta = (precio_base * unidades) * 0.93
+    elif tipo_venta == "gramaje":
+        unidades = cantidad // gramaje
+        precio_venta = precio_base
+        if unidades < 1:
+            flash("❌ La cantidad en gramos no es suficiente para una unidad", "error")
+            return redirect(url_for("detalle_producto", galleta=json.dumps(producto)))
+        precio_venta = precio_base 
+        cantidad = cantidad  # Guardamos los gramos ingresados
+    else:  # Unidad
+        precio_venta = precio_base
 
-    # Generamos una clave única usando ID y tipo de venta
-    clave_carrito = f"{id}_{tipo_venta}"
+    # Generar clave única para el carrito
+    if tipo_venta == "gramaje":
+        clave_carrito = f"{id}_gramaje_{cantidad}"  # Incluimos la cantidad específica
+    else:
+        clave_carrito = f"{id}_{tipo_venta}"
+
+    # Manejar el carrito
+    carrito = session.get("carrito", {})
 
     if clave_carrito in carrito:
-        # Si ya existe con el mismo tipo de venta, sumamos la cantidad
-        carrito[clave_carrito]["cantidad"] += cantidad
+        if tipo_venta == "gramaje":
+            # Para gramaje, actualizar cantidad de gramos
+            carrito[clave_carrito]["cantidad"] += cantidad
+            # Recalcular unidades
+            nuevas_unidades = carrito[clave_carrito]["cantidad"] // gramaje
+            carrito[clave_carrito]["precio"] = precio_base 
+        else:
+            carrito[clave_carrito]["cantidad"] += cantidad
     else:
-        # Si es un nuevo tipo de venta, lo agregamos como un nuevo producto en el carrito
         carrito[clave_carrito] = {
-            "id": producto[0],
+            "id": id,
             "nombre": producto[1],
-            "precio": producto[2],
+            "precio": precio_venta,
             "cantidad": cantidad,
             "tipo_venta": tipo_venta,
+            "peso_galleta": gramaje if tipo_venta == "gramaje" else None,
         }
 
-    print("Carrito actualizado:", carrito)
-
+    session["carrito"] = carrito
     session.modified = True
     flash("✅ Producto agregado al carrito", "success")
     return redirect(url_for("detalle_producto", galleta=json.dumps(producto)))
@@ -272,131 +311,163 @@ def agregar_al_carrito(id):
 
 @app.route("/eliminar_carrito/<int:id>/<tipo_venta>", methods=["POST"])
 def eliminar_del_carrito(id, tipo_venta):
-    if "carrito" in session:
-        carrito = session["carrito"]
+    carrito = session.get("carrito", {})
 
-        clave = f"{id}_{tipo_venta}"  # Genera la clave en el formato correcto
+    # Buscar todas las claves que coincidan con el id y tipo_venta
+    claves_a_eliminar = [
+        key
+        for key in carrito
+        if key.startswith(f"{id}_{tipo_venta}")
+        or (tipo_venta == "gramaje" and key.startswith(f"{id}_gramaje_"))
+    ]
 
-        if clave in carrito:
-            del carrito[clave]  # Elimina el producto del carrito
-            session.modified = True  # Guarda los cambios en la sesión
-            print(f"Producto eliminado: {clave}")  # Depuración en consola
-        else:
-            print(f"No se encontró la clave: {clave}")  # Depuración si no lo encuentra
+    for clave in claves_a_eliminar:
+        del carrito[clave]
 
-    return redirect(url_for("carrito_dashboard"))  # Volver a la vista del carrito
+    session["carrito"] = carrito
+    session.modified = True
+    flash("🗑️ Producto eliminado del carrito", "success")
+    return redirect(url_for("carrito_dashboard"))
 
 
 @app.route("/finalizar_compra", methods=["POST"])
 def finalizar_compra():
-    user = session.get("user")
-    user_id = session.get("user")[6]  # ID del cliente en sesión
-    carrito = session.get("carrito")
-    total_precio = sum(item["precio"] * item["cantidad"] for item in carrito.values())
+    if "user" not in session or "carrito" not in session or not session["carrito"]:
+        flash("Carrito vacío o sesión inválida", "error")
+        return redirect(url_for("carrito_dashboard"))
+
+    user = session["user"]
+    user_id = user[6]  # ID del cliente en sesión
+    carrito = session["carrito"]
+    tipo_venta = request.form.get("tipo_venta_input", "online")
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    id_empleado = 1  # ID de un empleado específico para ventas en línea
-    descuento = 0  # Puedes modificar esto si hay descuentos
-    tipo_venta = request.form.get("tipo_venta", "online")  # Por defecto online para clientes
+    id_empleado = 1  # ID de empleado para ventas online
+    descuento = 0
     cur = mysql.connection.cursor()
 
     try:
-        # Insertar la venta en la tabla `ventas`
+        # 1. Insertar la venta principal
         cur.execute(
             """
             INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento, tipoVenta, estadoVenta)
-            VALUES (%s, %s, %s, %s, %s,
+            VALUES (%s, %s, %s, %s, %s, 
                     CASE WHEN %s = 'online' THEN 'pendiente' ELSE 'confirmada' END)
             """,
             (id_empleado, user_id, fecha_actual, descuento, tipo_venta, tipo_venta),
         )
+        id_venta = cur.lastrowid
         mysql.connection.commit()
 
-        # Obtener el ID de la venta generada
-        id_venta = cur.lastrowid
-        print(f"✅ ID de la venta generada: {id_venta}")
-
-        # Insertar detalles de la venta en la tabla `detalleventas`
+        # 2. Procesar cada item del carrito
         for key, item in carrito.items():
-            print(f"Producto en carrito: {item}")
-            id_galleta = key.split("_")[0]  # ID del producto (galleta)
-            tipo_venta_detalle = item.get(
-                "tipo_venta", "unidad"
-            )  # Debe ser 'gramaje', 'paquetes' o 'unidades'
-            print(f"Tipo de venta: {tipo_venta_detalle}")
+            id_galleta = item["id"]
+            tipo_venta_detalle = item["tipo_venta"]
+            precio_unitario = item["precio"]
+            cantidad_vendida = item["cantidad"]
 
+            # Calcular cantidad_galletas según el tipo de venta
+            if tipo_venta_detalle == "gramaje":
+                peso_galleta = revisar_gramaje_por_id(id_galleta)
+                cantidad_galletas = cantidad_vendida // peso_galleta
+                cantidad_vendida = cantidad_vendida  # Guardamos los gramos
+            elif tipo_venta_detalle == "paquete 1kg":
+                peso_galleta = revisar_gramaje_por_id(id_galleta)
+                cantidad_galletas = 1000 // peso_galleta
+                cantidad_vendida = 1  # 1 paquete
+            elif tipo_venta_detalle == "paquete 700gr":
+                peso_galleta = revisar_gramaje_por_id(id_galleta)
+                cantidad_galletas = 700 // peso_galleta
+                cantidad_vendida = 1  # 1 paquete
+            else:  # unidad
+                cantidad_galletas = cantidad_vendida
+                cantidad_vendida = cantidad_vendida  # Cantidad de unidades
+
+            # Insertar en detalleventas
             cur.execute(
                 """
-                INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO detalleventas 
+                (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido, cantidad_galletas)
+                VALUES (%s, %s, %s, %s, %s, %s)
                 """,
                 (
                     id_venta,
                     id_galleta,
-                    item["cantidad"],
+                    cantidad_vendida,
                     tipo_venta_detalle,
-                    item["precio"],
+                    precio_unitario,
+                    cantidad_galletas,
                 ),
             )
-            # Actualizar inventario solo si es venta local (confirmada)
-        if tipo_venta == "local":
-            for key, item in carrito.items():
-                id_galleta = key.split("_")[0]
-                cantidad = item["cantidad"]
 
-                # Convertir a unidades si es paquete
-                if item["tipo_venta"] == "paquete 1kg":
-                    peso_galleta = ventas.revisar_gramaje_por_id(id_galleta)
-                    cantidad = round(cantidad * 1000 / peso_galleta)
-                elif item["tipo_venta"] == "paquete 700gr":
-                    peso_galleta = ventas.revisar_gramaje_por_id(id_galleta)
-                    cantidad = round(cantidad * 700 / peso_galleta)
-
+            # Actualizar inventario solo para ventas locales
+            if tipo_venta == "local":
                 cur.execute(
                     """
                     UPDATE inventariogalletas 
                     SET cantidadGalletas = cantidadGalletas - %s
-                    WHERE idProduccionFK = (SELECT idProduccion FROM produccion WHERE idRecetaFK = (SELECT idReceta FROM recetas WHERE idGalletaFK = %s) LIMIT 1)
+                    WHERE idProduccionFK = (
+                        SELECT idProduccion FROM produccion 
+                        WHERE idRecetaFK = (
+                            SELECT idReceta FROM recetas 
+                            WHERE idGalletaFK = %s
+                        ) 
+                        LIMIT 1
+                    )
                     AND cantidadGalletas >= %s
                     AND estadoLote = 'Disponible'
                     ORDER BY fechaCaducidad ASC
                     LIMIT 1
                     """,
-                    (cantidad, id_galleta, cantidad),
+                    (cantidad_galletas, id_galleta, cantidad_galletas),
                 )
+
         mysql.connection.commit()
 
-        total_items = sum(
-        item["cantidad"] for item in carrito.values()
+        # 3. Calcular totales para el correo
+        total_precio = sum(
+            (
+                item["cantidad"] // revisar_gramaje_por_id(item["id"]) * item["precio"]
+                if item["tipo_venta"] == "gramaje"
+                else item["precio"] * item["cantidad"]
+            )
+            for item in carrito.values()
         )
 
-        msg = Message('RECIBO',
-        sender='contacto.soydongalleto@gmail.com',
-        recipients=[user[2]])  # Accediendo al correo del usuario
+        total_items = sum(
+            (
+                item["cantidad"] // revisar_gramaje_por_id(item["id"])
+                if item["tipo_venta"] == "gramaje"
+                else item["cantidad"]
+            )
+            for item in carrito.values()
+        )
+
+        msg = Message(
+            "RECIBO", sender="contacto.soydongalleto@gmail.com", recipients=[user[2]]
+        )  # Accediendo al correo del usuario
         msg.html = render_template(
-        "/client/emailVenta.html",
-        total_items=total_items,
-        total_precio=total_precio,
-        carrito=carrito,
-        id_venta=id_venta,
+            "/client/emailVenta.html",
+            total_items=total_items,
+            total_precio=total_precio,
+            carrito=carrito,
+            id_venta=id_venta,
         )
         mail.send(msg)
 
-
-
-        # Vaciar el carrito después de la compra
+        # 5. Limpiar carrito y mostrar mensaje
         session.pop("carrito")
-        flash("Compra finalizada con éxito.", "success")
-        flash("Id de tu compra: " + str(id_venta), "success")
+        flash(f"✅ Compra finalizada con éxito. ID de compra: {id_venta}", "success")
         return redirect(url_for("carrito_dashboard"))
+
     except Exception as e:
         mysql.connection.rollback()
-        flash(f"Ocurrió un error al procesar el pedido: {e}", "danger")
-        print(f"❌ Error en la compra: {e}")
+        flash(f"❌ Error al procesar la compra: {str(e)}", "error")
+        print(f"Error en finalizar_compra: {str(e)}")
         return redirect(url_for("carrito_dashboard"))
 
     finally:
         cur.close()
-        
+
 
 # Fin de rutas para el modulo de clientes / Sistema de carrito
 
@@ -499,17 +570,26 @@ def carrito_dashboard():
     if user[4] not in ["cliente"]:
         return render_template("pages/error404.html"), 404
 
-    if "carrito" not in session or not session["carrito"]:
-        carrito = {}
-    else:
-        carrito = session["carrito"]
+    carrito = session.get("carrito", {})
 
-    total_items = sum(
-        item["cantidad"] for item in carrito.values()
-    )  # Total de productos
-    total_precio = sum(
-        item["precio"] * item["cantidad"] for item in carrito.values()
-    )  # Total a pagar
+    total_items = 0
+    total_precio = 0
+
+    # Primera pasada para obtener peso de galletas y preparar datos
+    for key in carrito:
+        item = carrito[key]
+        if item["tipo_venta"] == "gramaje":
+            item["peso_galleta"] = revisar_gramaje_por_id(item["id"])
+
+    # Calcular totales
+    for item in carrito.values():
+        if item["tipo_venta"] == "gramaje":
+            unidades = item["cantidad"] // item["peso_galleta"]
+            total_items += unidades
+            total_precio += unidades * item["precio"]
+        else:
+            total_items += item["cantidad"]
+            total_precio += item["precio"] * item["cantidad"]
 
     return render_template(
         "/client/Carrito.html",
@@ -521,6 +601,19 @@ def carrito_dashboard():
     )
 
 
+def revisar_gramaje_por_id(id_galleta):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """
+        SELECT gramaje FROM galletas WHERE idGalleta = %s
+    """,
+        (id_galleta,),
+    )
+    resultado = cur.fetchone()
+    cur.close()
+    return resultado[0] if resultado else None
+
+
 @app.route("/historico")
 def historico_dashboard():
     if "user" not in session:
@@ -528,7 +621,7 @@ def historico_dashboard():
     user = session.get("user")
     if user[4] not in ["cliente"]:
         return render_template("pages/error404.html"), 404
-    
+
     idUsuario = user[0]
     # Obtener el id del cliente y nombre de la tabla clientes
     cur = mysql.connection.cursor()
@@ -543,13 +636,15 @@ def historico_dashboard():
         (idUsuario,),
     )
     resultado_cliente = cur.fetchone()
-    
+
     if resultado_cliente:
-        idCliente = resultado_cliente[0]  # Ahora usamos el idCliente de la tabla clientes
+        idCliente = resultado_cliente[
+            0
+        ]  # Ahora usamos el idCliente de la tabla clientes
         nombreCliente = resultado_cliente[1]
     else:
         return render_template("pages/error404.html"), 404  # Si no hay cliente asociado
-    
+
     # Consulta para histórico de compras
     cur.execute("SELECT * FROM v_historicoCompras where idCliente = %s", (idCliente,))
     print("ID del cliente:", idCliente)
@@ -581,7 +676,6 @@ def ventas_dashboard():
     if user[4] not in ["ventas"]:
         return render_template("pages/error404.html"), 404
     data = cookies.getCookies()
-    print("Data de ventas:", data)
     return render_template(
         "sales/baseVentas/baseVenta.html", data=data, user=user, is_base_template=True
     )
@@ -607,64 +701,90 @@ def listadoVentas():
     active_user = session.get("user")
     if active_user[4] not in ["ventas", "administrador"]:
         return render_template("pages/error404.html"), 404
-    
+
     cur = mysql.connection.cursor()
-    
+
     try:
-        # Consulta base
-        query = """
+        # Consulta base modificada para calcular correctamente el subtotal
+        base_query = """
             SELECT 
                 v.idVenta,
                 v.fechaVenta,
                 v.descuento,
-                SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido) AS subtotal,
-                SUM(dv.cantidadVendida * dv.PrecioUnitarioVendido) * (1 - v.descuento/100) AS totalVenta,
-                GROUP_CONCAT(CONCAT_WS('||', g.nombreGalleta, dv.tipoVenta, dv.cantidadVendida, dv.PrecioUnitarioVendido) SEPARATOR ';;') AS productos
+                SUM(
+                    CASE 
+                        WHEN dv.tipoVenta = 'gramaje' THEN dv.PrecioUnitarioVendido * dv.cantidad_galletas
+                        ELSE dv.PrecioUnitarioVendido * dv.cantidadVendida
+                    END
+                ) AS subtotal,
+                SUM(
+                    CASE 
+                        WHEN dv.tipoVenta = 'gramaje' THEN dv.PrecioUnitarioVendido * dv.cantidad_galletas
+                        ELSE dv.PrecioUnitarioVendido * dv.cantidadVendida
+                    END
+                ) * (1 - v.descuento/100) AS totalVenta,
+                GROUP_CONCAT(
+                    CONCAT_WS(
+                        '||', 
+                        g.nombreGalleta, 
+                        dv.tipoVenta, 
+                        dv.cantidadVendida,
+                        dv.PrecioUnitarioVendido,
+                        CASE 
+                            WHEN dv.tipoVenta = 'gramaje' THEN dv.PrecioUnitarioVendido * dv.cantidad_galletas
+                            ELSE dv.PrecioUnitarioVendido * dv.cantidadVendida
+                        END
+                    ) SEPARATOR ';;'
+                ) AS productos
             FROM ventas v
             JOIN detalleventas dv ON v.idVenta = dv.idVentaFK
             JOIN galletas g ON dv.idGalletaFK = g.idGalleta
             {where_clause}
+            AND v.estadoVenta = 'confirmada'
             GROUP BY v.idVenta
             ORDER BY v.fechaVenta DESC
             LIMIT 100
         """
-        
+
         # Obtener parámetros de filtro
         filter_type = request.args.get('filter_type')
         filter_value = request.args.get('filter_value')
         
-        where_clause = ""
+        where_clause = "WHERE 1=1"
         params = []
-        
+
         if filter_type and filter_value:
             if filter_type == 'day':
-                where_clause = "WHERE DATE(v.fechaVenta) = %s"
+                where_clause += " AND DATE(v.fechaVenta) = %s"
                 params.append(filter_value)
             elif filter_type == 'week':
                 year, week = filter_value.split('-W')
-                where_clause = """
-                    WHERE YEAR(v.fechaVenta) = %s 
+                where_clause += """
+                    AND YEAR(v.fechaVenta) = %s 
                     AND WEEK(v.fechaVenta, 3) = %s
                 """
                 params.extend([year, week])
             elif filter_type == 'month':
                 year, month = filter_value.split('-')
-                where_clause = """
-                    WHERE YEAR(v.fechaVenta) = %s 
+                where_clause += """
+                    AND YEAR(v.fechaVenta) = %s 
                     AND MONTH(v.fechaVenta) = %s
                 """
                 params.extend([year, month])
             elif filter_type == 'range':
                 start_date, end_date = filter_value.split('|')
-                where_clause = "WHERE DATE(v.fechaVenta) BETWEEN %s AND %s"
+                where_clause += " AND DATE(v.fechaVenta) BETWEEN %s AND %s"
                 params.extend([start_date, end_date])
         
-        # Ejecutar consulta
-        cur.execute(query.format(where_clause=where_clause), params)
+        # Construir la consulta final
+        final_query = base_query.format(where_clause=where_clause)
+        
+        # Ejecutar consulta con parámetros
+        cur.execute(final_query, params)
         
         ventas = []
         for row in cur.fetchall():
-            # Procesar productos (igual que antes)
+            # Procesar productos
             productos_raw = row[5].split(';;') if row[5] else []
             productos = []
             for prod in productos_raw:
@@ -672,8 +792,9 @@ def listadoVentas():
                 productos.append({
                     'nombre': partes[0],
                     'tipoVenta': partes[1],
-                    'cantidad': int(partes[2]),
-                    'precio': float(partes[3])
+                    'cantidad': int(partes[2]),  # cantidadVendida
+                    'precio': float(partes[3]),    # precio unitario
+                    'total_producto': float(partes[4])  # calculado según tipo
                 })
             
             ventas.append({
@@ -692,12 +813,15 @@ def listadoVentas():
         
     except Exception as e:
         print(f"Error: {str(e)}")
-        return render_template("/sales/listadoVentas.html", 
-                             user=session.get("user"),
-                             ventas=[],
-                             error=str(e))
+        return render_template(
+            "/sales/listadoVentas.html",
+            user=session.get("user"),
+            ventas=[],
+            error=str(e),
+        )
     finally:
         cur.close()
+
 
 @app.route("/sobreNosotros")
 def about_us():
@@ -733,16 +857,17 @@ def get_empleados():
     return empleados
 
 
-@app.route('/enviar-correo')
+@app.route("/enviar-correo")
 def enviar_correo():
-    msg = Message('¡Hola desde Flask!',
-                  sender='contacto.soydongalleto@gmail.com',
-                  recipients=['alberto.rt@outlook.com'])
-    msg.body = 'Este es un mensaje enviado desde una app Flask.'
+    msg = Message(
+        "¡Hola desde Flask!",
+        sender="contacto.soydongalleto@gmail.com",
+        recipients=["alberto.rt@outlook.com"],
+    )
+    msg.body = "Este es un mensaje enviado desde una app Flask."
     mail.send(msg)
-    return 'Correo enviado'
+    return "Correo enviado"
 
 
-
-LOG_FILENAME = 'temporales\logs.log'
-logging.basicConfig(filename=LOG_FILENAME,level=logging.INFO)
+LOG_FILENAME = "temporales/logs.log"
+logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO)
