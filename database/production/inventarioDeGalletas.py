@@ -94,7 +94,7 @@ def registrarMermaGalleta():
         
 def getGalletasTabla(estadoLote="Disponible"):
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM dongalletodev.invgalletastabla where estadoLote = %s and cantidad>1;", (estadoLote,))
+    cur.execute("SELECT * FROM dongalletodev.invgalletastabla where estadoLote = %s and cantidad>1 ORDER BY fechaCaducidad DESC;", (estadoLote,))
     columnas = [col[0] for col in cur.description]
     galletas = [dict(zip(columnas, fila)) for fila in cur.fetchall()]
     cur.close()
@@ -113,7 +113,7 @@ def actualizar_tabla():
 
 def getGalletasResumen():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT nombreGalleta, cantidad, fechaCaducidad FROM dongalletodev.invgalletastabla where estadoLote = 'Disponible';")
+    cur.execute("SELECT nombreGalleta, cantidad, fechaCaducidad FROM dongalletodev.invgalletastabla where estadoLote = 'Disponible' ORDER BY fechaCaducidad asc;")
     resumen = {}
     for nombre, cantidad, fecha_cad in cur.fetchall():
         if nombre not in resumen:
