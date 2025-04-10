@@ -399,7 +399,7 @@ def obtener_venta_online(idVenta):
         cursor.execute(
             """
             SELECT dv.idDetalleVenta, dv.idVentaFK, dv.idGalletaFK, dv.cantidadVendida,
-            dv.tipoVenta, dv.PrecioUnitarioVendido, g.nombreGalleta
+            dv.tipoVenta, dv.PrecioUnitarioVendido, g.nombreGalleta, dv.cantidad_galletas
             FROM detalleventas dv
             JOIN galletas g ON dv.idGalletaFK = g.idGalleta
             WHERE dv.idVentaFK = %s
@@ -411,7 +411,7 @@ def obtener_venta_online(idVenta):
             return jsonify({"error": "No se encontraron detalles para esta venta"}), 404
 
         # Calcular el total de la venta sumando los precios unitarios
-        total_venta = sum(detalle[5] * detalle[3] for detalle in detalles)
+        total_venta = sum(detalle[5] * detalle[7] for detalle in detalles)
 
         detalles_formateados = [
             {
@@ -471,3 +471,8 @@ def revisar_gramaje_por_id(idGalleta):
         return jsonify({"error": str(e)})
     finally:
         cursor.close()
+
+@app.route("/revisarDisponibilidadInventario", methods=["POST"])
+def revisar_disponibilidad_inventario():
+    cur = mysql.connection.cursor()
+    
