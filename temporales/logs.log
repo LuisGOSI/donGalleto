@@ -1,0 +1,63 @@
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 512-179-421
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:07] "GET /gestionUsuarios HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:08] "[36mGET /static/css/stylesUsuario/styleUsuario.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:08] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:08] "[36mGET /static/functions/funcionesUsuario.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:08] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:08] "GET /getUsuarios?estado=1 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:08] "[36mGET /static/img/Don_galleto_icon.png HTTP/1.1[0m" 304 -
+DEBUG:db:rol verificado, el usuario con correo "adminDonGalleto@gmail.com" accedio correctamente al dashboard
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:12] "GET /dashboard HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:12] "[36mGET /static/css/stylesAdmin/styleDashboard.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:12] "[36mGET /static/css/stylesAdmin/styleClientesCRUD.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:12] "[36mGET /static/functions/funcionesClientesCRUD.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:12] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:12] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:12] "[36mGET /static/img/thisIsFine.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:29:12] "[36mGET /static/functions/funcionesDashboard.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:08] "[32mPOST /logout HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:09] "GET /login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:09] "[36mGET /static/css/stylesLogin.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:09] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:09] "[36mGET /static/img/fondoGalleta.jpeg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:09] "[36mGET /static/img/arrow-small-left.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:19] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:19] "GET /produccion HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[33mGET /static/css/StylesInveGalleta.css HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/css/stylesProduccion/styleInveInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/css/stylesProduccion/stylesInicioProduccion.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/css/stylesProduccion/stylesProveedores.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/css/stylesProduccion/styleInveGalletas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/css/stylesProduccion/styleInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/css/stylesProduccion/styleRecetas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/functions/funcionesProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/functions/funcionesSolicitudProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "[36mGET /static/img/fondoInicioProduction.jpg HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:20] "GET /producciones-en-curso HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "GET /registerProveedor HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[33mGET /static/css/StylesInveGalleta.css HTTP/1.1[0m" 404 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/css/stylesHeader/styleHeader.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/css/stylesProduccion/stylesInicioProduccion.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/css/stylesProduccion/styleInveInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/css/stylesProduccion/stylesProveedores.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/css/stylesProduccion/styleInveGalletas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/css/stylesProduccion/styleRecetas.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/css/stylesProduccion/styleInsumos.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/functions/funcionesProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/functions/funcionesSolicitudProduccion.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/img/DonGalleto-logo.png HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:24] "[36mGET /static/functions/funcionesProveedores.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:25] "GET /producciones-en-curso HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:30:25] "GET /getProveedores?estado=1 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:34:20] "[35m[1mPOST /registerProveedor HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:34:21] "[36mGET /registerProveedor?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:34:21] "[36mGET /registerProveedor?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:34:21] "GET /registerProveedor?__debugger__=yes&cmd=resource&f=console.png&s=VPwzVE9wr4zCqk0mk42c HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 00:34:21] "[36mGET /registerProveedor?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
