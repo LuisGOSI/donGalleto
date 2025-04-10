@@ -11,12 +11,8 @@ def registrar_venta():
     data = request.get_json()
     idEmpleado = session.get("user")[5]
     if not idEmpleado:
-        return (
-            jsonify({"error": "No se encontró el ID del empleado en la sesión."}),
-            401,
-        )
+        return jsonify({"error": "No se encontró el ID del empleado en la sesión."}), 401
     
-    # Preprocesar productos para calcular correctamente los valores para el PDF
     productos = data.get("productos", [])
     subtotal = 0
     productos_para_pdf = []
@@ -28,7 +24,7 @@ def registrar_venta():
             INSERT INTO ventas (idEmpleadoFK, idClienteFK, fechaVenta, descuento, tipoVenta, estadoVenta) 
             VALUES (%s, NULL, %s, %s, %s,
                     CASE WHEN %s = 'online' THEN 'pendiente' ELSE 'confirmada' END)
-        """,
+            """,
             (idEmpleado, datetime.now(), data.get("descuento", 0), data.get("tipoVenta", "local"), data.get("tipoVenta", "local")),
         )
 
@@ -38,7 +34,7 @@ def registrar_venta():
             nombre = producto["name"]
             cantidad = producto["quantity"]
             tipo = producto["type"].lower()
-            precio_base = producto.get("basePrice", producto["price"])  # Usamos basePrice si existe
+            precio_base = producto.get("basePrice", producto["price"])
             
             # Obtener el ID de la galleta
             cursor.execute(
@@ -65,13 +61,12 @@ def registrar_venta():
                 cantidad_vendida = cantidad_galletas * cantidad
             elif tipo == "gramaje":
                 cantidad_galletas = round(cantidad / peso_galleta)
-                precio_unitario = precio_base  # Precio por unidad
+                precio_unitario = precio_base
                 cantidad_vendida = cantidad_galletas
             
-            # Guardar producto para PDF (con valores correctos)
             productos_para_pdf.append({
                 "name": nombre,
-                "quantity": cantidad,  # Siempre guardamos la cantidad ingresada (en gramos si es gramaje)
+                "quantity": cantidad,
                 "type": producto["type"],
                 "price": precio_unitario if tipo != "gramaje" else precio_base,
                 "subtotal": precio_unitario * cantidad if tipo != "gramaje" else precio_base * cantidad_galletas
@@ -84,33 +79,56 @@ def registrar_venta():
                 """
                 INSERT INTO detalleventas (idVentaFK, idGalletaFK, cantidadVendida, tipoVenta, PrecioUnitarioVendido, cantidad_galletas)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """,
+                """,
                 (idVenta, idGalleta, cantidad, tipo, precio_unitario, cantidad_vendida),
             )
 
-            # Actualizar inventario
+            # Actualizar inventario - Lógica mejorada
             if data.get("tipoVenta", "local") == "local":
+                cantidad_restante = cantidad_vendida
+                
+                # Obtenemos lotes ordenados por fecha de caducidad (más cercana primero)
                 cursor.execute(
                     """
-                    UPDATE inventariogalletas 
-                    SET cantidadGalletas = cantidadGalletas - %s
-                    WHERE idProduccionFK = (
-                        SELECT idProduccion 
-                        FROM (
-                            SELECT p.idProduccion 
-                            FROM produccion p
-                            INNER JOIN recetas r ON p.idRecetaFK = r.idReceta
-                            INNER JOIN inventariogalletas ig ON p.idProduccion = ig.idProduccionFK
-                            WHERE r.idGalletaFK = %s
-                            AND ig.cantidadGalletas >= %s 
-                            AND ig.estadoLote = 'Disponible'
-                            ORDER BY ig.fechaCaducidad ASC
-                            LIMIT 1
-                        ) AS subquery
-                    )
+                    SELECT ig.idInvGalleta, ig.cantidadGalletas
+                    FROM inventariogalletas ig
+                    INNER JOIN produccion p ON ig.idProduccionFK = p.idProduccion
+                    INNER JOIN recetas r ON p.idRecetaFK = r.idReceta
+                    WHERE r.idGalletaFK = %s
+                    AND ig.estadoLote = 'Disponible'
+                    AND ig.cantidadGalletas > 0
+                    ORDER BY ig.fechaCaducidad ASC
                     """,
-                    (cantidad_vendida, idGalleta, cantidad_vendida),
+                    (idGalleta,)
                 )
+                lotes_disponibles = cursor.fetchall()
+                
+                if not lotes_disponibles:
+                    return jsonify({"error": f"No hay stock disponible para la galleta '{nombre}'"}), 400
+                
+                for lote in lotes_disponibles:
+                    id_lote, stock_lote = lote
+                    cantidad_a_descontar = min(stock_lote, cantidad_restante)
+                    
+                    # Actualizar el lote
+                    nuevo_stock = stock_lote - cantidad_a_descontar
+                    estado_lote = 'Vendido' if nuevo_stock == 0 else 'Disponible'
+                    
+                    cursor.execute(
+                        """
+                        UPDATE inventariogalletas 
+                        SET cantidadGalletas = %s, estadoLote = %s
+                        WHERE idInvGalleta = %s
+                        """,
+                        (nuevo_stock, estado_lote, id_lote)
+                    )
+                    
+                    cantidad_restante -= cantidad_a_descontar
+                    if cantidad_restante == 0:
+                        break
+                
+                if cantidad_restante > 0:
+                    return jsonify({"error": f"No hay suficiente stock para la galleta '{nombre}'. Faltan {cantidad_restante} unidades"}), 400
 
         mysql.connection.commit()
         
@@ -124,26 +142,20 @@ def registrar_venta():
 
         if pdf_path:
             pdf_filename = os.path.basename(pdf_path)
-            return (
-                jsonify({
-                    "mensaje": "Venta registrada con éxito",
-                    "pdf_ticket": pdf_filename,
-                    "pdf_url": f"/static/tickets/{pdf_filename}",
-                    "tipo_venta": data.get("tipoVenta", "local"),
-                    "estado_venta": "pendiente" if data.get("tipoVenta", "local") == "online" else "confirmada",
-                }),
-                200,
-            )
+            return jsonify({
+                "mensaje": "Venta registrada con éxito",
+                "pdf_ticket": pdf_filename,
+                "pdf_url": f"/static/tickets/{pdf_filename}",
+                "tipo_venta": data.get("tipoVenta", "local"),
+                "estado_venta": "pendiente" if data.get("tipoVenta", "local") == "online" else "confirmada",
+            }), 200
         else:
-            return (
-                jsonify({
-                    "mensaje": "Venta registrada pero falló la generación del PDF",
-                    "pdf_ticket": None,
-                    "tipo_venta": data.get("tipoVenta", "local"),
-                    "estado_venta": "pendiente" if data.get("tipoVenta", "local") == "online" else "confirmada",
-                }),
-                200,
-            )
+            return jsonify({
+                "mensaje": "Venta registrada pero falló la generación del PDF",
+                "pdf_ticket": None,
+                "tipo_venta": data.get("tipoVenta", "local"),
+                "estado_venta": "pendiente" if data.get("tipoVenta", "local") == "online" else "confirmada",
+            }), 200
 
     except Exception as e:
         mysql.connection.rollback()
@@ -472,7 +484,75 @@ def revisar_gramaje_por_id(idGalleta):
     finally:
         cursor.close()
 
-@app.route("/revisarDisponibilidadInventario", methods=["POST"])
-def revisar_disponibilidad_inventario():
-    cur = mysql.connection.cursor()
+@app.route("/verificarStockVenta", methods=["POST"])
+def verificar_stock_venta():
+    cursor = mysql.connection.cursor()
+    data = request.get_json()
+    productos = data.get("productos", [])
+    
+    try:
+        productos_sin_stock = []
+        
+        for producto in productos:
+            nombre = producto["name"]
+            cantidad = producto["quantity"]
+            tipo = producto["type"].lower()
+            
+            # Obtener información de la galleta
+            cursor.execute(
+                "SELECT idGalleta, gramaje FROM galletas WHERE nombreGalleta = %s", (nombre,)
+            )
+            galleta = cursor.fetchone()
+            if not galleta:
+                return jsonify({"error": f"Galleta '{nombre}' no encontrada"}), 400
+                
+            idGalleta, peso_galleta = galleta
+            
+            # Calcular cantidad de galletas necesarias según el tipo
+            if tipo == "paquete 1kg":
+                cantidad_galletas = round(1000 / peso_galleta)
+                cantidad_vendida = cantidad_galletas * cantidad
+            elif tipo == "paquete 700gr":
+                cantidad_galletas = round(700 / peso_galleta)
+                cantidad_vendida = cantidad_galletas * cantidad
+            elif tipo == "gramaje":
+                cantidad_galletas = round(cantidad / peso_galleta)
+                cantidad_vendida = cantidad_galletas
+            else:  # unidad
+                cantidad_vendida = cantidad
+            
+            # Verificar stock disponible
+            cursor.execute(
+                """
+                SELECT SUM(ig.cantidadGalletas) as stock_total
+                FROM inventariogalletas ig
+                INNER JOIN produccion p ON ig.idProduccionFK = p.idProduccion
+                INNER JOIN recetas r ON p.idRecetaFK = r.idReceta
+                WHERE r.idGalletaFK = %s AND ig.estadoLote = 'Disponible'
+                """,
+                (idGalleta,)
+            )
+            stock = cursor.fetchone()[0] or 0
+            
+            if stock < cantidad_vendida:
+                productos_sin_stock.append({
+                    "nombre": nombre,
+                    "stock_disponible": stock,
+                    "stock_requerido": cantidad_vendida
+                })
+        
+        if productos_sin_stock:
+            return jsonify({
+                "stock_suficiente": False,
+                "productos_sin_stock": productos_sin_stock
+            }), 200
+        else:
+            return jsonify({
+                "stock_suficiente": True
+            }), 200
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
     
