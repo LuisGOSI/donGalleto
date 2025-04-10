@@ -13,7 +13,7 @@ import re
 def login():
     new_captcha_dict = captcha.create()
     user = session.get("user")
-    if user is not None:
+    if user is not None and user[1] != 0:
         match user[4]:
             case "administrador":
                 return redirect(url_for("admin_dashboard"))
@@ -31,7 +31,10 @@ def login():
             cur.execute("SELECT * FROM usuarios where email = %s", (email,))
             userDb = cur.fetchone()
             cur.close()
-            if userDb and check_password_hash(userDb[3], password):
+            if userDb[1] == 0:
+                flash("Usuario no activo")
+                return render_template("/pages/login.html", captcha=new_captcha_dict)
+            if userDb and check_password_hash(userDb[3], password) and userDb[1] != 0:
                 session["user"] = userDb
                 role = userDb[4]
                 match role:
