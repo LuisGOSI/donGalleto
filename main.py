@@ -133,7 +133,7 @@ def gestion_insumos():
     """
     )
     presentaciones = cur.fetchall()
-    cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores")
+    cur.execute("SELECT idProveedor, nombreProveedor FROM proveedores WHERE estadoProveedor= 1")
     proveedores = cur.fetchall()
     cur.execute(
         """
@@ -381,6 +381,10 @@ def finalizar_compra():
             else:  # unidad
                 cantidad_galletas = cantidad_vendida
                 cantidad_vendida = cantidad_vendida  # Cantidad de unidades
+            
+            # Actualizar el item del carrito con la cantidad de galletas
+            item["cantidad_galletas"] = cantidad_galletas
+
 
             # Insertar en detalleventas
             cur.execute(
@@ -426,7 +430,7 @@ def finalizar_compra():
         # 3. Calcular totales para el correo
         total_precio = sum(
             (
-                item["cantidad"] // revisar_gramaje_por_id(item["id"]) * item["precio"]
+                item["cantidad_galletas"] * item["precio"]  # Usamos la cantidad de galletas ya calculada
                 if item["tipo_venta"] == "gramaje"
                 else item["precio"] * item["cantidad"]
             )

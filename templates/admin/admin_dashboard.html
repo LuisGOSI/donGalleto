@@ -92,7 +92,7 @@
 
 <div class="container" style="background: #936A4B; padding: 20px; border-radius: 10px; font-family: 'Open Sans', sans-serif; font-weight: bold;"> 
     <div class="row">
-        <h3 class="text-white text-center fw-bold" style="margin: 10px;">Cantidad de Galletas mas vendidas TOP 3</h3>
+        <h3 class="text-white text-center fw-bold" style="margin: 10px;">Cantidad de Galletas mas vendidas TOP 3 por unidad</h3>
         {% for galleta in galletas %}
         <div class="col-md-4">
             <div class="product">
@@ -113,12 +113,12 @@
 <div class="charts-section" style="display: flex; flex-wrap: nowrap; justify-content: center; gap: 20px; align-items: flex-start; width: 100%; overflow-x: auto; padding: 10px; box-sizing: border-box;">
 
     <div class="chart-card" style="background: #4E3629; color: white; padding: 10px; border-radius: 8px; width: 30%; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex-shrink: 0;">
-        <h3 style="color: white; font-weight: bold; margin-top: 0; text-align: center; font-size: 28px;">Ganancias por tipo de venta</h3>
+        <h3 style="color: white; font-weight: bold; margin-top: 0; text-align: center; font-size: 28px;">Ganancias monetarios por tipo de venta</h3>
         <canvas id="ventasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 150px; display: block; padding: 10px;"></canvas>
     </div>
 
     <div class="chart-card" style="background: #D7B89D; color: white; padding: 10px; border-radius: 8px; width: 55%; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex-shrink: 0;">
-        <h3 style="color: black; font-weight: bold; margin-top: 0; text-align: center; flex-shrink: 0;">Ganancias de los últimos 5 días de la semana</h3>
+        <h3 style="color: black; font-weight: bold; margin-top: 0; text-align: center; flex-shrink: 0;">Ganancias monetarias de los últimos 5 días de la semana</h3>
         <div style="flex-grow: 1; min-height: 0; overflow: hidden;">
             <canvas id="gananciasChart" style="background: #E3C7A1; border-radius: 8px; width: 100%; height: 428px; display: block;"></canvas>
         </div>

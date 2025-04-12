@@ -273,9 +273,10 @@ def confirmar_venta_online(idVenta):
     cursor = mysql.connection.cursor()
 
     try:
-        # Verificar que la venta existe y es online pendiente
+        # 1. Validar que la venta existe y es online pendiente
         cursor.execute(
-            "SELECT tipoVenta, estadoVenta FROM ventas WHERE idVenta = %s", (idVenta,)
+            "SELECT tipoVenta, estadoVenta FROM ventas WHERE idVenta = %s", 
+            (idVenta,)
         )
         venta = cursor.fetchone()
 
@@ -285,75 +286,88 @@ def confirmar_venta_online(idVenta):
         tipo_venta, estado_venta = venta
 
         if tipo_venta != "online" or estado_venta != "pendiente":
-            return (
-                jsonify({"error": "Solo se pueden confirmar ventas online pendientes"}),
-                400,
-            )
+            return jsonify({
+                "error": "Solo se pueden confirmar ventas online pendientes"
+            }), 400
 
-        # Obtener los detalles de la venta para actualizar inventario
-        cursor.execute(
-            "SELECT idGalletaFK, cantidadVendida, tipoVenta FROM detalleventas WHERE idVentaFK = %s",
-            (idVenta,),
-        )
+        # 2. Obtener los detalles de la venta (solo necesitamos cantidad_galletas)
+        cursor.execute("""
+            SELECT 
+                dv.idGalletaFK,
+                dv.cantidad_galletas,
+                g.nombreGalleta
+            FROM detalleventas dv
+            JOIN galletas g ON dv.idGalletaFK = g.idGalleta
+            WHERE dv.idVentaFK = %s
+        """, (idVenta,))
         detalles = cursor.fetchall()
 
-        # Actualizar inventario para cada producto
+        # 3. Procesar cada item del detalle
         for detalle in detalles:
-            idGalleta, cantidad, tipo = detalle
+            id_galleta, cantidad_galletas, nombre_galleta = detalle
 
-            cantidadVendida = cantidad
-            if tipo == "paquete 1kg":
-                peso_galleta = revisar_gramaje_por_id(idGalleta)
-                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
-                    return peso_galleta, 400
-                cantidadVendida = round((1000 / peso_galleta) * cantidad) 
-            elif tipo == "paquete 700gr":
-                peso_galleta = revisar_gramaje_por_id(idGalleta)
-                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
-                    return peso_galleta, 400
-                cantidadVendida = round((700 / peso_galleta) * cantidad)
-            elif tipo == "gramaje":
-                peso_galleta = revisar_gramaje_por_id(idGalleta)
-                if isinstance(peso_galleta, dict) and "error" in peso_galleta:
-                    return peso_galleta, 400
-                cantidad_galletas = round(cantidad / peso_galleta)
-                cantidadVendida = cantidad_galletas
+            # 4. Buscar lotes disponibles (más antiguos primero)
+            cursor.execute("""
+                SELECT 
+                    ig.idInvGalleta,
+                    ig.cantidadGalletas
+                FROM inventariogalletas ig
+                JOIN produccion p ON ig.idProduccionFK = p.idProduccion
+                JOIN recetas r ON p.idRecetaFK = r.idReceta
+                WHERE r.idGalletaFK = %s
+                AND ig.estadoLote = 'Disponible'
+                AND ig.cantidadGalletas > 0
+                ORDER BY ig.fechaCaducidad ASC
+            """, (id_galleta,))
+            
+            lotes = cursor.fetchall()
+            galletas_por_descontar = cantidad_galletas
 
-            cursor.execute(
-                """
-                UPDATE inventariogalletas 
-                SET cantidadGalletas = cantidadGalletas - %s
-                WHERE idProduccionFK = (
-                    SELECT idProduccion 
-                    FROM (
-                        SELECT p.idProduccion 
-                        FROM produccion p
-                        INNER JOIN recetas r ON p.idRecetaFK = r.idReceta
-                        INNER JOIN inventariogalletas ig ON p.idProduccion = ig.idProduccionFK
-                        WHERE r.idGalletaFK = %s
-                        AND ig.cantidadGalletas >= %s 
-                        AND ig.estadoLote = 'Disponible'
-                        ORDER BY ig.fechaCaducidad ASC  # Priorizar lotes próximos a caducar
-                        LIMIT 1
-                    ) AS subquery
+            # 5. Descontar de los lotes más antiguos primero
+            for lote in lotes:
+                id_lote, cant_disponible = lote
+                
+                if galletas_por_descontar <= 0:
+                    break
+
+                a_descontar = min(cant_disponible, galletas_por_descontar)
+
+                # Actualizar el lote
+                cursor.execute("""
+                    UPDATE inventariogalletas
+                    SET cantidadGalletas = cantidadGalletas - %s
+                    WHERE idInvGalleta = %s
+                """, (a_descontar, id_lote))
+
+                # Actualizar estado si se agota
+                if cant_disponible - a_descontar <= 0:
+                    cursor.execute("""
+                        UPDATE inventariogalletas
+                        SET estadoLote = 'Vendido'
+                        WHERE idInvGalleta = %s
+                    """, (id_lote,))
+
+                galletas_por_descontar -= a_descontar
+
+            # Verificar si se pudo descontar todo
+            if galletas_por_descontar > 0:
+                raise Exception(
+                    f"Stock insuficiente para {nombre_galleta}. "
+                    f"Faltan {galletas_por_descontar} galletas en inventario"
                 )
-                AND cantidadGalletas >= %s  # Validación adicional
-                """,
-                (cantidadVendida, idGalleta, cantidadVendida, cantidadVendida),
-            )
 
-            # Verificar si se actualizó el inventario
-            if cursor.rowcount == 0:
-                raise Exception(f"No hay suficiente stock para la galleta ID {idGalleta}")
-
-        # Actualizar estado de la venta a confirmada
-        cursor.execute(
-            "UPDATE ventas SET estadoVenta = 'confirmada' WHERE idVenta = %s",
-            (idVenta,),
-        )
+        # 6. Confirmar la venta
+        cursor.execute("""
+            UPDATE ventas
+            SET estadoVenta = 'confirmada'
+            WHERE idVenta = %s
+        """, (idVenta,))
 
         mysql.connection.commit()
-        return jsonify({"mensaje": "Venta confirmada e inventario actualizado"}), 200
+        return jsonify({
+            "mensaje": "Venta confirmada e inventario actualizado correctamente",
+            "detalle": "Se descontaron las galletas del inventario sin modificar recetas"
+        }), 200
 
     except Exception as e:
         mysql.connection.rollback()
@@ -405,7 +419,6 @@ def obtener_venta_online(idVenta):
     try:
         cursor.execute("SELECT * FROM ventas WHERE idVenta = %s", (idVenta,))
         venta = cursor.fetchone()
-        print(venta)
         if not venta:
             return jsonify({"error": "Venta no encontrada"}), 404
         cursor.execute(
@@ -423,7 +436,10 @@ def obtener_venta_online(idVenta):
             return jsonify({"error": "No se encontraron detalles para esta venta"}), 404
 
         # Calcular el total de la venta sumando los precios unitarios
-        total_venta = sum(detalle[5] * detalle[7] for detalle in detalles)
+        total_venta = sum(
+            detalle[5] * (detalle[3] if detalle[4] in ["paquete 1kg", "paquete 700gr"] else detalle[7])
+            for detalle in detalles
+        )
 
         detalles_formateados = [
             {

@@ -26,7 +26,7 @@
       </div>
       <div class="product-detail-info">
         <h2 class="product-detail-title">{{galleta[1]}}</h2> <!-- Nombre de la galleta -->
-        <p class="product-detail-description">Deliciosa galleta de chocolate con trozos de chocolate semiamargo. Horneada diariamente con ingredientes frescos y de la mejor calidad.</p> <!-- Descripción de la galleta -->
+        <p class="product-detail-description">{{galleta[5]}}</p> <!-- Descripción de la galleta -->
         <p id="productPrice" class="product-detail-price"> $ {{galleta[2]}} C/U</p> <!-- Precio -->
 
         <form action="/agregar_carrito/{{galleta[0]}}" method="POST">
@@ -88,17 +88,17 @@
         const productPrice = document.getElementById('productPrice');
         switch (this.value) {
           case 'unidad':
-            productPrice.textContent = `$ ${price} C/U`;
-            break;
+        productPrice.textContent = `$ ${price.toFixed(2)} C/U`;
+        break;
           case 'paquete 1kg':
-            productPrice.textContent = `$ ${Math.round( price * (1000 / weight )) * 0.93} C/U`;
-            break;
+        productPrice.textContent = `$ ${(price * (1000 / weight) * 0.93).toFixed(2)} C/U`;
+        break;
           case 'paquete 700gr':
-            productPrice.textContent = `$ ${Math.round( price * (700 / weight )) * 0.93} C/U`;
-            break;
+        productPrice.textContent = `$ ${(price * (700 / weight) * 0.93).toFixed(2)} C/U`;
+        break;
           case 'gramaje':
-            productPrice.textContent = `$ ${price} C/U`;
-            break;
+        productPrice.textContent = `$ ${price.toFixed(2)} C/U`;
+        break;
         }
       });
 
