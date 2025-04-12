@@ -312,23 +312,26 @@ def agregar_produccion(id_receta):
     conexion = mysql.connection
     data = request.get_json()
     ingredientes = data['data']['ingredientes']
-    idProduccion = data['idProduccion']
+    # Cambié a .get() para manejar mejor cuando idProduccion no existe
+    idProduccion = data.get('idProduccion')  
+    
     try:
-
-        
-        # Verificar que todos los ingredientes están disponibles
+        # Verificación de ingredientes (se mantiene igual)
         if any(ing['estado'] == 'Insuficiente' for ing in ingredientes):
             return jsonify({"success": False, "message": "Insumos insuficientes"}), 400
 
         with conexion.cursor() as cursor:
-            # Iniciar transacción
+            # Iniciar transacción (se mantiene igual)
             conexion.begin()
 
+            # --------------------------------------------
+            # SECCIÓN MOVIDA: Procesamiento de ingredientes
+            # (antes estaba mezclado con la lógica de producción)
+            # --------------------------------------------
             for ingrediente in ingredientes:
                 id_insumo = ingrediente['idInsumo']
                 cantidad_necesaria = ingrediente['cantidadNecesaria']
                 
-                # Obtener lotes ordenados por caducidad (más viejo primero)
                 cursor.execute("""
                     SELECT idInventarioInsumo, cantidad 
                     FROM inventarioinsumos 
@@ -344,10 +347,8 @@ def agregar_produccion(id_receta):
                     id_lote, cantidad_lote = lote
                     
                     if cantidad_lote >= restante:
-                        # Usar todo lo necesario de este lote
                         nueva_cantidad = cantidad_lote - restante
                         if nueva_cantidad == 0:
-                            # Marcar lote como agotado
                             cursor.execute("""
                                 UPDATE inventarioinsumos 
                                 SET cantidad = 0, estadoLote = 'Agotado' 
@@ -362,7 +363,6 @@ def agregar_produccion(id_receta):
                         restante = 0
                         break
                     else:
-                        # Usar todo este lote y continuar con el siguiente
                         restante -= cantidad_lote
                         cursor.execute("""
                             UPDATE inventarioinsumos 
@@ -371,31 +371,41 @@ def agregar_produccion(id_receta):
                         """, (id_lote,))
 
                 if restante > 0:
-                    # Rollback si no hay suficiente incluso después de procesar todos los lotes
                     conexion.rollback()
                     return jsonify({
                         "success": False,
                         "message": f"Insumo ID {id_insumo} insuficiente después de procesar todos los lotes"
                     }), 400
 
-                if idProduccion is None:
-                    cursor.execute("""
-                        INSERT INTO produccion (idRecetaFK, fechaProduccion, estadoProduccion) 
-                        VALUES (%s, NOW(), 'Preparación')
-                    """, (id_receta,))
-                else:
-                    cursor.execute("""
-                        UPDATE produccion 
-                        SET estadoProduccion = 'Preparación' 
-                        WHERE idProduccion = %s
-                    """, (idProduccion,))
+            # --------------------------------------------------
+            # SECCIÓN REORGANIZADA: Manejo de la producción
+            # (antes estaba DENTRO del bucle de ingredientes)
+            # --------------------------------------------------
+            if idProduccion is None:
+                # Crear NUEVA producción (esto solo debe ejecutarse UNA vez)
+                cursor.execute("""
+                    INSERT INTO produccion (idRecetaFK, fechaProduccion, estadoProduccion) 
+                    VALUES (%s, NOW(), 'Preparación')
+                """, (id_receta,))
+                # Agregado: Obtenemos el ID de la nueva producción
+                idProduccion = cursor.lastrowid  
+            else:
+                # Actualizar producción EXISTENTE (esto solo debe ejecutarse UNA vez)
+                cursor.execute("""
+                    UPDATE produccion 
+                    SET estadoProduccion = 'Preparación' 
+                    WHERE idProduccion = %s
+                """, (idProduccion,))
 
-            # Confirmar transacción si todo está bien
+            # Confirmar transacción
             conexion.commit()
             
-            # Aquí iría la lógica para crear la producción e inventario de galletas...
-
-            return jsonify({"success": True, "message": "Producción agregada correctamente"}), 200
+            # Retornamos el idProduccion para referencia del cliente
+            return jsonify({
+                "success": True, 
+                "message": "Producción agregada correctamente",
+                "idProduccion": idProduccion  # Nuevo: retornamos el ID
+            }), 200
 
     except Exception as e:
         conexion.rollback()

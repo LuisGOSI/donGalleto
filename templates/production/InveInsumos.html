@@ -124,7 +124,7 @@
                         </thead>
                         <tbody>
                             {% for insumo in insumos %}
-                            {% if insumo[6] != 'Caducado' %}
+                            {% if insumo[6] == 'Disponible' %}
                             <tr>
                                 <td>{{insumo[0]}}</td>
                                 <td>{{insumo[1]}}</td>
